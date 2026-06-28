@@ -1,0 +1,17 @@
+# Rust build artifacts
+target/
+**/*.wasm
+
+# Node
+node_modules/
+dist/
+.next/
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# OS
+.DS_Store
+Thumbs.db

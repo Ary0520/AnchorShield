@@ -1,0 +1,21 @@
+[package]
+name = "insurance-market"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+doctest = false
+
+[dependencies]
+soroban-sdk = { workspace = true }
+# interfaces is rlib — provides OracleClient + AnchorStakeClient traits
+interfaces = { path = "../interfaces" }
+
+[dev-dependencies]
+soroban-sdk = { workspace = true, features = ["testutils"] }
+anchor-stake = { path = "../anchor-stake", features = ["testutils"] }
+
+[features]
+testutils = ["soroban-sdk/testutils"]
