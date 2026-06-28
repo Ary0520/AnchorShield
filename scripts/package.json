@@ -1,0 +1,19 @@
+{
+  "name": "anchorshield-scripts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "create-market": "ts-node create-market.ts",
+    "seed-testnet": "ts-node seed-testnet.ts"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "13.3.0",
+    "axios": "1.7.9",
+    "dotenv": "16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.30",
+    "typescript": "5.4.5",
+    "ts-node": "10.9.2"
+  }
+}
