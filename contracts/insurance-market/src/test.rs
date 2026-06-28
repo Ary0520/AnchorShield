@@ -244,3 +244,229 @@ fn test_cannot_initialize_twice() {
         &t._anchor_stake.address,
     );
 }
+
+// ─── Oracle mock ─────────────────────────────────────────────────────────────
+// Following the official Stellar mocking pattern:
+// https://developers.stellar.org/docs/build/guides/testing/mocking
+//
+// KEY: All mocks MUST be registered in the SAME Env as the contract under test.
+// The setup_with_oracle_env function creates a single Env, registers the mock
+// oracle into it, then initializes the market pointing at that oracle.
+
+use interfaces::oracle::{OracleTrait, PriceData};
+
+mod oracle_above {
+    use super::*;
+    use soroban_sdk::{contract, contractimpl, Env, Symbol, Vec};
+
+    /// Always returns $1.00 (healthy, above threshold).
+    #[contract]
+    pub struct MockOracle;
+
+    #[contractimpl]
+    impl OracleTrait for MockOracle {
+        fn lastprice(env: Env, _asset: Symbol) -> Option<PriceData> {
+            Some(PriceData {
+                price: 100_000_000_000_000i128,
+                timestamp: env.ledger().timestamp(),
+            })
+        }
+        fn decimals(_env: Env) -> u32 { 14 }
+        fn assets(env: Env) -> Vec<Symbol> { Vec::new(&env) }
+    }
+}
+
+mod oracle_below {
+    use super::*;
+    use soroban_sdk::{contract, contractimpl, Env, Symbol, Vec};
+
+    /// Always returns $0.990 (below the $0.995 depeg threshold).
+    #[contract]
+    pub struct MockOracle;
+
+    #[contractimpl]
+    impl OracleTrait for MockOracle {
+        fn lastprice(env: Env, _asset: Symbol) -> Option<PriceData> {
+            Some(PriceData {
+                price: 99_000_000_000_000i128,
+                timestamp: env.ledger().timestamp(),
+            })
+        }
+        fn decimals(_env: Env) -> u32 { 14 }
+        fn assets(env: Env) -> Vec<Symbol> { Vec::new(&env) }
+    }
+}
+
+mod oracle_stale {
+    use super::*;
+    use soroban_sdk::{contract, contractimpl, Env, Symbol, Vec};
+
+    /// Returns a below-threshold price but with a 10-minute-old timestamp.
+    #[contract]
+    pub struct MockOracle;
+
+    #[contractimpl]
+    impl OracleTrait for MockOracle {
+        fn lastprice(env: Env, _asset: Symbol) -> Option<PriceData> {
+            Some(PriceData {
+                price: 99_000_000_000_000i128,
+                timestamp: env.ledger().timestamp().saturating_sub(600),
+            })
+        }
+        fn decimals(_env: Env) -> u32 { 14 }
+        fn assets(env: Env) -> Vec<Symbol> { Vec::new(&env) }
+    }
+}
+
+struct OracleTestSetup {
+    env: Env,
+    market: InsuranceMarketClient<'static>,
+    usdc: Address,
+    alice: Address,
+}
+
+/// Creates one Env, registers the oracle mock INTO that env, then sets up the market.
+/// The oracle_register_fn closure receives the env and returns the oracle's Address.
+fn setup_oracle_env<F>(register_oracle: F, expiry_offset: u64) -> OracleTestSetup
+where
+    F: Fn(&Env) -> Address,
+{
+    let env = Env::default();
+    env.mock_all_auths();
+    env.ledger().set(LedgerInfo {
+        timestamp: 1_000_000,
+        protocol_version: 26,
+        sequence_number: 100,
+        network_id: Default::default(),
+        base_reserve: 10,
+        min_temp_entry_ttl: 1,
+        min_persistent_entry_ttl: 1,
+        max_entry_ttl: 6_312_000,
+    });
+
+    // Register oracle into THIS env
+    let oracle_id = register_oracle(&env);
+
+    let admin = Address::generate(&env);
+    let usdc_id = env.register_stellar_asset_contract_v2(admin.clone());
+    let usdc = usdc_id.address();
+    let sac = StellarAssetClient::new(&env, &usdc);
+
+    let alice = Address::generate(&env);
+    sac.mint(&alice, &(100 * ONE_USDC));
+
+    let anchor_stake_id = env.register(AnchorStake, ());
+    let anchor_stake_client = AnchorStakeClient::new(&env, &anchor_stake_id);
+    anchor_stake_client.initialize(&admin, &admin, &usdc);
+
+    let expiry = env.ledger().timestamp() + expiry_offset;
+    let market_contract_id = env.register(InsuranceMarket, ());
+    let market = InsuranceMarketClient::new(&env, &market_contract_id);
+    market.initialize(
+        &0u32,
+        &String::from_str(&env, "USDC depeg < $0.995 for 1hr"),
+        &usdc,
+        &Symbol::new(&env, "USDC"),
+        &oracle_id,
+        &DEPEG_THRESHOLD,
+        &BREACH_DURATION,
+        &expiry,
+        &None::<Address>,
+        &anchor_stake_id,
+    );
+
+    OracleTestSetup { env, market, usdc, alice }
+}
+
+// ─── Oracle-path settlement tests ────────────────────────────────────────────
+
+#[test]
+fn test_try_settle_yes_wins_after_breach_duration() {
+    let t = setup_oracle_env(
+        |env| env.register(oracle_below::MockOracle, ()),
+        86400,
+    );
+
+    t.market.mint_complete_set(&t.alice, &(10 * ONE_USDC));
+
+    // Tick 1: first detection — breach timer starts
+    t.market.try_settle();
+    assert_eq!(t.market.get_state(), MarketState::Open, "still open after tick 1");
+    assert!(t.market.get_breach_started_at().is_some(), "breach timer started");
+
+    // Advance time past breach duration
+    t.env.ledger().set(LedgerInfo {
+        timestamp: 1_000_000 + BREACH_DURATION + 1,
+        protocol_version: 26,
+        sequence_number: 200,
+        network_id: Default::default(),
+        base_reserve: 10,
+        min_temp_entry_ttl: 1,
+        min_persistent_entry_ttl: 1,
+        max_entry_ttl: 6_312_000,
+    });
+
+    // Tick 2: duration met → YES wins
+    t.market.try_settle();
+    assert_eq!(t.market.get_state(), MarketState::Settled, "YES wins after breach");
+}
+
+#[test]
+fn test_try_settle_healthy_oracle_does_not_settle() {
+    let t = setup_oracle_env(
+        |env| env.register(oracle_above::MockOracle, ()),
+        86400,
+    );
+
+    t.market.try_settle();
+    assert_eq!(t.market.get_state(), MarketState::Open, "healthy market stays open");
+    assert_eq!(t.market.get_breach_started_at(), None, "no breach timer started");
+}
+
+#[test]
+fn test_try_settle_stale_oracle_does_not_settle() {
+    let t = setup_oracle_env(
+        |env| env.register(oracle_stale::MockOracle, ()),
+        86400,
+    );
+
+    // Price is below threshold but timestamp is 10 min old — contract should skip
+    t.market.try_settle();
+    assert_eq!(t.market.get_state(), MarketState::Open, "stale oracle skipped");
+    assert_eq!(t.market.get_breach_started_at(), None, "no breach from stale oracle");
+}
+
+#[test]
+fn test_claim_yes_wins_pays_yes_holders() {
+    let t = setup_oracle_env(
+        |env| env.register(oracle_below::MockOracle, ()),
+        86400,
+    );
+
+    t.market.mint_complete_set(&t.alice, &(10 * ONE_USDC));
+
+    // Start breach
+    t.market.try_settle();
+
+    // Cross breach duration
+    t.env.ledger().set(LedgerInfo {
+        timestamp: 1_000_000 + BREACH_DURATION + 1,
+        protocol_version: 26,
+        sequence_number: 200,
+        network_id: Default::default(),
+        base_reserve: 10,
+        min_temp_entry_ttl: 1,
+        min_persistent_entry_ttl: 1,
+        max_entry_ttl: 6_312_000,
+    });
+
+    t.market.try_settle();
+    assert_eq!(t.market.get_state(), MarketState::Settled);
+
+    let usdc_client = TokenClient::new(&t.env, &t.usdc);
+    let before = usdc_client.balance(&t.alice);
+    t.market.claim(&t.alice);
+    let after = usdc_client.balance(&t.alice);
+
+    assert_eq!(after - before, 10 * ONE_USDC, "alice claims 10 USDC via YES");
+}
