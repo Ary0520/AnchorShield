@@ -1,4 +1,5 @@
 use soroban_sdk::{contracttype, Address, String, Symbol};
+use interfaces::oracle::Asset;
 
 #[contracttype]
 #[derive(Clone)]
@@ -26,9 +27,9 @@ pub struct MarketConfig {
     pub label: String,
     /// SAC address of the collateral token (USDC, EURC, etc.)
     pub collateral_token: Address,
-    /// RedStone oracle symbol: "USDC", "EURC", "MGUSD", "PYUSD", "BENJI"
-    pub covered_asset_symbol: Symbol,
-    /// RedStone SEP-40 oracle contract address
+    /// SEP-40 oracle asset: Asset::Other(Symbol) for USDC/EURC etc.
+    pub covered_asset: Asset,
+    /// SEP-40 oracle contract address
     pub oracle_contract: Address,
     /// Price below which a depeg is detected, 14-decimal fixed point
     /// $0.995 = 9_950_000_000_000_0 (i.e. 0.995 * 1e14)

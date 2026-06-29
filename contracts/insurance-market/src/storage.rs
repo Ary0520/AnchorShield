@@ -41,8 +41,8 @@ pub enum DataKey {
     MarketId,
     Label,
     CollateralToken,       // Address — USDC SAC address
-    CoveredAssetSymbol,    // Symbol — "USDC", "EURC", "MGUSD", "PYUSD"
-    OracleContract,        // Address — RedStone SEP-40 contract
+    CoveredAsset,          // Asset (from oracle interface) — the asset being insured
+    OracleContract,        // Address — SEP-40 contract
     DepegThreshold,        // i128 — e.g. 9_950_000_000_000_0 for $0.995 (14 decimals)
     BreachDurationSeconds, // u64 — e.g. 3600 for 1 hour
     ExpiryTimestamp,       // u64 — Unix seconds when market expires

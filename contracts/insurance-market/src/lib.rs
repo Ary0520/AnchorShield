@@ -3,6 +3,7 @@
 use soroban_sdk::{contract, contractimpl, token, Address, Env, Map, String, Symbol};
 
 use interfaces::anchor_stake::AnchorStakeClient;
+use interfaces::oracle::Asset;
 use crate::{
     orderbook::{cancel_order, fill_orders, place_order},
     settlement::check_and_settle,
@@ -28,14 +29,14 @@ impl InsuranceMarket {
     /// Called once by the factory immediately after deployment.
     ///
     /// Parameters mirror the spec's MarketConfig struct.
-    /// depeg_threshold uses 14-decimal fixed point (RedStone format):
+    /// depeg_threshold uses 14-decimal fixed point:
     ///   $0.995 = 9_950_000_000_000_0  (14 zeros after decimal = 1e14)
     pub fn initialize(
         env: Env,
         market_id: u32,
         label: String,
         collateral_token: Address,
-        covered_asset_symbol: Symbol,
+        covered_asset: Asset,
         oracle_contract: Address,
         depeg_threshold: i128,
         breach_duration_seconds: u64,
@@ -51,7 +52,7 @@ impl InsuranceMarket {
         s.set(&DataKey::MarketId, &market_id);
         s.set(&DataKey::Label, &label);
         s.set(&DataKey::CollateralToken, &collateral_token);
-        s.set(&DataKey::CoveredAssetSymbol, &covered_asset_symbol);
+        s.set(&DataKey::CoveredAsset, &covered_asset);
         s.set(&DataKey::OracleContract, &oracle_contract);
         s.set(&DataKey::DepegThreshold, &depeg_threshold);
         s.set(&DataKey::BreachDurationSeconds, &breach_duration_seconds);
