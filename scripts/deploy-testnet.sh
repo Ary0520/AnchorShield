@@ -84,7 +84,7 @@ info "Uploading insurance-market WASM..."
 IM_WASM_HASH=$(stellar contract upload \
   --source "$IDENTITY" \
   --network "$NETWORK" \
-  --wasm "$WASM_DIR/insurance_market.wasm")
+  --wasm "$WASM_DIR/insurance_market.wasm" 2>&1 | tail -1)
 info "insurance-market WASM hash: $IM_WASM_HASH"
 
 # Wait for ledger close before next transaction (prevents TxBadSeq)
@@ -98,7 +98,7 @@ ANCHOR_STAKE_ID=$(stellar contract deploy \
   --source "$IDENTITY" \
   --network "$NETWORK" \
   --wasm "$WASM_DIR/anchor_stake.wasm" \
-  --alias anchor-stake)
+  --alias anchor-stake 2>&1 | tail -1)
 info "anchor-stake deployed: $ANCHOR_STAKE_ID"
 
 # Wait for contract to be available on-chain before invoking it
@@ -129,7 +129,7 @@ FACTORY_ID=$(stellar contract deploy \
   --source "$IDENTITY" \
   --network "$NETWORK" \
   --wasm "$WASM_DIR/market_factory.wasm" \
-  --alias market-factory)
+  --alias market-factory 2>&1 | tail -1)
 info "market-factory deployed: $FACTORY_ID"
 
 # Wait for contract to be available on-chain before invoking it
