@@ -117,31 +117,32 @@ stellar contract invoke \
 info "market-factory initialized"
 
 # ── Step 6: create the first USDC depeg market ───────────────────────────────
-# TESTNET_REDSTONE_ORACLE must be set before running.
-# Fetch from: https://docs.redstone.finance/docs/smart-contract-devs/get-started/stellar
-TESTNET_REDSTONE_ORACLE="${TESTNET_REDSTONE_ORACLE:-}"
-if [[ -z "$TESTNET_REDSTONE_ORACLE" ]]; then
-  warning "TESTNET_REDSTONE_ORACLE not set — skipping market creation"
-  warning "Set it and re-run: TESTNET_REDSTONE_ORACLE=C... ./scripts/deploy-testnet.sh"
-else
-  # Expiry: 30 days from now (Unix timestamp)
-  EXPIRY=$(date -d "+30 days" +%s 2>/dev/null || python3 -c "import time; print(int(time.time()) + 2592000)")
-  info "Creating USDC depeg market (expiry: $EXPIRY)..."
-  stellar contract invoke \
-    --id market-factory \
-    --source "$IDENTITY" \
-    --network "$NETWORK" \
-    -- create_market \
-    --label "USDC depeg < \$0.995 for 1hr" \
-    --collateral_token "$TESTNET_USDC_SAC" \
-    --covered_asset_symbol USDC \
-    --oracle_contract "$TESTNET_REDSTONE_ORACLE" \
-    --depeg_threshold 99500000000000 \
-    --breach_duration_seconds 3600 \
-    --expiry_timestamp "$EXPIRY"
-    # --anchor_id is omitted → CLI passes None automatically
-  info "USDC depeg market created"
-fi
+# Oracle: Reflector Network — SEP-40 compatible, verified on Stellar's official
+# oracle provider list: https://developers.stellar.org/docs/data/oracles/oracle-providers
+# Using the "External CEXs & DEXs" feed which covers USDC, EURC, PYUSD, XLM, BTC.
+# RedStone's Stellar doc page returned 404 as of June 2026; Reflector is the
+# production-ready SEP-40 oracle already integrated with DeFindex.
+REFLECTOR_TESTNET="CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63"
+ORACLE_CONTRACT="${ORACLE_CONTRACT:-$REFLECTOR_TESTNET}"
+info "Oracle: $ORACLE_CONTRACT (Reflector testnet — External CEXs/DEXs)"
+
+# Expiry: 30 days from now
+EXPIRY=$(date -d "+30 days" +%s 2>/dev/null || python3 -c "import time; print(int(time.time()) + 2592000)")
+info "Creating USDC depeg market (expiry: $EXPIRY)..."
+stellar contract invoke \
+  --id market-factory \
+  --source "$IDENTITY" \
+  --network "$NETWORK" \
+  -- create_market \
+  --label "USDC depeg < \$0.995 for 1hr" \
+  --collateral_token "$TESTNET_USDC_SAC" \
+  --covered_asset_symbol USDC \
+  --oracle_contract "$ORACLE_CONTRACT" \
+  --depeg_threshold 99500000000000 \
+  --breach_duration_seconds 3600 \
+  --expiry_timestamp "$EXPIRY"
+  # --anchor_id is omitted → CLI passes None automatically
+info "USDC depeg market created"
 
 # ── Step 7: write watcher .env ───────────────────────────────────────────────
 ENV_FILE="$SCRIPTS_DIR/../watcher/.env.testnet"
@@ -156,7 +157,9 @@ WATCHER_SECRET_KEY=S...
 
 MARKET_FACTORY_CONTRACT=$FACTORY_ID
 ANCHOR_STAKE_CONTRACT=$ANCHOR_STAKE_ID
-REDSTONE_CONTRACT=${TESTNET_REDSTONE_ORACLE:-FILL_IN_REDSTONE_ADDRESS}
+# Reflector oracle — External CEXs & DEXs feed (SEP-40 compatible)
+# Source: https://developers.stellar.org/docs/data/oracles/oracle-providers
+ORACLE_CONTRACT=$ORACLE_CONTRACT
 EOF
 info "Watcher env written to $ENV_FILE"
 

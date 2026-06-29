@@ -21,10 +21,13 @@ export const CONFIG = {
   MARKET_FACTORY_CONTRACT: required('MARKET_FACTORY_CONTRACT'),
   ANCHOR_STAKE_CONTRACT: required('ANCHOR_STAKE_CONTRACT'),
 
-  // ── RedStone SEP-40 oracle ───────────────────────────────────────────────────
-  // Address of the RedStone price feed contract on Stellar.
-  // Fetch from: https://docs.redstone.finance/docs/smart-contract-devs/get-started/stellar
-  REDSTONE_CONTRACT: required('REDSTONE_CONTRACT'),
+  // ── Oracle ───────────────────────────────────────────────────────────────────
+  // Reflector Network oracle (SEP-40 compatible).
+  // RedStone's Stellar docs returned 404 as of June 2026.
+  // Reflector is listed on https://developers.stellar.org/docs/data/oracles/oracle-providers
+  // Testnet (External CEXs/DEXs): CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63
+  // Mainnet (External CEXs/DEXs): CAFJZQWSED6YAWZU3GWRTOCNPPCGBN32L7QV43XX5LZLFTK6JLN34DLN
+  ORACLE_CONTRACT: required('ORACLE_CONTRACT'),
 
   // ── Polling ─────────────────────────────────────────────────────────────────
   // How many order fills to attempt per market per tick.

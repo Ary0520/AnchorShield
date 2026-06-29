@@ -2,8 +2,12 @@
 target/
 **/*.wasm
 
+# Soroban test snapshots (auto-generated, opt-in to commit if desired)
+**/test_snapshots/
+
 # Node
 node_modules/
+**/node_modules/
 dist/
 .next/
 
