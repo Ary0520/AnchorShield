@@ -12,9 +12,9 @@
 
 // ── TESTNET ───────────────────────────────────────────────────────────────────
 
-/// Testnet USDC SAC (Circle)
-/// Verify at: https://stellar.expert/explorer/testnet
-pub const TESTNET_USDC_SAC: &str = "CCW67TSZV3SSS2HXMBQ5JFGCKJNFESNU4W4III5JEHE74XX53P6BYOS";
+/// Testnet USDC SAC — issuer GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5
+/// Verified June 2026 via: stellar contract id asset --asset USDC:GBBD47...
+pub const TESTNET_USDC_SAC: &str = "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA";
 
 /// Reflector testnet oracle — External CEXs & DEXs feeds (USDC, EURC, PYUSD etc.)
 /// Source: https://developers.stellar.org/docs/data/oracles/oracle-providers
