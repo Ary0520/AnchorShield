@@ -1,50 +1,106 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { isAllowed, getPublicKey } from "@stellar/freighter-api";
+import { useState, useEffect, useCallback } from "react";
+import {
+  isConnected,
+  isAllowed,
+  requestAccess,
+  getAddress,
+  getNetworkDetails,
+} from "@stellar/freighter-api";
+
+export interface WalletState {
+  publicKey: string | null;
+  isConnecting: boolean;
+  error: string | null;
+  networkPassphrase: string | null;
+}
 
 export function useWallet() {
-  const [publicKey, setPublicKey] = useState<string | null>(null);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<WalletState>({
+    publicKey: null,
+    isConnecting: false,
+    error: null,
+    networkPassphrase: null,
+  });
 
-  // Check if wallet is already connected
+  // On mount: check if Freighter is already connected + allowed
   useEffect(() => {
-    const storedKey = localStorage.getItem("anchorshield_wallet");
-    if (storedKey) {
-      setPublicKey(storedKey);
+    (async () => {
+      try {
+        const { isConnected: connected } = await isConnected();
+        if (!connected) return;
+
+        const { isAllowed: allowed } = await isAllowed();
+        if (!allowed) return;
+
+        const { address, error } = await getAddress();
+        if (error || !address) return;
+
+        const details = await getNetworkDetails();
+        setState((s) => ({
+          ...s,
+          publicKey: address,
+          networkPassphrase: details.networkPassphrase ?? null,
+        }));
+      } catch {
+        // Freighter not installed or unavailable — silent
+      }
+    })();
+  }, []);
+
+  const connect = useCallback(async () => {
+    setState((s) => ({ ...s, isConnecting: true, error: null }));
+    try {
+      const { isConnected: connected } = await isConnected();
+      if (!connected) {
+        setState((s) => ({
+          ...s,
+          isConnecting: false,
+          error: "Freighter extension not found. Please install it.",
+        }));
+        return;
+      }
+
+      // requestAccess opens the Freighter popup
+      const { address, error } = await requestAccess();
+      if (error) {
+        setState((s) => ({
+          ...s,
+          isConnecting: false,
+          error: String(error),
+        }));
+        return;
+      }
+
+      const details = await getNetworkDetails();
+      setState({
+        publicKey: address,
+        isConnecting: false,
+        error: null,
+        networkPassphrase: details.networkPassphrase ?? null,
+      });
+    } catch (err: unknown) {
+      setState((s) => ({
+        ...s,
+        isConnecting: false,
+        error: err instanceof Error ? err.message : "Failed to connect wallet",
+      }));
     }
   }, []);
 
-  const connect = async () => {
-    setIsConnecting(true);
-    setError(null);
-    try {
-      const allowed = await isAllowed();
-      if (!allowed) {
-        throw new Error("Freighter is not installed or not allowed.");
-      }
-      const pk = await getPublicKey();
-      setPublicKey(pk);
-      localStorage.setItem("anchorshield_wallet", pk);
-    } catch (err: any) {
-      setError(err?.message ?? "Failed to connect wallet");
-      console.error("Wallet connect error:", err);
-    } finally {
-      setIsConnecting(false);
-    }
-  };
+  const disconnect = useCallback(() => {
+    setState({
+      publicKey: null,
+      isConnecting: false,
+      error: null,
+      networkPassphrase: null,
+    });
+  }, []);
 
-  const disconnect = () => {
-    setPublicKey(null);
-    localStorage.removeItem("anchorshield_wallet");
-  };
+  const shortKey = state.publicKey
+    ? `${state.publicKey.slice(0, 4)}...${state.publicKey.slice(-4)}`
+    : null;
 
-  return {
-    publicKey,
-    isConnecting,
-    connect,
-    disconnect,
-    error,
-  };
+  return { ...state, shortKey, connect, disconnect };
 }

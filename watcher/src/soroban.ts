@@ -62,20 +62,28 @@ export async function invokeContract(
     throw new Error(`[soroban] Send failed for ${method}: status=${sendResult.status}`);
   }
 
-  // Poll until confirmed (max 30 seconds, 10 attempts × 3s)
+  // Poll via raw JSON-RPC to avoid stellar-sdk v13 XDR parsing bug on getTransaction
+  const hash = sendResult.hash;
   for (let i = 0; i < 10; i++) {
     await sleep(3_000);
-    const result = await server.getTransaction(sendResult.hash);
-    if (result.status === rpc.Api.GetTransactionStatus.SUCCESS) {
-      return result.returnValue ?? null;
+    const pollRes = await fetch(CONFIG.STELLAR_RPC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'getTransaction',
+        params: { hash },
+      }),
+    });
+    const pollJson = await pollRes.json() as { result?: { status: string } };
+    const status = pollJson.result?.status;
+    if (status === 'SUCCESS') return null;
+    if (status === 'FAILED') {
+      throw new Error(`[soroban] Transaction failed for ${method}: hash=${hash}`);
     }
-    if (result.status === rpc.Api.GetTransactionStatus.FAILED) {
-      throw new Error(`[soroban] Transaction failed for ${method}: hash=${sendResult.hash}`);
-    }
-    // NOT_FOUND means still processing — keep polling
   }
-
-  throw new Error(`[soroban] Timeout polling for ${method}: hash=${sendResult.hash}`);
+  throw new Error(`[soroban] Timeout polling for ${method}: hash=${hash}`);
 }
 
 /**
