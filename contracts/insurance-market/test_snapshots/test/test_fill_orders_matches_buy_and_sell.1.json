@@ -635,12 +635,19 @@
                       "key": {
                         "vec": [
                           {
-                            "symbol": "CoveredAssetSymbol"
+                            "symbol": "CoveredAsset"
                           }
                         ]
                       },
                       "val": {
-                        "symbol": "USDC"
+                        "vec": [
+                          {
+                            "symbol": "Generic"
+                          },
+                          {
+                            "symbol": "USDC"
+                          }
+                        ]
                       }
                     },
                     {

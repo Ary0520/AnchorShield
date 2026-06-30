@@ -28,9 +28,9 @@
  * Symbol names are passed as Soroban Symbol type — e.g. "USDC", "EURC"
  */
 
-import { nativeToScVal } from '@stellar/stellar-sdk';
-import { CONFIG } from './config.js';
-import { queryContract } from './soroban.js';
+import { nativeToScVal, xdr } from '@stellar/stellar-sdk';
+import { CONFIG } from './config';
+import { queryContract } from './soroban';
 
 /**
  * Maximum price age before treating it as stale.
@@ -58,12 +58,19 @@ interface PriceData {
  */
 export async function getOraclePrice(assetSymbol: string): Promise<number | null> {
   try {
-    // lastprice(asset: Symbol) -> Option<PriceData>
-    // scValToNative converts Option<PriceData> to { price: bigint, timestamp: bigint } | null
+    // lastprice(asset: Asset) -> Option<PriceData>
+    // Asset enum:
+    //  - 0: Stellar(Address)
+    //  - 1: Other(Symbol)
+    // Encode as a vector: first element is u32 variant index, second is the value
+    const symbolScVal = nativeToScVal(assetSymbol, { type: 'symbol' });
+    const variantIndexScVal = nativeToScVal(1, { type: 'u32' }); // Other is index 1
+    const assetScVal = xdr.ScVal.scvVec([variantIndexScVal, symbolScVal]);
+
     const result = await queryContract(
       CONFIG.ORACLE_CONTRACT,
       'lastprice',
-      [nativeToScVal(assetSymbol, { type: 'symbol' })],
+      [assetScVal],
     ) as PriceData | null;
 
     if (!result) {

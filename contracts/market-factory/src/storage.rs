@@ -1,4 +1,4 @@
-use soroban_sdk::{contracttype, Address, String, Symbol};
+use soroban_sdk::{contracttype, Address, String};
 use interfaces::oracle::Asset;
 
 #[contracttype]

@@ -1,4 +1,5 @@
-use soroban_sdk::{contractclient, Address, Env, String, Symbol};
+use soroban_sdk::{contractclient, Address, Env, String};
+use super::oracle::Asset;
 
 /// Minimal interface for InsuranceMarket — used by market-factory to call
 /// initialize() on a freshly deployed insurance-market contract instance.
@@ -9,7 +10,7 @@ pub trait InsuranceMarketTrait {
         market_id: u32,
         label: String,
         collateral_token: Address,
-        covered_asset_symbol: Symbol,
+        covered_asset: Asset,
         oracle_contract: Address,
         depeg_threshold: i128,
         breach_duration_seconds: u64,

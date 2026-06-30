@@ -15,11 +15,11 @@ import {
   xdr,
   scValToNative,
   nativeToScVal,
+  rpc,
 } from '@stellar/stellar-sdk';
-import { Server, Api, assembleTransaction } from '@stellar/stellar-sdk/rpc';
 import { CONFIG } from './config';
 
-export const server = new Server(CONFIG.STELLAR_RPC_URL, {
+export const server = new rpc.Server(CONFIG.STELLAR_RPC_URL, {
   allowHttp: false,
 });
 
@@ -50,11 +50,11 @@ export async function invokeContract(
 
   // Simulate first to get the resource footprint and updated fee
   const simResult = await server.simulateTransaction(tx);
-  if (Api.isSimulationError(simResult)) {
+  if (rpc.Api.isSimulationError(simResult)) {
     throw new Error(`[soroban] Simulation failed for ${method}: ${simResult.error}`);
   }
 
-  const preparedTx = assembleTransaction(tx, simResult).build();
+  const preparedTx = rpc.assembleTransaction(tx, simResult).build();
   preparedTx.sign(keypair);
 
   const sendResult = await server.sendTransaction(preparedTx);
@@ -66,10 +66,10 @@ export async function invokeContract(
   for (let i = 0; i < 10; i++) {
     await sleep(3_000);
     const result = await server.getTransaction(sendResult.hash);
-    if (result.status === Api.GetTransactionStatus.SUCCESS) {
+    if (result.status === rpc.Api.GetTransactionStatus.SUCCESS) {
       return result.returnValue ?? null;
     }
-    if (result.status === Api.GetTransactionStatus.FAILED) {
+    if (result.status === rpc.Api.GetTransactionStatus.FAILED) {
       throw new Error(`[soroban] Transaction failed for ${method}: hash=${sendResult.hash}`);
     }
     // NOT_FOUND means still processing — keep polling
@@ -99,11 +99,11 @@ export async function queryContract(
     .build();
 
   const sim = await server.simulateTransaction(tx);
-  if (Api.isSimulationError(sim)) {
+  if (rpc.Api.isSimulationError(sim)) {
     throw new Error(`[soroban] Query failed for ${method}: ${sim.error}`);
   }
 
-  const successSim = sim as Api.SimulateTransactionSuccessResponse;
+  const successSim = sim as rpc.Api.SimulateTransactionSuccessResponse;
   return scValToNative(successSim.result!.retval);
 }
 

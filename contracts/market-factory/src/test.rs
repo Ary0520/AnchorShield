@@ -7,6 +7,8 @@ use soroban_sdk::{
     Address, BytesN, Env, String, Symbol,
 };
 
+use interfaces::oracle::Asset;
+
 use crate::{MarketFactory, MarketFactoryClient};
 use anchor_stake::{AnchorStake, AnchorStakeClient};
 
@@ -54,7 +56,7 @@ fn test_create_market_deploys_and_initializes() {
     let market_id = factory.create_market(
         &String::from_str(&env, "USDC depeg < $0.995 for 1hr"),
         &usdc,
-        &Symbol::new(&env, "USDC"),
+        &Asset::Other(Symbol::new(&env, "USDC")),
         &oracle,
         &9_950_000_000_000_0i128,
         &3600u64,
@@ -81,12 +83,12 @@ fn test_list_markets_returns_all_ids() {
 
     factory.create_market(
         &String::from_str(&env, "Market 0"), &usdc,
-        &Symbol::new(&env, "USDC"), &oracle,
+        &Asset::Other(Symbol::new(&env, "USDC")), &oracle,
         &9_950_000_000_000_0i128, &3600u64, &expiry, &None::<Address>,
     );
     factory.create_market(
         &String::from_str(&env, "Market 1"), &usdc,
-        &Symbol::new(&env, "EURC"), &oracle,
+        &Asset::Other(Symbol::new(&env, "EURC")), &oracle,
         &9_950_000_000_000_0i128, &3600u64, &expiry, &None::<Address>,
     );
 

@@ -1,10 +1,11 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contractimpl, Address, BytesN, Env, Map, String, Symbol, Vec,
+    contract, contractimpl, Address, BytesN, Env, Map, String, Vec,
 };
 
 use interfaces::insurance_market::InsuranceMarketClient;
+use interfaces::oracle::Asset;
 use crate::storage::{DataKey, MarketConfig};
 
 mod events;
@@ -64,7 +65,7 @@ impl MarketFactory {
         env: Env,
         label: String,
         collateral_token: Address,
-        covered_asset_symbol: Symbol,
+        covered_asset: Asset,
         oracle_contract: Address,
         depeg_threshold: i128,
         breach_duration_seconds: u64,
@@ -112,7 +113,7 @@ impl MarketFactory {
             &market_id,
             &label,
             &collateral_token,
-            &covered_asset_symbol,
+            &covered_asset,
             &oracle_contract,
             &depeg_threshold,
             &breach_duration_seconds,
@@ -132,7 +133,7 @@ impl MarketFactory {
             market_id,
             label,
             collateral_token,
-            covered_asset_symbol,
+            covered_asset,
             oracle_contract,
             depeg_threshold,
             breach_duration_seconds,

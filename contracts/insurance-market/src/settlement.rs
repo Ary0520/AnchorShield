@@ -1,7 +1,7 @@
-use soroban_sdk::{Env, Symbol};
+use soroban_sdk::Env;
 
 use crate::storage::{DataKey, MarketState};
-use interfaces::oracle::OracleClient;
+use interfaces::oracle::{OracleClient, Asset};
 use interfaces::anchor_stake::AnchorStakeClient;
 
 /// Reject oracle prices older than 5 minutes.
@@ -23,7 +23,7 @@ pub fn check_and_settle(env: &Env) {
         .unwrap();
     let now = env.ledger().timestamp();
 
-    // ── Path 1: expiry ────────────────────────────────────────────────────────
+    // ─── Path 1: expiry ────────────────────────────────────────────────────────
     if now >= expiry {
         let breach_start: Option<u64> = env
             .storage()
@@ -41,20 +41,20 @@ pub fn check_and_settle(env: &Env) {
         return;
     }
 
-    // ── Path 2: oracle price check ────────────────────────────────────────────
+    // ─── Path 2: oracle price check ────────────────────────────────────────────
     let oracle_addr: soroban_sdk::Address = env
         .storage()
         .instance()
         .get(&DataKey::OracleContract)
         .unwrap();
-    let asset_sym: Symbol = env
+    let covered_asset: Asset = env
         .storage()
         .instance()
-        .get(&DataKey::CoveredAssetSymbol)
+        .get(&DataKey::CoveredAsset)
         .unwrap();
 
     let oracle = OracleClient::new(env, &oracle_addr);
-    let price_data = match oracle.lastprice(&asset_sym) {
+    let price_data = match oracle.lastprice(&covered_asset) {
         None => return, // Oracle has no data yet — skip this tick
         Some(p) => p,
     };

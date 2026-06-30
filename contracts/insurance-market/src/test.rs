@@ -8,6 +8,8 @@ use soroban_sdk::{
     Address, Env, String, Symbol,
 };
 
+use interfaces::oracle::{Asset, OracleTrait, PriceData};
+
 use crate::{InsuranceMarket, InsuranceMarketClient};
 use crate::storage::MarketState;
 use anchor_stake::{AnchorStake, AnchorStakeClient};
@@ -65,7 +67,7 @@ fn setup(expiry_offset: u64) -> TestSetup {
         &0u32,
         &String::from_str(&env, "USDC depeg < $0.995 for 1hr"),
         &usdc,
-        &Symbol::new(&env, "USDC"),
+        &Asset::Other(Symbol::new(&env, "USDC")),
         &oracle,
         &DEPEG_THRESHOLD,
         &BREACH_DURATION,
@@ -235,7 +237,7 @@ fn test_cannot_initialize_twice() {
         &0u32,
         &String::from_str(&t.env, "duplicate"),
         &t.usdc,
-        &Symbol::new(&t.env, "USDC"),
+        &Asset::Generic(Symbol::new(&t.env, "USDC")),
         &t.oracle,
         &DEPEG_THRESHOLD,
         &BREACH_DURATION,
@@ -253,11 +255,9 @@ fn test_cannot_initialize_twice() {
 // The setup_with_oracle_env function creates a single Env, registers the mock
 // oracle into it, then initializes the market pointing at that oracle.
 
-use interfaces::oracle::{OracleTrait, PriceData};
-
 mod oracle_above {
     use super::*;
-    use soroban_sdk::{contract, contractimpl, Env, Symbol, Vec};
+    use soroban_sdk::{contract, contractimpl, Env, Vec};
 
     /// Always returns $1.00 (healthy, above threshold).
     #[contract]
@@ -265,20 +265,24 @@ mod oracle_above {
 
     #[contractimpl]
     impl OracleTrait for MockOracle {
-        fn lastprice(env: Env, _asset: Symbol) -> Option<PriceData> {
+        fn base(_env: Env) -> Asset { Asset::Other(Symbol::new(&_env, "USD")) }
+        fn resolution(_env: Env) -> u32 { 300 }
+        fn price(_env: Env, _asset: Asset, _timestamp: u64) -> Option<PriceData> { None }
+        fn prices(_env: Env, _asset: Asset, _records: u32) -> Option<Vec<PriceData>> { None }
+        fn lastprice(env: Env, _asset: Asset) -> Option<PriceData> {
             Some(PriceData {
                 price: 100_000_000_000_000i128,
                 timestamp: env.ledger().timestamp(),
             })
         }
         fn decimals(_env: Env) -> u32 { 14 }
-        fn assets(env: Env) -> Vec<Symbol> { Vec::new(&env) }
+        fn assets(env: Env) -> Vec<Asset> { Vec::new(&env) }
     }
 }
 
 mod oracle_below {
     use super::*;
-    use soroban_sdk::{contract, contractimpl, Env, Symbol, Vec};
+    use soroban_sdk::{contract, contractimpl, Env, Vec};
 
     /// Always returns $0.990 (below the $0.995 depeg threshold).
     #[contract]
@@ -286,20 +290,24 @@ mod oracle_below {
 
     #[contractimpl]
     impl OracleTrait for MockOracle {
-        fn lastprice(env: Env, _asset: Symbol) -> Option<PriceData> {
+        fn base(_env: Env) -> Asset { Asset::Other(Symbol::new(&_env, "USD")) }
+        fn resolution(_env: Env) -> u32 { 300 }
+        fn price(_env: Env, _asset: Asset, _timestamp: u64) -> Option<PriceData> { None }
+        fn prices(_env: Env, _asset: Asset, _records: u32) -> Option<Vec<PriceData>> { None }
+        fn lastprice(env: Env, _asset: Asset) -> Option<PriceData> {
             Some(PriceData {
                 price: 99_000_000_000_000i128,
                 timestamp: env.ledger().timestamp(),
             })
         }
         fn decimals(_env: Env) -> u32 { 14 }
-        fn assets(env: Env) -> Vec<Symbol> { Vec::new(&env) }
+        fn assets(env: Env) -> Vec<Asset> { Vec::new(&env) }
     }
 }
 
 mod oracle_stale {
     use super::*;
-    use soroban_sdk::{contract, contractimpl, Env, Symbol, Vec};
+    use soroban_sdk::{contract, contractimpl, Env, Vec};
 
     /// Returns a below-threshold price but with a 10-minute-old timestamp.
     #[contract]
@@ -307,14 +315,18 @@ mod oracle_stale {
 
     #[contractimpl]
     impl OracleTrait for MockOracle {
-        fn lastprice(env: Env, _asset: Symbol) -> Option<PriceData> {
+        fn base(_env: Env) -> Asset { Asset::Other(Symbol::new(&_env, "USD")) }
+        fn resolution(_env: Env) -> u32 { 300 }
+        fn price(_env: Env, _asset: Asset, _timestamp: u64) -> Option<PriceData> { None }
+        fn prices(_env: Env, _asset: Asset, _records: u32) -> Option<Vec<PriceData>> { None }
+        fn lastprice(env: Env, _asset: Asset) -> Option<PriceData> {
             Some(PriceData {
                 price: 99_000_000_000_000i128,
                 timestamp: env.ledger().timestamp().saturating_sub(600),
             })
         }
         fn decimals(_env: Env) -> u32 { 14 }
-        fn assets(env: Env) -> Vec<Symbol> { Vec::new(&env) }
+        fn assets(env: Env) -> Vec<Asset> { Vec::new(&env) }
     }
 }
 
@@ -366,7 +378,7 @@ where
         &0u32,
         &String::from_str(&env, "USDC depeg < $0.995 for 1hr"),
         &usdc,
-        &Symbol::new(&env, "USDC"),
+        &Asset::Other(Symbol::new(&env, "USDC")),
         &oracle_id,
         &DEPEG_THRESHOLD,
         &BREACH_DURATION,

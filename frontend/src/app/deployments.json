@@ -1,0 +1,12 @@
+[
+  {
+    "contractId": "market_factory",
+    "networkPassphrase": "Test SDF Network ; September 2015",
+    "contractAddress": "CDPLCH2HKDALDYNYDK22BTDNCHGB63S4WZCP7WJXYXIHKSCA3BG2B47R"
+  },
+  {
+    "contractId": "anchor_stake",
+    "networkPassphrase": "Test SDF Network ; September 2015",
+    "contractAddress": "CDROZ7YDBYJVKUD5ZVDE627KK4D6I6WLC4BE22XBXK6GQ6VZA7PN34DD"
+  }
+]

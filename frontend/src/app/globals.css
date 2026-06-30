@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🔹 Default Light Mode (AnchorShield) */
+:root {
+  --background: #f5f5f7;
+  --foreground: #1d1d1f;
+  --border-color: #e5e7eb;
+}
+
+/* 🔹 Override for Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --border-color: #374151;
+  }
+}
+
+/* 🔹 Global Body Styles */
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+}
+
+/* 🔹 Button Styles */
+.button {
+  @apply px-6 py-2 font-bold rounded-lg transition text-center;
+}
+.button-primary {
+  @apply bg-purple-600 text-white hover:bg-purple-700;
+}
+.button-secondary {
+  @apply bg-gray-700 text-white hover:bg-gray-800;
+}
+.button-disabled {
+  @apply bg-gray-500 text-white cursor-not-allowed;
+}
+
+/* 🔹 Dropdown Styles */
+.dropdown {
+  @apply absolute mt-2 w-48 bg-gray-900 border border-gray-700 rounded-md shadow-lg;
+}
+.dropdown-item {
+  @apply block w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-800;
+}
+.dropdown-item-danger {
+  @apply block w-full px-4 py-2 text-left text-red-400 hover:bg-gray-800;
+}
+
+/* 🔹 Address Box */
+.address-box {
+  @apply mt-4 w-full max-w-xs bg-gray-800 text-gray-300 p-3 rounded-md text-center shadow-sm border border-gray-600;
+}
+
+/* 🔹 Wallet Connector Container */
+.connector-container {
+  @apply flex flex-col items-center space-y-6 p-6 bg-gray-900 shadow-lg rounded-lg border border-gray-700;
+}
+
+/* 🔹 Title Styling */
+.connector-title {
+  @apply text-2xl font-bold text-gray-200;
+}
+
+/* 🔹 Form Input */
+.input {
+  @apply w-full px-3 py-2 border rounded-md bg-gray-800 text-white placeholder-gray-400 focus:ring focus:ring-purple-500 focus:outline-none;
+}
+.input-disabled {
+  @apply bg-gray-700 cursor-not-allowed text-gray-400;
+}
+
+/* 🔹 Card Styling */
+.card {
+  @apply p-4 border rounded-lg shadow-md text-center bg-gray-800 border-gray-700 text-white;
+}
+
+/* 🔹 Stack Layout */
+.stack {
+  @apply flex flex-row space-x-2 items-center;
+}
+
+/* 🔹 Contract Link */
+.contract-link {
+  @apply font-mono text-xs underline text-blue-400 hover:text-blue-600;
+}
+
+/* 🔹 Green Disconnect Button */
+.button-green {
+  @apply bg-green-600 text-white hover:bg-green-700;
+}

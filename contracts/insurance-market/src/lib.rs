@@ -1,6 +1,6 @@
 #![no_std]
 
-use soroban_sdk::{contract, contractimpl, token, Address, Env, Map, String, Symbol};
+use soroban_sdk::{contract, contractimpl, token, Address, Env, Map, String};
 
 use interfaces::anchor_stake::AnchorStakeClient;
 use interfaces::oracle::Asset;
