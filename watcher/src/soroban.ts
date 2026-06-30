@@ -58,9 +58,11 @@ export async function invokeContract(
   preparedTx.sign(keypair);
 
   const sendResult = await server.sendTransaction(preparedTx);
-  if (sendResult.status !== 'PENDING') {
+  if (sendResult.status === 'ERROR') {
     throw new Error(`[soroban] Send failed for ${method}: status=${sendResult.status}`);
   }
+  // PENDING = submitted, DUPLICATE = already submitted (both are fine to poll)
+  // TRY_AGAIN_LATER = transient, but we'll poll anyway
 
   // Poll via raw JSON-RPC to avoid stellar-sdk v13 XDR parsing bug on getTransaction
   const hash = sendResult.hash;

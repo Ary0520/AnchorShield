@@ -58,19 +58,17 @@ interface PriceData {
  */
 export async function getOraclePrice(assetSymbol: string): Promise<number | null> {
   try {
-    // lastprice(asset: Asset) -> Option<PriceData>
-    // Asset enum:
-    //  - 0: Stellar(Address)
-    //  - 1: Other(Symbol)
-    // Encode as a vector: first element is u32 variant index, second is the value
-    const symbolScVal = nativeToScVal(assetSymbol, { type: 'symbol' });
-    const variantIndexScVal = nativeToScVal(1, { type: 'u32' }); // Other is index 1
-    const assetScVal = xdr.ScVal.scvVec([variantIndexScVal, symbolScVal]);
+    // Confirmed working encoding against live Reflector testnet contract:
+    // Asset::Other(Symbol) = scvVec([scvSymbol("Other"), scvSymbol(assetSymbol)])
+    const assetArg = xdr.ScVal.scvVec([
+      xdr.ScVal.scvSymbol('Other'),
+      xdr.ScVal.scvSymbol(assetSymbol),
+    ]);
 
     const result = await queryContract(
       CONFIG.ORACLE_CONTRACT,
       'lastprice',
-      [assetScVal],
+      [assetArg],
     ) as PriceData | null;
 
     if (!result) {
