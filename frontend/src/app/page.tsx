@@ -11,8 +11,9 @@ import {
 } from "@/lib/contracts";
 import MarketDetail from "./components/MarketDetail";
 import AcrDashboard from "./components/AcrDashboard";
+import StatsPage from "./components/StatsPage";
 
-type Tab = "markets" | "acr";
+type Tab = "markets" | "acr" | "stats";
 
 export default function Home() {
   const wallet = useWallet();
@@ -114,7 +115,7 @@ export default function Home() {
       {/* Tabs */}
       <div className="px-6 pt-6">
         <div className="flex gap-4 border-b border-gray-200 mb-6">
-          {(["markets", "acr"] as Tab[]).map((t) => (
+          {(["markets", "acr", "stats"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -124,7 +125,7 @@ export default function Home() {
                   : "border-transparent text-gray-500 hover:text-gray-800"
               }`}
             >
-              {t === "markets" ? "Insurance Markets" : "Anchor ACR Scores"}
+              {t === "markets" ? "Insurance Markets" : t === "acr" ? "Anchor ACR Scores" : "Protocol Stats"}
             </button>
           ))}
           <button
@@ -162,6 +163,8 @@ export default function Home() {
         )}
 
         {tab === "acr" && <AcrDashboard />}
+
+        {tab === "stats" && <StatsPage />}
       </div>
     </div>
   );
