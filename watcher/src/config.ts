@@ -39,9 +39,9 @@ export const CONFIG = {
   MARKETS: [
     { id: 0, symbol: 'USDC',  threshold_pct: 0.995, breach_hours: 1 },
     { id: 1, symbol: 'EURC',  threshold_pct: 0.995, breach_hours: 1 },
-    { id: 2, symbol: 'MGUSD', threshold_pct: 0.995, breach_hours: 1 },
-    { id: 3, symbol: 'PYUSD', threshold_pct: 0.995, breach_hours: 1 },
-    { id: 4, symbol: 'BENJI', threshold_pct: 0.990, breach_hours: 4 },
+    { id: 2, symbol: 'DAI',   threshold_pct: 0.995, breach_hours: 1 },
+    { id: 3, symbol: 'USDT',  threshold_pct: 0.995, breach_hours: 1 },
+    { id: 4, symbol: 'USDC',  threshold_pct: 0.995, breach_hours: 1 }, // short-expiry test
   ] as const,
 
   // ── Anchor accounts to monitor via Horizon ───────────────────────────────────

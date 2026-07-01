@@ -192,18 +192,13 @@ export async function getMarket(marketId: number): Promise<MarketConfig> {
 
 export async function getMarketState(marketContract: string): Promise<string> {
   const result = await queryContract(marketContract, "get_state");
-  // scValToNative returns the enum variant name as a string for unit variants,
-  // or as { VariantName: value } for tuple variants. MarketState variants are unit.
+  // scValToNative on a Soroban contracttype enum (scvVec) returns ["Expired"], ["Open"], etc.
+  if (Array.isArray(result) && result.length > 0) return String(result[0]);
   if (typeof result === "string") return result;
   if (result && typeof result === "object") {
     const key = Object.keys(result as object)[0];
-    // Map raw variant names to display strings
-    if (key === "Open") return "Open";
-    if (key === "Settled") return "Settled";
-    if (key === "Expired") return "Expired";
     return key ?? String(result);
   }
-  // Fallback: numeric enum index
   const map: Record<number, string> = { 0: "Open", 1: "Settled", 2: "Expired" };
   return map[Number(result)] ?? String(result);
 }

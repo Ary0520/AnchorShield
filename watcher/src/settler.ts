@@ -42,16 +42,20 @@ export async function runSettlementCheck(
     }
 
     try {
-      // try_settle takes no args — permissionless, no auth
       await invokeContract(contractAddr, 'try_settle', []);
       console.log(`[Settler] try_settle ok — market ${marketId}`);
     } catch (err) {
-      // "market not open" is expected once a market settles — not a real error
       const msg = (err as Error).message;
-      if (msg.includes('market not open') || msg.includes('already settled')) {
+      if (
+        msg.includes('market not open') ||
+        msg.includes('already settled') ||
+        msg.includes('market already') ||
+        msg.includes('UnreachableCodeReached') ||
+        msg.includes('InvalidAction')
+      ) {
         console.log(`[Settler] Market ${marketId} already settled, skipping`);
       } else {
-        console.warn(`[Settler] try_settle market ${marketId}: ${msg}`);
+        console.warn(`[Settler] try_settle market ${marketId}: ${msg.split('\n')[0]}`);
       }
     }
   }
