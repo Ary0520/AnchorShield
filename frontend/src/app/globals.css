@@ -2,94 +2,136 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🔹 Default Light Mode (AnchorShield) */
 :root {
-  --background: #f5f5f7;
-  --foreground: #1d1d1f;
-  --border-color: #e5e7eb;
+  --bg: #080810;
+  --fg: #ffffff;
+  --muted: rgba(255,255,255,0.5);
+  --border: rgba(255,255,255,0.08);
+  --accent: #00e5ff;
+  --accent-dim: rgba(0,229,255,0.12);
 }
 
-/* 🔹 Override for Dark Mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --border-color: #374151;
-  }
+* {
+  box-sizing: border-box;
 }
 
-/* 🔹 Global Body Styles */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* 🔹 Button Styles */
-.button {
-  @apply px-6 py-2 font-bold rounded-lg transition text-center;
-}
-.button-primary {
-  @apply bg-purple-600 text-white hover:bg-purple-700;
-}
-.button-secondary {
-  @apply bg-gray-700 text-white hover:bg-gray-800;
-}
-.button-disabled {
-  @apply bg-gray-500 text-white cursor-not-allowed;
+/* ── Video tile (no player controls) ─────────────────────────── */
+.video-tile video {
+  pointer-events: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* 🔹 Dropdown Styles */
-.dropdown {
-  @apply absolute mt-2 w-48 bg-gray-900 border border-gray-700 rounded-md shadow-lg;
-}
-.dropdown-item {
-  @apply block w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-800;
-}
-.dropdown-item-danger {
-  @apply block w-full px-4 py-2 text-left text-red-400 hover:bg-gray-800;
+/* ── Gradient text ─────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* 🔹 Address Box */
-.address-box {
-  @apply mt-4 w-full max-w-xs bg-gray-800 text-gray-300 p-3 rounded-md text-center shadow-sm border border-gray-600;
+.gradient-text-accent {
+  background: linear-gradient(135deg, #00e5ff 0%, #00ff88 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* 🔹 Wallet Connector Container */
-.connector-container {
-  @apply flex flex-col items-center space-y-6 p-6 bg-gray-900 shadow-lg rounded-lg border border-gray-700;
+/* ── Glassmorphism card ────────────────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* 🔹 Title Styling */
-.connector-title {
-  @apply text-2xl font-bold text-gray-200;
+/* ── Subtle grid background ────────────────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
 
-/* 🔹 Form Input */
-.input {
-  @apply w-full px-3 py-2 border rounded-md bg-gray-800 text-white placeholder-gray-400 focus:ring focus:ring-purple-500 focus:outline-none;
-}
-.input-disabled {
-  @apply bg-gray-700 cursor-not-allowed text-gray-400;
-}
-
-/* 🔹 Card Styling */
-.card {
-  @apply p-4 border rounded-lg shadow-md text-center bg-gray-800 border-gray-700 text-white;
+/* ── Noise overlay ─────────────────────────────────────────────── */
+.noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
 }
 
-/* 🔹 Stack Layout */
-.stack {
-  @apply flex flex-row space-x-2 items-center;
+/* ── Pulse ring animation ──────────────────────────────────────── */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 0.3; }
+  100% { transform: scale(0.95); opacity: 0.6; }
 }
 
-/* 🔹 Contract Link */
-.contract-link {
-  @apply font-mono text-xs underline text-blue-400 hover:text-blue-600;
+.pulse-ring {
+  animation: pulse-ring 3s ease-in-out infinite;
 }
 
-/* 🔹 Green Disconnect Button */
-.button-green {
-  @apply bg-green-600 text-white hover:bg-green-700;
+/* ── Floating animation ────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
 }
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ── Shimmer line ──────────────────────────────────────────────── */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer-line {
+  background: linear-gradient(
+    90deg,
+    rgba(0,229,255,0) 0%,
+    rgba(0,229,255,0.6) 50%,
+    rgba(0,229,255,0) 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ── Threshold line blink ──────────────────────────────────────── */
+@keyframes threshold-blink {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.threshold-line {
+  animation: threshold-blink 2s ease-in-out infinite;
+}
+
+/* ── Stats counter glow ────────────────────────────────────────── */
+.stat-glow {
+  text-shadow: 0 0 20px rgba(0,229,255,0.4);
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
