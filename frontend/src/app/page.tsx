@@ -256,15 +256,133 @@ function Hero() {
   );
 }
 
-// ── STATS BAR ──────────────────────────────────────────────────────
+// ── Techy HUD card — corner brackets, scan line ───────────────────
+function HudCard({
+  children,
+  className = "",
+  scanDelay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  scanDelay?: number;
+}) {
+  return (
+    <div className={`relative bg-[#0a0a12] overflow-hidden ${className}`}>
+      {/* Corner brackets — bigger, brighter */}
+      <span className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/60" />
+      <span className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/60" />
+      <span className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/60" />
+      <span className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/60" />
+
+      {/* Dot grid */}
+      <div
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+
+      {/* Scan line — bright cyan */}
+      <motion.div
+        className="absolute left-0 right-0 h-[2px] pointer-events-none"
+        style={{
+          background: "linear-gradient(90deg, transparent 0%, rgba(0,229,255,0.7) 20%, rgba(0,229,255,0.9) 50%, rgba(0,229,255,0.7) 80%, transparent 100%)",
+          boxShadow: "0 0 12px 2px rgba(0,229,255,0.4)",
+        }}
+        initial={{ top: "0%" }}
+        animate={{ top: "100%" }}
+        transition={{
+          duration: 2.5,
+          delay: scanDelay,
+          repeat: Infinity,
+          repeatDelay: 3,
+          ease: "linear",
+        }}
+      />
+
+      <div className="relative z-10 p-8 h-full">{children}</div>
+    </div>
+  );
+}
+
+// ── STATS — HUD cards, pure typography ────────────────────────────
 function StatsBar() {
   return (
-    <section className="border-y border-white/[0.05] py-10">
-      <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-        <StatCounter value="4" label="Markets live" />
-        <StatCounter value="$3B+" label="RWAs on Stellar" />
-        <StatCounter value="1" label="Markets resolved" />
-        <StatCounter value="100%" label="NO win rate so far" />
+    <section className="py-20">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+          {/* LEFT — big square: $3B+ */}
+          <HudCard className="min-h-[340px] flex flex-col justify-between" scanDelay={0}>
+            <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
+              Stellar ecosystem · RWA
+            </span>
+            <div>
+              <motion.p
+                className="text-[clamp(5rem,10vw,8.5rem)] font-bold leading-none tracking-tighter text-white"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+              >
+                $3B+
+              </motion.p>
+              <p className="text-white/35 text-sm mt-4 max-w-xs leading-relaxed">
+                In tokenized real-world assets on Stellar.
+                USDC. EURC. MGUSD. USDT.
+                Every dollar carries peg risk.
+              </p>
+            </div>
+          </HudCard>
+
+          {/* RIGHT — two stacked */}
+          <div className="flex flex-col gap-4">
+
+            {/* Top right: 4 markets */}
+            <HudCard className="flex-1 flex flex-col justify-between min-h-[160px]" scanDelay={1}>
+              <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
+                Live on testnet
+              </span>
+              <div>
+                <motion.p
+                  className="text-[clamp(3.5rem,7vw,6rem)] font-bold leading-none tracking-tighter text-white"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.75, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  4
+                </motion.p>
+                <p className="text-white/35 text-sm mt-2">
+                  Active markets — USDC · EURC · USDT · DAI
+                </p>
+              </div>
+            </HudCard>
+
+            {/* Bottom right: $10M */}
+            <HudCard className="flex-1 flex flex-col justify-between min-h-[160px]" scanDelay={2}>
+              <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
+                Why this exists
+              </span>
+              <div>
+                <motion.p
+                  className="text-[clamp(3.5rem,7vw,6rem)] font-bold leading-none tracking-tighter text-white"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.75, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  $10M
+                </motion.p>
+                <p className="text-white/35 text-sm mt-2">
+                  Drained from Stellar in Feb 2026. No hedge existed. Now one does.
+                </p>
+              </div>
+            </HudCard>
+
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -392,93 +510,146 @@ function WhySection() {
   );
 }
 
-// ── ACR SECTION (anchor video) ─────────────────────────────────────
+// ── ACR SECTION ────────────────────────────────────────────────────
 function AcrSection() {
+  const ratings = [
+    { rating: "AAA", range: "≥ 2.0x", color: "#4ade80", label: "Anchor staked double the cover" },
+    { rating: "AA",  range: "≥ 1.0x", color: "#34d399", label: "Fully backed — complete skin in game" },
+    { rating: "A",   range: "≥ 0.5x", color: "#fbbf24", label: "Covers more than half of outstanding risk" },
+    { rating: "BBB", range: "≥ 0.1x", color: "#fb923c", label: "Partial stake — limited signal" },
+    { rating: "C",   range: "< 0.1x", color: "#f87171", label: "Low confidence signal" },
+  ];
+
   return (
-    <section className="py-28 border-t border-white/[0.05]">
+    <section className="py-20 border-t border-white/[0.05]">
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* Section label */}
-        <FadeIn className="mb-16 text-center">
-          <p className="text-white/30 text-xs uppercase tracking-widest mb-3 font-mono">The differentiator</p>
-          <h2 className="text-4xl font-bold gradient-text mb-4">Anchor Confidence Ratio.</h2>
-          <p className="text-white/40 text-base max-w-xl mx-auto">
-            Open-chain trust infrastructure for Stellar&apos;s anchor economy.
-            Not a product feature — a primitive.
+        {/* Section heading */}
+        <FadeIn className="mb-12">
+          <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-3">
+            The differentiator
+          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+            Anchor Confidence Ratio.
+          </h2>
+          <p className="text-white/40 text-base mt-3 max-w-xl">
+            Open on-chain trust infrastructure for Stellar&apos;s anchor economy.
+            Not a dashboard feature — a public primitive.
           </p>
         </FadeIn>
 
-        {/* Three column bento */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Bento: big left + two stacked right */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-          {/* Left: explanation */}
-          <FadeIn delay={0} className="lg:col-span-1">
-            <div className="glass rounded-2xl p-7 h-full flex flex-col justify-between
-                            hover:border-white/[0.14] transition-colors">
-              <div>
-                <h3 className="text-xl font-bold text-white mb-4">
-                  Anchors stake their own capital.
-                </h3>
-                <p className="text-white/50 text-sm leading-relaxed mb-4">
-                  Anchors like MoneyGram and Bitso can stake their own USDC against their
-                  stablecoin market. The ratio of their stake to total cover outstanding is
-                  published on-chain as a single number: the ACR.
+          {/* LEFT — anchor video, full height */}
+          <FadeIn delay={0}>
+            <div className="video-tile relative overflow-hidden rounded-2xl min-h-[480px] h-full">
+              <video
+                src="/acrAnimation.mp4" autoPlay loop muted playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+              <div className="relative z-10 h-full flex flex-col justify-end p-8">
+                <p className="text-white/40 text-xs font-mono uppercase tracking-widest mb-3">
+                  Anchor Confidence Ratio
                 </p>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Any wallet, contract, or DeFi protocol on Stellar can call
-                  <code className="text-white/80 font-mono text-xs mx-1 bg-white/[0.06] px-1.5 py-0.5 rounded">
-                    get_acr(anchor)
-                  </code>
-                  and know, in real time, how much skin the anchor has in the game.
+                <h3 className="text-3xl font-bold text-white mb-2">
+                  ACR = stake ÷ cover outstanding
+                </h3>
+                <p className="text-white/55 text-sm max-w-sm leading-relaxed">
+                  Anchors stake their own USDC against their stablecoin market.
+                  The ratio is published on-chain — readable by any contract, wallet, or indexer on Stellar.
                 </p>
               </div>
-              <Link
-                href="/app"
-                className="mt-6 inline-flex items-center gap-2 text-sm text-white/60
-                           hover:text-white transition-colors"
-              >
-                View Anchor Scores →
-              </Link>
             </div>
           </FadeIn>
 
-          {/* Center: anchor animation video */}
-          <FadeIn delay={0.1} className="lg:col-span-1">
-            <VideoTile src="/anchorAnimation.mp4" className="h-full min-h-[320px]">
-              <div className="p-6 flex flex-col justify-end h-full">
-                <div className="glass rounded-xl px-4 py-3 inline-block">
-                  <p className="text-white/40 text-xs font-mono mb-1">On-chain · Soroban testnet</p>
-                  <p className="text-white font-semibold text-sm">
-                    ACR = stake ÷ cover outstanding
+          {/* RIGHT — two stacked */}
+          <div className="flex flex-col gap-4">
+
+            {/* Top right: the code call as a feature */}
+            <FadeIn delay={0.1}>
+              <div className="glass rounded-2xl p-8 flex flex-col justify-between min-h-[200px]">
+                <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-4">
+                  Public on-chain API
+                </p>
+                <div className="bg-black/50 rounded-xl px-6 py-5 border border-white/[0.06] font-mono mb-4">
+                  <p className="text-white/30 text-xs mb-2">// callable from any Soroban contract</p>
+                  <p className="text-[clamp(0.85rem,2vw,1.05rem)] leading-snug">
+                    <span className="text-white/40">let acr = </span>
+                    <span className="text-[#00e5ff]">anchor_stake</span>
+                    <span className="text-white/60">.</span>
+                    <span className="text-white font-semibold">get_acr</span>
+                    <span className="text-white/60">(</span>
+                    <span className="text-[#00ff88]">&anchor_address</span>
+                    <span className="text-white/60">);</span>
+                  </p>
+                  <p className="text-white/30 text-xs mt-3">
+                    // 10_000 = 1.0x · 20_000 = 2.0x · 5_000 = 0.5x
                   </p>
                 </div>
+                <p className="text-white/40 text-xs">
+                  Any wallet, lending protocol, or DeFi app on Stellar can read
+                  an anchor&apos;s confidence ratio in real time. No API key. No permission. Always on.
+                </p>
               </div>
-            </VideoTile>
-          </FadeIn>
+            </FadeIn>
 
-          {/* Right: what ACR ratings mean */}
-          <FadeIn delay={0.2} className="lg:col-span-1">
-            <div className="glass rounded-2xl p-7 h-full hover:border-white/[0.14] transition-colors">
-              <p className="text-white/40 text-xs font-mono uppercase tracking-widest mb-5">ACR ratings</p>
-              <div className="space-y-4">
-                {[
-                  { rating: "AAA", desc: "2.0x+", label: "Anchor staked double the cover", color: "text-green-400" },
-                  { rating: "AA",  desc: "1.0–2.0x", label: "Fully backed — full skin in game", color: "text-emerald-400" },
-                  { rating: "A",   desc: "0.5–1.0x", label: "Covers more than half of risk", color: "text-yellow-400" },
-                  { rating: "BBB", desc: "0.1–0.5x", label: "Partial stake — limited signal", color: "text-orange-400" },
-                  { rating: "C",   desc: "<0.1x",   label: "Low confidence signal", color: "text-red-400" },
-                ].map((r) => (
-                  <div key={r.rating} className="flex items-start gap-3">
-                    <span className={`font-mono font-bold text-sm w-10 shrink-0 ${r.color}`}>{r.rating}</span>
-                    <div>
-                      <p className="text-white/80 text-xs font-medium">{r.desc}</p>
-                      <p className="text-white/40 text-xs">{r.label}</p>
-                    </div>
-                  </div>
-                ))}
+            {/* Bottom right: ratings table */}
+            <FadeIn delay={0.2}>
+              <div className="glass rounded-2xl p-8 flex flex-col min-h-[260px]">
+                <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-5">
+                  ACR ratings
+                </p>
+                <div className="space-y-3 flex-1">
+                  {ratings.map((r, i) => (
+                    <motion.div
+                      key={r.rating}
+                      className="flex items-center gap-4"
+                      initial={{ opacity: 0, x: -12 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 + i * 0.07, duration: 0.4 }}
+                    >
+                      {/* Rating badge */}
+                      <span
+                        className="font-mono font-bold text-sm w-12 shrink-0"
+                        style={{ color: r.color }}
+                      >
+                        {r.rating}
+                      </span>
+                      {/* Range */}
+                      <span className="text-white/30 font-mono text-xs w-14 shrink-0">{r.range}</span>
+                      {/* Bar */}
+                      <div className="flex-1 h-px bg-white/[0.06] relative">
+                        <motion.div
+                          className="absolute left-0 top-0 h-px"
+                          style={{ background: r.color, opacity: 0.5 }}
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${(5 - i) * 20}%` }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.4 + i * 0.07, duration: 0.6 }}
+                        />
+                      </div>
+                      {/* Label */}
+                      <span className="text-white/40 text-xs text-right w-44 shrink-0 hidden md:block">
+                        {r.label}
+                      </span>
+                    </motion.div>
+                  ))}
+                </div>
+                <div className="mt-5 pt-4 border-t border-white/[0.05]">
+                  <Link
+                    href="/app"
+                    className="text-sm text-white/40 hover:text-white transition-colors"
+                  >
+                    View live anchor scores →
+                  </Link>
+                </div>
               </div>
-            </div>
-          </FadeIn>
+            </FadeIn>
+
+          </div>
         </div>
       </div>
     </section>
