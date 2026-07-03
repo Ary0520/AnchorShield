@@ -718,12 +718,12 @@ async function fetchOraclePrices(symbol: string): Promise<number[]> {
 
 // ── Single market card with sparkline ─────────────────────────────
 function MarketCard({
-  asset, label, expires, risk, marketId,
+  asset, symbol, logo, expires, marketId,
 }: {
   asset: string;
-  label: string;
+  symbol: string;
+  logo: string | null;
   expires: string;
-  risk: "Low" | "Moderate" | "High";
   marketId: number;
 }) {
   const [prices, setPrices] = useState<{ v: number }[]>([]);
@@ -731,71 +731,80 @@ function MarketCard({
   const THRESHOLD = 0.995;
 
   useEffect(() => {
-    fetchOraclePrices(asset).then((pts) => {
+    fetchOraclePrices(symbol).then((pts) => {
       setPrices(pts.map((v) => ({ v })));
       const latest = pts[pts.length - 1];
-      // Cover $1000 cost = distance from peg expressed as premium estimate
-      // Using current oracle price vs threshold as rough implied probability
       const impliedProb = Math.max(0, (THRESHOLD - latest + 0.005) / THRESHOLD);
-      const cost = Math.max(1, Math.round(impliedProb * 1000 * 100)); // cents
+      const cost = Math.max(1, Math.round(impliedProb * 1000 * 100));
       setCoverCost(`$${cost}`);
     });
-  }, [asset]);
+  }, [symbol]);
 
-  const riskColor: Record<string, string> = {
-    Low: "#4ade80",
-    Moderate: "#fbbf24",
-    High: "#f87171",
-  };
-  const lineColor = risk === "Low" ? "#00e5ff" : risk === "Moderate" ? "#fbbf24" : "#f87171";
   const currentPrice = prices.length ? prices[prices.length - 1].v : null;
   const priceDisplay = currentPrice ? `$${currentPrice.toFixed(4)}` : "—";
+  // Color the line based on distance from threshold
+  const danger = currentPrice !== null && currentPrice < 0.998;
+  const lineColor = danger ? "#fbbf24" : "#00e5ff";
 
   return (
     <Link href="/app">
       <motion.div
-        className="bg-[#0e0e18] rounded-2xl overflow-hidden cursor-pointer group"
-        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
-        whileHover={{ borderColor: "rgba(255,255,255,0.18)", y: -2 }}
+        className="rounded-2xl overflow-hidden cursor-pointer relative"
+        style={{
+          background: "linear-gradient(145deg, #0e0e1a 0%, #0a0a12 100%)",
+          border: "1px solid rgba(255,255,255,0.07)",
+        }}
+        whileHover={{
+          borderColor: "rgba(0,229,255,0.25)",
+          boxShadow: "0 0 24px rgba(0,229,255,0.06)",
+          y: -3,
+        }}
         transition={{ duration: 0.2 }}
       >
+        {/* Top glow when dangerous */}
+        {danger && (
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent" />
+        )}
+
         {/* Header */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-2">
+        <div className="px-4 pt-4 pb-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center
-                            text-white font-bold text-xs">
-              {asset[0]}
-            </div>
+            {/* Logo */}
+            {logo ? (
+              <img src={logo} alt={asset} className="w-8 h-8 rounded-full" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center
+                              text-white font-bold text-xs">
+                {asset[0]}
+              </div>
+            )}
             <div>
-              <p className="text-white font-semibold text-sm leading-none">{asset}</p>
-              <p className="text-white/35 text-xs mt-0.5">{label.split(" ")[0]} depeg</p>
+              <p className="text-white font-bold text-base leading-none">{asset}</p>
+              <p className="text-white/30 text-[11px] mt-0.5 font-mono">depeg &lt; $0.995</p>
             </div>
           </div>
-          <span
-            className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-            style={{
-              color: riskColor[risk],
-              background: riskColor[risk] + "18",
-            }}
-          >
-            {risk}
-          </span>
         </div>
 
-        {/* Sparkline + current price */}
-        <div className="relative px-1 py-1">
-          <div className="absolute top-2 right-4 text-right">
-            <p className="text-white font-bold text-lg leading-none">{priceDisplay}</p>
-            <p className="text-white/30 text-[10px] mt-0.5">oracle price</p>
+        {/* Price + sparkline */}
+        <div className="relative px-1">
+          {/* Price overlay — top right */}
+          <div className="absolute top-0 right-4 z-10">
+            <p
+              className="text-xl font-bold leading-none tabular-nums"
+              style={{ color: danger ? "#fbbf24" : "#ffffff" }}
+            >
+              {priceDisplay}
+            </p>
           </div>
-          <div className="h-16">
+
+          <div className="h-16 mt-1">
             {prices.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={prices} margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
+                <LineChart data={prices} margin={{ top: 8, right: 6, left: 6, bottom: 4 }}>
                   <YAxis domain={[0.993, 1.004]} hide />
                   <ReferenceLine
                     y={THRESHOLD}
-                    stroke="rgba(239,68,68,0.4)"
+                    stroke="rgba(239,68,68,0.35)"
                     strokeDasharray="3 3"
                     strokeWidth={1}
                   />
@@ -810,27 +819,25 @@ function MarketCard({
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full bg-white/[0.02] animate-pulse rounded" />
+              <div className="h-full mx-4 bg-white/[0.03] animate-pulse rounded-lg" />
             )}
-          </div>
-          {/* Threshold label */}
-          <div className="absolute bottom-2 left-4 flex items-center gap-1">
-            <div className="w-3 h-px bg-red-500/50" style={{ borderTop: "1px dashed rgba(239,68,68,0.4)" }} />
-            <span className="text-[9px] text-red-400/60 font-mono">$0.995 threshold</span>
           </div>
         </div>
 
+        {/* Divider */}
+        <div className="mx-4 h-px bg-white/[0.05]" />
+
         {/* Footer */}
-        <div className="flex items-end justify-between px-4 pb-4 pt-1">
+        <div className="flex items-center justify-between px-4 py-3">
           <div>
-            <p className="text-white/60 text-xs">Cover $1&apos;000</p>
-            <p className="text-white/30 text-[10px] mt-0.5">Expires {expires}</p>
+            <p className="text-white/50 text-[11px]">Cover $1&apos;000</p>
+            <p className="text-white/20 text-[10px] mt-0.5 font-mono">exp. {expires}</p>
           </div>
           <div
-            className="text-sm font-bold px-3 py-1.5 rounded-xl"
+            className="text-sm font-bold px-3 py-1.5 rounded-lg tabular-nums"
             style={{
-              background: riskColor[risk] + "20",
-              color: riskColor[risk],
+              background: danger ? "rgba(251,191,36,0.12)" : "rgba(0,229,255,0.1)",
+              color: danger ? "#fbbf24" : "#00e5ff",
             }}
           >
             {coverCost ?? "—"}
@@ -844,44 +851,67 @@ function MarketCard({
 // ── MARKETS PREVIEW ────────────────────────────────────────────────
 function MarketsPreview() {
   const markets = [
-    { asset: "USDC", label: "USDC depeg < $0.995 for 1hr", expires: "Jul 30 2026", risk: "Low" as const,     marketId: 0 },
-    { asset: "EURC", label: "EURC depeg < $0.995 for 1hr", expires: "Sep 28 2026", risk: "Low" as const,     marketId: 1 },
-    { asset: "USDT", label: "USDT depeg < $0.995 for 1hr", expires: "Sep 28 2026", risk: "Moderate" as const, marketId: 3 },
-    { asset: "DAI",  label: "DAI depeg < $0.995 for 1hr",  expires: "Sep 28 2026", risk: "Low" as const,     marketId: 2 },
+    { asset: "USDC",  symbol: "USDC",  logo: "/usdclogo.svg",  expires: "Jul 30 2026",  marketId: 0 },
+    { asset: "EURC",  symbol: "EURC",  logo: "/eurclogo.svg",  expires: "Sep 28 2026",  marketId: 1 },
+    { asset: "PYUSD", symbol: "USDT",  logo: "/pyusdlogo.svg", expires: "Sep 28 2026",  marketId: 3 },
+    { asset: "MGUSD", symbol: "DAI",   logo: null,             expires: "Sep 28 2026",  marketId: 2 },
   ];
 
   return (
     <section className="py-28 border-t border-white/[0.05]">
       <div className="max-w-7xl mx-auto px-6">
-        <FadeIn className="flex items-end justify-between mb-8">
-          <div>
-            <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-2">
-              Live markets
-            </p>
-            <h2 className="text-3xl font-bold text-white">
-              Live markets on Stellar testnet.
-            </h2>
-            <p className="text-white/40 text-sm mt-2">
-              Each market is a fully collateralized binary outcome contract.
-              1 YES + 1 NO = exactly $1 USDC.
-            </p>
+
+        {/* Section header — more assertive */}
+        <FadeIn className="mb-12">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-3">
+                Live markets · Stellar testnet
+              </p>
+              <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+                Pick a stablecoin.<br />
+                <span className="text-white/40">Hedge the risk.</span>
+              </h2>
+              <p className="text-white/35 text-sm mt-4 max-w-lg">
+                Each market is a fully collateralized binary outcome contract.
+                Pay a small premium. Get an automatic $1 payout per token if the peg breaks.
+              </p>
+            </div>
+            <Link
+              href="/app"
+              className="hidden lg:flex items-center gap-2 text-sm text-white/35
+                         hover:text-white transition-colors shrink-0 mt-2 ml-8 border-b border-white/10
+                         hover:border-white/40 pb-0.5"
+            >
+              View all markets →
+            </Link>
           </div>
-          <Link
-            href="/app"
-            className="hidden md:flex items-center gap-2 text-sm text-white/40
-                       hover:text-white transition-colors shrink-0 ml-8"
-          >
-            View all markets →
-          </Link>
         </FadeIn>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {markets.map((m, i) => (
-            <FadeIn key={m.asset} delay={i * 0.08}>
+            <FadeIn key={m.asset} delay={i * 0.07}>
               <MarketCard {...m} />
             </FadeIn>
           ))}
         </div>
+
+        {/* Bottom CTA strip */}
+        <FadeIn delay={0.35} className="mt-8">
+          <div className="flex items-center justify-between border-t border-white/[0.05] pt-6">
+            <p className="text-white/25 text-xs">
+              Settlements are permissionless — anyone can trigger them.
+              Our watcher calls <span className="font-mono text-white/40">try_settle()</span> every 60s.
+            </p>
+            <Link
+              href="/app"
+              className="text-sm px-5 py-2.5 rounded-full border border-white/10 text-white/60
+                         hover:border-white/30 hover:text-white transition-all duration-200 shrink-0 ml-6"
+            >
+              Start hedging →
+            </Link>
+          </div>
+        </FadeIn>
       </div>
     </section>
   );
