@@ -114,37 +114,70 @@ function StatCounter({ value, label }: { value: string; label: string }) {
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 20);
+    const fn = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled ? "glass border-b border-white/[0.06]" : ""
-    }`}>
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-white font-semibold text-lg tracking-tight">AnchorShield</span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/10 text-white/30 uppercase tracking-widest">
-            Testnet
+    <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4">
+      <motion.div
+        className="flex items-center justify-between w-full max-w-5xl px-6 h-16 rounded-3xl"
+        style={{
+          background: "rgba(255, 255, 255, 0.07)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          border: "1px solid rgba(255,255,255,0.18)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12)",
+        }}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-1">
+          <img
+            src="/ANCHORSHIELDLOGO2.PNG"
+            alt="AnchorShield"
+            className="h-12 w-12 object-contain"
+          />
+          <span className="text-white font-semibold text-[17px] tracking-tight">
+            AnchorShield
           </span>
         </div>
-        <div className="flex items-center gap-8">
-          <Link href="/app" className="text-sm text-white/50 hover:text-white transition-colors">
+
+        {/* Links */}
+        <div className="flex items-center gap-6">
+          <Link
+            href="/app"
+            className="text-sm text-white/45 hover:text-white transition-colors duration-150"
+          >
             Markets
           </Link>
-          <Link href="/app" className="text-sm text-white/50 hover:text-white transition-colors">
+          <Link
+            href="/app"
+            className="text-sm text-white/45 hover:text-white transition-colors duration-150"
+          >
             ACR
           </Link>
           <Link
             href="/app"
-            className="text-sm px-4 py-2 rounded-full border border-white/10 text-white/80
-                       hover:border-white/30 hover:text-white transition-all duration-200"
+            className="text-sm px-4 py-1.5 rounded-xl font-medium text-white
+                       transition-all duration-200"
+            style={{
+              background: "rgba(255,255,255,0.09)",
+              border: "1px solid rgba(255,255,255,0.12)",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.15)";
+              (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.22)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)";
+              (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)";
+            }}
           >
             Launch App →
           </Link>
         </div>
-      </div>
+      </motion.div>
     </nav>
   );
 }
@@ -929,12 +962,12 @@ function MarketsPreview() {
         <FadeIn className="mb-12">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-3">
-                Live markets · Stellar testnet
+              <p className="text-white/3 text-[12px] font-mono uppercase tracking-[0.25em] mb-3 ">
+                Live markets
               </p>
               <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-                Pick a stablecoin.<br />
-                <span className="text-white/40">Hedge the risk.</span>
+                Pick the market.<br />
+                <span className="text-white/60">Hedge the risk.</span>
               </h2>
               <p className="text-white/35 text-sm mt-4 max-w-lg">
                 Each market is a fully collateralized binary outcome contract.
