@@ -513,7 +513,71 @@ function WhySection() {
   );
 }
 
-// ── ACR SECTION ────────────────────────────────────────────────────
+// ── LOGO CAROUSEL ──────────────────────────────────────────────────
+function LogoCarousel() {
+  const logos = [
+    { src: "/circlelogo.svg",        alt: "Circle",            type: "svg" },
+    { src: "/moneygramlogo.png",     alt: "MoneyGram",         type: "png" },
+    { src: "/franklintempletonlogo.svg", alt: "Franklin Templeton",type: "svg" },
+    { src: "/circlelogo.svg",        alt: "Circle",            type: "svg" },
+    { src: "/moneygramlogo.png",     alt: "MoneyGram",         type: "png" },
+    { src: "/franklintempletonlogo.svg", alt: "Franklin Templeton",type: "svg" },
+    { src: "/circlelogo.svg",        alt: "Circle",            type: "svg" },
+    { src: "/moneygramlogo.png",     alt: "MoneyGram",         type: "png" },
+    { src: "/franklintempletonlogo.svg", alt: "Franklin Templeton",type: "svg" },
+  ];
+
+  return (
+    <section className="py-16 border-y border-white/[0.04] overflow-hidden">
+      <p className="text-center text-white/3 text-[12px] font-mono uppercase tracking-[0.3em] mb-8">
+        Stellar ecosystem partners
+      </p>
+
+      {/* Infinite scroll track */}
+      <div className="relative flex overflow-hidden">
+        {/* Fade masks on edges */}
+        <div className="absolute left-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
+             style={{ background: "linear-gradient(90deg, #080810 0%, transparent 100%)" }} />
+        <div className="absolute right-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
+             style={{ background: "linear-gradient(270deg, #080810 0%, transparent 100%)" }} />
+
+        {/* Track — duplicated for seamless loop */}
+        <div
+          className="flex gap-16 items-center shrink-0"
+          style={{
+            animation: "marquee 25s linear infinite",
+            width: "max-content",
+          }}
+        >
+          {[...logos, ...logos].map((logo, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-center h-10 px-2 shrink-0"
+              style={{ minWidth: "120px" }}
+            >
+              <img
+                src={logo.src}
+                alt={logo.alt}
+                className="max-h-10 max-w-[140px] object-contain"
+                style={{
+                  filter: "grayscale(100%) brightness(0.75)",
+                  opacity: 0.85,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes marquee {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
+    </section>
+  );
+}
 function AcrSection() {
   const ratings = [
     { rating: "AAA", range: "≥ 2.0x", color: "#4ade80", label: "Anchor staked double the cover" },
@@ -853,8 +917,8 @@ function MarketsPreview() {
   const markets = [
     { asset: "USDC",  symbol: "USDC",  logo: "/usdclogo.svg",  expires: "Jul 30 2026",  marketId: 0 },
     { asset: "EURC",  symbol: "EURC",  logo: "/eurclogo.svg",  expires: "Sep 28 2026",  marketId: 1 },
-    { asset: "PYUSD", symbol: "USDT",  logo: "/pyusdlogo.svg", expires: "Sep 28 2026",  marketId: 3 },
-    { asset: "MGUSD", symbol: "DAI",   logo: null,             expires: "Sep 28 2026",  marketId: 2 },
+    { asset: "PYUSD", symbol: "PYUSD",  logo: "/pyusdlogo.svg", expires: "Sep 28 2026",  marketId: 3 },
+    { asset: "MGUSD", symbol: "MGUSD",   logo: "/mgusdlogo.jpg",             expires: "Sep 28 2026",  marketId: 2 },
   ];
 
   return (
@@ -1008,6 +1072,7 @@ export default function LandingPage() {
       <StatsBar />
       <HowItWorks />
       <WhySection />
+      <LogoCarousel />
       <AcrSection />
       <MarketsPreview />
       <CtaBanner />
