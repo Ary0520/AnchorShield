@@ -1,5 +1,6 @@
 # AnchorShield
 
+<img width="1012" height="569" alt="image" src="https://github.com/user-attachments/assets/606df59d-9f01-43da-8ba7-8b91a2bc1357" />
 Parametric insurance protocol on Stellar's Soroban smart contract platform.
 
 Insures against machine-verifiable failures in Stellar's ecosystem — stablecoin depegs (USDC, EURC, MGUSD, PYUSD) and anchor settlement failures — with permissionless, oracle-driven settlement and no human claims process.
