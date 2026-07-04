@@ -12,6 +12,7 @@
     "@stellar/freighter-api": "^4.0.0",
     "@stellar/stellar-sdk": "^13.3.0",
     "framer-motion": "^12.0.0",
+    "lightweight-charts": "^5.2.0",
     "lucide-react": "^0.500.0",
     "next": "15.0.0",
     "react": "^19.0.0",

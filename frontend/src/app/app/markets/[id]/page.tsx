@@ -11,6 +11,18 @@ import {
 } from "@/lib/contracts";
 import { useWallet } from "@/hooks";
 import { ChevronRight } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// lightweight-charts uses canvas/document — must disable SSR
+const OracleChart = dynamic(
+  () => import("@/app/components/OracleChart"),
+  { ssr: false, loading: () => (
+    <div
+      className="rounded-lg shrink-0 animate-pulse"
+      style={{ height: 300, background: "#161616", border: "1px solid #222" }}
+    />
+  )}
+);
 
 // ── Asset metadata ────────────────────────────────────────────────────────
 const ASSET_META: Record<string, { logo: string | null; symbol: string; threshold: number }> = {
@@ -226,136 +238,121 @@ export default function MarketDetailPage() {
       </div>
 
       {/* ── Content grid ───────────────────────────────── */}
-      <div className="flex flex-1 overflow-hidden gap-3 p-4" style={{ zIndex: 1 }}>
+      <div className="flex flex-1 overflow-hidden gap-0" style={{ zIndex: 1 }}>
 
-        {/* LEFT column */}
-        <div className="flex flex-col gap-6 flex-1 min-w-0 overflow-y-auto">
+        {/* LEFT column — chart dominates, secondary info below */}
+        <div className="flex flex-col flex-1 min-w-0 overflow-hidden" style={{ borderRight: "1px solid #1a1a1a" }}>
 
-          {/* Chart card */}
-          <div
-            className="flex flex-col rounded-lg shrink-0"
-            style={{ height: 300, background: "#161616", border: "1px solid #222" }}
-          >
-            {/* Chart header bar */}
-            <div
-              className="flex items-center justify-between px-4 py-3 shrink-0 rounded-tl-lg rounded-tr-lg"
-              style={{ background: "#1c1b1b", borderBottom: "1px solid #222" }}
-            >
-              {/* Price + timestamp */}
-              <div
-                className="flex items-center gap-2 px-2 py-1 rounded"
-                style={{ background: "#0a0a0a", border: "1px solid #222" }}
-              >
-                <span style={{ ...mono, fontSize: 13, color: "white" }}>$1.0003</span>
-                <span style={{ ...mono, fontSize: 10, color: "#888" }}>· 2 min ago</span>
-              </div>
-              {/* Time range buttons */}
-              <div className="flex items-center p-0.5 rounded gap-0" style={{ background: "#0a0a0a", border: "1px solid #222" }}>
-                {(["1H","6H","1D","1W"] as const).map((r) => (
-                  <button
-                    key={r}
-                    className="px-3 py-1 rounded text-xs font-bold transition-all"
-                    style={{
-                      background: r === "1D" ? "#2a2a2a" : "transparent",
-                      color: r === "1D" ? "white" : "#888",
-                      letterSpacing: "0.55px",
-                    }}
-                  >
-                    {r}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Chart body — empty canvas ready for real chart */}
-            <div
-              className="flex-1 relative rounded-bl-lg rounded-br-lg overflow-hidden"
-              style={{ background: "#0d0d0d" }}
-            >
-              {/* Y-axis labels */}
-              <div className="absolute right-4 top-4 bottom-6 flex flex-col justify-between items-end">
-                {["$1.010","$1.005","$1.000","$0.995","$0.990","$0.980"].map((l, i) => (
-                  <span key={l} style={{ ...mono, fontSize: 10, color: i === 3 ? "#690005" : "#888" }}>{l}</span>
-                ))}
-              </div>
-              {/* X-axis labels */}
-              <div className="absolute bottom-2 left-4 right-12 flex justify-between">
-                {["00:00","06:00","12:00","18:00","24:00"].map((t) => (
-                  <span key={t} style={{ ...mono, fontSize: 10, color: "#888" }}>{t}</span>
-                ))}
-              </div>
-              {/* Threshold label */}
-              <div className="absolute" style={{ bottom: "35%", left: 0, right: 48, borderTop: "1px dashed rgba(105,0,5,0.7)" }}>
-                <span
-                  className="absolute left-4 -top-3 px-2 py-0.5 rounded text-xs"
-                  style={{ background: "#0d0d0d", border: "1px solid rgba(105,0,5,0.3)", color: "#690005", fontSize: 9 }}
-                >
-                  Depeg threshold
-                </span>
-              </div>
-              {/* Chart renders here — plug in Recharts/real data later */}
-            </div>
+          {/* Chart — fills as much height as possible */}
+          <div className="flex-1 min-h-0 p-4 pb-0">
+            <OracleChart symbol={asset} threshold={meta.threshold} />
           </div>
 
-          {/* Section B & C row */}
-          <div className="flex gap-3 shrink-0">
-            {/* How this market settles */}
+          {/* Secondary row — How this settles + Order Book */}
+          <div className="flex gap-0 shrink-0" style={{ height: 220, borderTop: "1px solid #1a1a1a" }}>
+
+            {/* How this settles */}
             <div
-              className="flex flex-col flex-1 rounded-lg"
-              style={{ background: "#161616", border: "1px solid #222" }}
+              className="flex flex-col p-4 gap-2.5"
+              style={{ width: "45%", borderRight: "1px solid #1a1a1a", overflowY: "auto" }}
             >
-              <div className="px-4 py-4 shrink-0" style={{ borderBottom: "1px solid #222" }}>
-                <div className="flex items-center gap-2">
-                  <span style={{ fontSize: 18 }}>⚒</span>
-                  <span className="font-semibold text-white" style={{ fontSize: 18, letterSpacing: "-0.18px" }}>
-                    How this market settles
-                  </span>
+              <div className="flex items-center gap-2 mb-1">
+                <span style={{ fontSize: 14 }}>⚒</span>
+                <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+                  How this settles
+                </span>
+              </div>
+              {[
+                { label: "Trigger",  value: `${meta.symbol}/USD < $${meta.threshold}` },
+                { label: "Duration", value: "1 continuous hour" },
+                { label: "YES wins", value: "Each YES → $1.00 USDC", accent: "#ffb800" },
+                { label: "NO wins",  value: `No breach before ${formatExpiry(config.expiry_timestamp)}` },
+              ].map((row, i) => (
+                <div key={row.label} className="flex justify-between items-start gap-4">
+                  <span style={{ ...mono, fontSize: 10, color: row.accent ?? "#555", flexShrink: 0 }}>{row.label}</span>
+                  <span style={{ ...mono, fontSize: 10, color: "rgba(255,255,255,0.6)", textAlign: "right" }}>{row.value}</span>
                 </div>
-              </div>
-              <div className="flex flex-col gap-3 p-4 flex-1">
-                {[
-                  { label: "Trigger",   value: `${meta.symbol}/USD < $${meta.threshold}`, mono: true, valueColor: "white" },
-                  { label: "Duration",  value: "1 continuous hour", mono: true, valueColor: "white" },
-                  { label: "YES wins",  value: "Each YES redeems $1.00 USDC", mono: false, valueColor: "white", labelColor: "#ffb800" },
-                  { label: "NO wins",   value: `No breach before ${formatExpiry(config.expiry_timestamp)} — NO redeems $1.00`, mono: false, valueColor: "white", labelColor: "#888" },
-                ].map((row, i) => (
-                  <div
-                    key={row.label}
-                    className="flex items-center justify-between text-xs pb-3"
-                    style={i < 3 ? { borderBottom: "1px solid rgba(34,34,34,0.5)" } : {}}
-                  >
-                    <span style={{ color: row.labelColor ?? "#888", fontSize: 12 }}>{row.label}</span>
-                    <span style={{ ...(row.mono ? mono : {}), color: row.valueColor, fontSize: 12 }}>{row.value}</span>
-                  </div>
-                ))}
-              </div>
-              <div
-                className="flex items-start gap-2 px-3 py-3 rounded-bl-lg rounded-br-lg"
-                style={{ background: "#1c1b1b", borderTop: "1px solid #222" }}
-              >
-                <span style={{ fontSize: 16, color: "#888", lineHeight: 1.2 }}>ⓘ</span>
-                <span style={{ ...mono, fontSize: 10, color: "#888", lineHeight: 1.5 }}>
-                  Settlement is permissionless. Watcher calls{" "}
-                  <span
-                    className="px-1 rounded"
-                    style={{ background: "#0a0a0a", border: "1px solid rgba(34,34,34,0.5)", color: "white" }}
-                  >
-                    try_settle()
-                  </span>{" "}
-                  every 60 seconds.
+              ))}
+              <div className="mt-auto pt-2" style={{ borderTop: "1px solid #1a1a1a" }}>
+                <span style={{ ...mono, fontSize: 9, color: "#444", lineHeight: 1.5 }}>
+                  Permissionless · watcher calls{" "}
+                  <span style={{ color: "#555" }}>try_settle()</span> every 60s
                 </span>
               </div>
             </div>
 
             {/* Order Book */}
-            <OrderBook buyOrders={buyOrders} sellOrders={sellOrders} midBps={midBps} formatUsdc={formatUsdc} />
+            <div className="flex flex-col flex-1 min-w-0">
+              <div
+                className="flex items-center justify-between px-4 py-2.5 shrink-0"
+                style={{ borderBottom: "1px solid #1a1a1a" }}
+              >
+                <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+                  Order Book
+                </span>
+                <span style={{ ...mono, fontSize: 9, color: "#555", letterSpacing: "0.06em" }}>YES TOKENS</span>
+              </div>
+
+              {/* Column headers */}
+              <div className="grid px-4 py-1.5 shrink-0" style={{ gridTemplateColumns: "1fr 1fr 1px 1fr 1fr", borderBottom: "1px solid #111" }}>
+                {["Size","Price","","Price","Size"].map((h, i) => (
+                  <span key={i} style={{ ...mono, fontSize: 9, color: "#444", textAlign: i === 1 ? "right" : i === 3 ? "left" : "left", paddingLeft: i === 3 ? 8 : 0 }}>{h}</span>
+                ))}
+              </div>
+
+              {/* Rows */}
+              <div className="flex flex-1 min-h-0 overflow-hidden">
+                <div className="flex-1 flex flex-col" style={{ borderRight: "1px solid #111" }}>
+                  {Array.from({ length: 5 }, (_, i) => {
+                    const o = buyOrders[i];
+                    return (
+                      <div key={i} className="relative flex items-center justify-between px-4" style={{ height: 22 }}>
+                        {o && <div className="absolute inset-y-0 right-0 left-[60%]" style={{ background: "rgba(38,166,154,0.08)" }} />}
+                        <span style={{ ...mono, fontSize: 10, color: "rgba(255,255,255,0.5)", position: "relative" }}>
+                          {o ? parseInt(formatUsdc(o.amount - o.filled)).toLocaleString() : ""}
+                        </span>
+                        <span style={{ ...mono, fontSize: 10, color: "#26a69a", position: "relative" }}>
+                          {o ? String(o.price_bps) : ""}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex-1 flex flex-col">
+                  {Array.from({ length: 5 }, (_, i) => {
+                    const o = sellOrders[i];
+                    return (
+                      <div key={i} className="relative flex items-center justify-between px-4" style={{ height: 22 }}>
+                        {o && <div className="absolute inset-y-0 left-0 right-[60%]" style={{ background: "rgba(239,83,80,0.08)" }} />}
+                        <span style={{ ...mono, fontSize: 10, color: "#ef5350", position: "relative", paddingLeft: 8 }}>
+                          {o ? String(o.price_bps) : ""}
+                        </span>
+                        <span style={{ ...mono, fontSize: 10, color: "rgba(255,255,255,0.5)", position: "relative" }}>
+                          {o ? parseInt(formatUsdc(o.amount - o.filled)).toLocaleString() : ""}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Mid price */}
+              <div
+                className="flex items-center justify-center py-2 shrink-0"
+                style={{ borderTop: "1px solid #1a1a1a" }}
+              >
+                <span style={{ ...mono, fontSize: 10, color: midBps !== null ? "rgba(255,255,255,0.5)" : "#444" }}>
+                  {midBps !== null ? `${midBps.toFixed(0)} bps mid` : "no orders"}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* RIGHT column — trade panel */}
         <div
           className="w-[320px] shrink-0 flex flex-col gap-3"
-          style={{ height: "100%", overflowY: "auto" }}
+          style={{ height: "100%", overflowY: "auto", background: "#0a0a0a" }}
         >
           <TradePanel
             isOpen={isOpen} isSettled={isSettled} yesWon={yesWon}
@@ -549,12 +546,12 @@ function TradePanel({
       {/* Trade card */}
       <div
         className="flex flex-col rounded-xl overflow-hidden flex-1 min-h-0"
-        style={{ background: "#161616", border: "1px solid #222" }}
+        style={{ background: "#0d0d0d", borderLeft: "none" }}
       >
         {/* Tabs */}
         <div
           className="flex shrink-0"
-          style={{ background: "#1c1b1b", borderBottom: "1px solid #222" }}
+          style={{ borderBottom: "1px solid #1a1a1a" }}
         >
           {(["cover", "underwrite"] as const).map((tab) => (
             <button
@@ -562,9 +559,9 @@ function TradePanel({
               onClick={() => setTradeTab(tab)}
               className="flex-1 py-4 text-sm font-bold transition-all"
               style={{
-                background: tradeTab === tab ? "#161616" : "transparent",
-                color: tradeTab === tab ? "white" : "#888",
-                borderBottom: tradeTab === tab ? "2px solid white" : "2px solid transparent",
+                background: "transparent",
+                color: tradeTab === tab ? "white" : "rgba(255,255,255,0.25)",
+                borderBottom: tradeTab === tab ? "2px solid #00ffc2" : "2px solid transparent",
                 fontFamily: "Inter, sans-serif",
               }}
             >
@@ -620,7 +617,7 @@ function TradePanel({
               {/* Preview box */}
               <div
                 className="flex flex-col gap-2.5 p-3 rounded-lg"
-                style={{ background: "#1c1b1b", border: "1px solid #222" }}
+                style={{ background: "#111", border: "1px solid #1a1a1a" }}
               >
                 <PreviewRow
                   label="You pay:"
@@ -809,7 +806,7 @@ function TradePanel({
       {(hasPosition || wallet.publicKey) && (
         <div
           className="flex flex-col gap-4 p-5 rounded-lg shrink-0"
-          style={{ background: "#161616", border: "1px solid #222" }}
+          style={{ background: "#0d0d0d", borderTop: "1px solid #1a1a1a" }}
         >
           <div className="flex items-center gap-2">
             <svg width="19" height="18" viewBox="0 0 19 18" fill="none" style={{ flexShrink: 0 }}>
