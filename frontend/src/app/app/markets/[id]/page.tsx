@@ -139,89 +139,76 @@ export default function MarketDetailPage() {
 
       {/* ── Sticky top header ──────────────────────────── */}
       <div
-        className="shrink-0 flex flex-col gap-4 px-6 pt-6 pb-0"
+        className="shrink-0 px-6"
         style={{ background: "rgba(10,10,10,0.9)", backdropFilter: "blur(6px)", borderBottom: "1px solid #222", zIndex: 2 }}
       >
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs" style={{ color: "#888" }}>
-          <Link href="/app" className="hover:text-white transition-colors" style={{ color: "#888" }}>Risk Curve</Link>
-          <ChevronRight size={11} />
-          <span className="text-white">{meta.symbol}</span>
-          <ChevronRight size={11} />
-          <span className="text-white">Market</span>
+        <div className="flex items-center gap-1.5 pt-4 pb-3" style={{ color: "#888", fontSize: 12 }}>
+          <Link href="/app" style={{ color: "#888", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "white"}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#888"}
+          >Risk Curve</Link>
+          <ChevronRight size={11} style={{ color: "#555" }} />
+          <span style={{ color: "#bbb" }}>{meta.symbol}</span>
+          <ChevronRight size={11} style={{ color: "#555" }} />
+          <span style={{ color: "#bbb" }}>Market</span>
         </div>
 
-        {/* Title row */}
-        <div className="flex items-end justify-between pb-4 flex-wrap gap-3">
-          {/* Logo + name + badge */}
-          <div className="flex items-center gap-4">
+        {/* Single compact title row */}
+        <div className="flex items-center justify-between pb-4 gap-4" style={{ minHeight: 48 }}>
+          {/* Left: logo + name + badge */}
+          <div className="flex items-center gap-3 shrink-0">
             <div
-              className="relative flex items-center justify-center p-[5px] rounded-full shrink-0 size-10"
-              style={{ background: "#161616", border: "1px solid #222" }}
+              className="relative flex items-center justify-center rounded-full shrink-0"
+              style={{ width: 40, height: 40, background: "#161616", border: "1px solid #222", padding: 5 }}
             >
               {meta.logo ? (
-                <div className="rounded-full overflow-hidden w-[30px] h-[30px]">
-                  <img src={meta.logo} alt={meta.symbol} className="w-full h-full object-cover rounded-full" />
-                </div>
+                <img src={meta.logo} alt={meta.symbol} style={{ width: 30, height: 30, borderRadius: "50%", objectFit: "cover" }} />
               ) : (
-                <span className="text-white text-sm font-bold">{meta.symbol[0]}</span>
+                <span style={{ color: "white", fontSize: 14, fontWeight: 700 }}>{meta.symbol[0]}</span>
               )}
-              {/* Live dot */}
               <span
-                className="absolute -bottom-1 -right-1 rounded-full border-2"
-                style={{
-                  width: 16, height: 16,
-                  background: stateIsOpen ? "#00e676" : "#555",
-                  borderColor: "#0a0a0a",
-                }}
+                className="absolute rounded-full border-2"
+                style={{ width: 14, height: 14, bottom: -3, right: -3, background: stateIsOpen ? "#00e676" : "#555", borderColor: "#0a0a0a" }}
               />
             </div>
-            <div className="flex items-center gap-3">
-              <span
-                className="font-bold text-white tracking-tight"
-                style={{ fontSize: 24, letterSpacing: "-0.48px" }}
-              >
-                {meta.symbol} Depeg Market
-              </span>
-              {/* OPEN badge */}
-              <span
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
-                style={{
-                  background: openBadge.bg,
-                  border: `1px solid ${openBadge.border}`,
-                  color: openBadge.text,
-                  letterSpacing: "-0.48px",
-                  fontSize: 10,
-                }}
-              >
-                <span className="rounded-full w-1.5 h-1.5 inline-block" style={{ background: openBadge.dot }} />
-                {openBadge.label}
-              </span>
-            </div>
+            <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-0.44px", whiteSpace: "nowrap" }}>
+              {meta.symbol} Depeg Market
+            </span>
+            <span
+              className="flex items-center gap-1 rounded-full"
+              style={{ padding: "3px 8px", background: openBadge.bg, border: `1px solid ${openBadge.border}`, color: openBadge.text, fontSize: 10, fontWeight: 700, fontFamily: "Inter, sans-serif", whiteSpace: "nowrap" }}
+            >
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: openBadge.dot, display: "inline-block" }} />
+              {openBadge.label}
+            </span>
           </div>
 
-          {/* Stat pills */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {[
-              { label: "YES", value: yesPrice, valueColor: "white" },
-              { label: "NO",  value: noPrice,  valueColor: "white" },
-              { label: "Risk", value: riskPct, valueColor: "#ffb800" },
-              { label: `$${formatUsdc(collateral)} locked`, value: "", valueColor: "#888" },
-              { label: `Expires ${formatExpiry(config.expiry_timestamp)}`, value: "", valueColor: "#888" },
-            ].map((p) => (
-              <div
-                key={p.label}
-                className="flex gap-2 items-center px-3 py-1.5"
-                style={{ background: "#161616", border: "1px solid #222" }}
-              >
-                <span style={{ ...mono, color: "#888", fontSize: 13 }}>{p.label}</span>
-                {p.value && (
-                  <span style={{ ...mono, color: p.valueColor, fontSize: 13, fontWeight: 700 }}>
-                    {p.value}
-                  </span>
-                )}
-              </div>
-            ))}
+          {/* Right: stat pills — all inline, no wrap */}
+          <div className="flex items-center shrink-0" style={{ gap: 1 }}>
+            {/* YES */}
+            <div style={{ background: "#161616", border: "1px solid #222", padding: "7px 13px", display: "flex", gap: 8, alignItems: "center" }}>
+              <span style={{ ...mono, color: "#888", fontSize: 13 }}>YES</span>
+              <span style={{ ...mono, color: "white", fontSize: 13, fontWeight: 700 }}>{yesPrice}</span>
+            </div>
+            {/* NO */}
+            <div style={{ background: "#161616", border: "1px solid #222", padding: "7px 13px", display: "flex", gap: 8, alignItems: "center", marginLeft: -1 }}>
+              <span style={{ ...mono, color: "#888", fontSize: 13 }}>NO</span>
+              <span style={{ ...mono, color: "white", fontSize: 13, fontWeight: 700 }}>{noPrice}</span>
+            </div>
+            {/* Risk */}
+            <div style={{ background: "#161616", border: "1px solid #222", padding: "7px 13px", display: "flex", gap: 8, alignItems: "center", marginLeft: -1 }}>
+              <span style={{ ...mono, color: "#888", fontSize: 13 }}>Risk</span>
+              <span style={{ ...mono, color: "#ffb800", fontSize: 13, fontWeight: 700 }}>{riskPct}</span>
+            </div>
+            {/* Collateral */}
+            <div style={{ background: "#161616", border: "1px solid #222", padding: "7px 13px", display: "flex", alignItems: "center", marginLeft: -1 }}>
+              <span style={{ ...mono, color: "#888", fontSize: 13 }}>${formatUsdc(collateral)} locked</span>
+            </div>
+            {/* Expiry */}
+            <div style={{ background: "#161616", border: "1px solid #222", padding: "7px 13px", display: "flex", alignItems: "center", marginLeft: -1 }}>
+              <span style={{ ...mono, color: "#888", fontSize: 13 }}>Expires {formatExpiry(config.expiry_timestamp)}</span>
+            </div>
           </div>
         </div>
 
@@ -239,7 +226,7 @@ export default function MarketDetailPage() {
       </div>
 
       {/* ── Content grid ───────────────────────────────── */}
-      <div className="flex flex-1 overflow-hidden gap-3 p-6" style={{ zIndex: 1 }}>
+      <div className="flex flex-1 overflow-hidden gap-3 p-4" style={{ zIndex: 1 }}>
 
         {/* LEFT column */}
         <div className="flex flex-col gap-6 flex-1 min-w-0 overflow-y-auto">
@@ -247,7 +234,7 @@ export default function MarketDetailPage() {
           {/* Chart card */}
           <div
             className="flex flex-col rounded-lg shrink-0"
-            style={{ height: 400, background: "#161616", border: "1px solid #222" }}
+            style={{ height: 300, background: "#161616", border: "1px solid #222" }}
           >
             {/* Chart header bar */}
             <div
@@ -367,8 +354,8 @@ export default function MarketDetailPage() {
 
         {/* RIGHT column — trade panel */}
         <div
-          className="w-[343px] shrink-0 flex flex-col gap-3"
-          style={{ overflowY: "auto", maxHeight: "100%" }}
+          className="w-[320px] shrink-0 flex flex-col gap-3"
+          style={{ height: "100%", overflowY: "auto" }}
         >
           <TradePanel
             isOpen={isOpen} isSettled={isSettled} yesWon={yesWon}
@@ -561,7 +548,7 @@ function TradePanel({
     <>
       {/* Trade card */}
       <div
-        className="flex flex-col rounded-xl overflow-hidden"
+        className="flex flex-col rounded-xl overflow-hidden flex-1 min-h-0"
         style={{ background: "#161616", border: "1px solid #222" }}
       >
         {/* Tabs */}
@@ -586,7 +573,7 @@ function TradePanel({
           ))}
         </div>
 
-        <div className="flex flex-col gap-5 p-5">
+        <div className="flex flex-col gap-4 p-4 overflow-y-auto flex-1 min-h-0">
 
           {/* ── BUY COVER ─────────────────────── */}
           {tradeTab === "cover" && (
@@ -607,7 +594,7 @@ function TradePanel({
                     type="number"
                     value={coverAmount}
                     onChange={e => setCoverAmount(e.target.value)}
-                    className="flex-1 bg-transparent outline-none text-white px-4 py-4 w-0"
+                    className="flex-1 bg-transparent outline-none text-white px-4 py-3 w-0"
                     placeholder="0"
                     style={{ ...mono, fontSize: 24 }}
                   />
@@ -632,7 +619,7 @@ function TradePanel({
 
               {/* Preview box */}
               <div
-                className="flex flex-col gap-3 p-4 rounded-lg"
+                className="flex flex-col gap-2.5 p-3 rounded-lg"
                 style={{ background: "#1c1b1b", border: "1px solid #222" }}
               >
                 <PreviewRow
@@ -687,41 +674,6 @@ function TradePanel({
                   />
                 )}
               </div>
-
-              {/* CTA */}
-              {isOpen ? (
-                wallet.publicKey ? (
-                  <button
-                    onClick={handleBuyCover}
-                    disabled={coverAmt <= 0}
-                    className="w-full py-4 rounded-lg text-lg font-bold flex items-center justify-center gap-2 disabled:opacity-40 transition-all"
-                    style={{
-                      background: "#00ffc2",
-                      color: "#0a0a0a",
-                      boxShadow: "0 0 7.5px rgba(0,255,194,0.1)",
-                      fontFamily: "Inter, sans-serif",
-                      letterSpacing: "-0.18px",
-                    }}
-                  >
-                    Buy Cover <span style={{ opacity: 0.8 }}>·</span> Pay {bestAskBps !== null && coverAmt > 0 ? `$${premiumCost.toFixed(2)}` : coverAmt > 0 ? "at limit" : "$0.00"}
-                  </button>
-                ) : (
-                  <button
-                    onClick={wallet.connect}
-                    className="w-full py-4 rounded-lg text-sm font-bold"
-                    style={{ background: "white", color: "#111", fontFamily: "Inter, sans-serif" }}
-                  >
-                    Connect Wallet
-                  </button>
-                )
-              ) : (
-                <div
-                  className="text-xs text-center py-3 rounded-lg"
-                  style={{ background: "#1c1b1b", color: "#888" }}
-                >
-                  Market {isSettled ? (yesWon ? "settled — YES won" : "expired — NO won") : "closed"}
-                </div>
-              )}
             </>
           )}
 
@@ -738,7 +690,7 @@ function TradePanel({
                     type="number"
                     value={uwAmount}
                     onChange={e => setUwAmount(e.target.value)}
-                    className="flex-1 bg-transparent outline-none text-white px-4 py-4 w-0"
+                    className="flex-1 bg-transparent outline-none text-white px-4 py-3 w-0"
                     placeholder="0"
                     style={{ ...mono, fontSize: 24 }}
                   />
@@ -760,7 +712,7 @@ function TradePanel({
                     type="number"
                     value={uwPremiumBps}
                     onChange={e => setUwPremiumBps(e.target.value)}
-                    className="flex-1 bg-transparent outline-none text-white px-4 py-4 w-0"
+                    className="flex-1 bg-transparent outline-none text-white px-4 py-3 w-0"
                     placeholder="150"
                     style={{ ...mono, fontSize: 24 }}
                   />
@@ -770,33 +722,11 @@ function TradePanel({
               </div>
 
               {uwAmt > 0 && (
-                <div className="flex flex-col gap-3 p-4 rounded-lg" style={{ background: "#1c1b1b", border: "1px solid #222" }}>
+                <div className="flex flex-col gap-3 p-3 rounded-lg" style={{ background: "#1c1b1b", border: "1px solid #222" }}>
                   <PreviewRow label="Collateral locked:" value={`$${uwAmt.toFixed(2)} USDC`} valueColor="white" />
                   <div className="h-px" style={{ background: "#222" }} />
                   <PreviewRow label="If NO wins (earned):" value={`+$${uwEarned.toFixed(2)}`} valueColor="#00ffc2" bold />
                   <PreviewRow label="If YES wins (lost):" value={`−$${uwAmt.toFixed(2)}`} valueColor="#690005" />
-                </div>
-              )}
-
-              {isOpen ? (
-                wallet.publicKey ? (
-                  <button
-                    onClick={handleMintAndSell}
-                    disabled={uwAmt <= 0}
-                    className="w-full py-4 rounded-lg text-lg font-bold disabled:opacity-40"
-                    style={{ background: "#1c1b1b", border: "1px solid #333", color: "white", fontFamily: "Inter, sans-serif" }}
-                  >
-                    Mint + Place Sell Order
-                  </button>
-                ) : (
-                  <button onClick={wallet.connect} className="w-full py-4 rounded-lg text-sm font-bold"
-                    style={{ background: "white", color: "#111", fontFamily: "Inter, sans-serif" }}>
-                    Connect Wallet
-                  </button>
-                )
-              ) : (
-                <div className="text-xs text-center py-3 rounded-lg" style={{ background: "#1c1b1b", color: "#888" }}>
-                  Market closed
                 </div>
               )}
 
@@ -812,12 +742,73 @@ function TradePanel({
             </>
           )}
         </div>
+
+        {/* ── Pinned CTA — always visible at bottom of card ── */}
+        <div className="shrink-0 p-4 pt-0">
+          {tradeTab === "cover" ? (
+            isOpen ? (
+              wallet.publicKey ? (
+                <button
+                  onClick={handleBuyCover}
+                  disabled={coverAmt <= 0}
+                  className="w-full py-4 rounded-lg text-lg font-bold flex items-center justify-center gap-2 disabled:opacity-40 transition-all"
+                  style={{
+                    background: "#00ffc2",
+                    color: "#0a0a0a",
+                    boxShadow: "0 0 12px rgba(0,255,194,0.15)",
+                    fontFamily: "Inter, sans-serif",
+                    letterSpacing: "-0.18px",
+                  }}
+                >
+                  Buy Cover <span style={{ opacity: 0.7 }}>·</span> Pay {bestAskBps !== null && coverAmt > 0 ? `$${premiumCost.toFixed(2)}` : coverAmt > 0 ? "at limit" : "$0.00"}
+                </button>
+              ) : (
+                <button
+                  onClick={wallet.connect}
+                  className="w-full py-4 rounded-lg text-sm font-bold"
+                  style={{ background: "white", color: "#111", fontFamily: "Inter, sans-serif" }}
+                >
+                  Connect Wallet
+                </button>
+              )
+            ) : (
+              <div className="text-xs text-center py-3 rounded-lg" style={{ background: "#1c1b1b", color: "#888" }}>
+                Market {isSettled ? (yesWon ? "settled — YES won" : "expired — NO won") : "closed"}
+              </div>
+            )
+          ) : (
+            isOpen ? (
+              wallet.publicKey ? (
+                <button
+                  onClick={handleMintAndSell}
+                  disabled={uwAmt <= 0}
+                  className="w-full py-4 rounded-lg text-lg font-bold disabled:opacity-40"
+                  style={{ background: "#1c1b1b", border: "1px solid #333", color: "white", fontFamily: "Inter, sans-serif" }}
+                >
+                  Mint + Place Sell Order
+                </button>
+              ) : (
+                <button
+                  onClick={wallet.connect}
+                  className="w-full py-4 rounded-lg text-sm font-bold"
+                  style={{ background: "white", color: "#111", fontFamily: "Inter, sans-serif" }}
+                >
+                  Connect Wallet
+                </button>
+              )
+            ) : (
+              <div className="text-xs text-center py-3 rounded-lg" style={{ background: "#1c1b1b", color: "#888" }}>
+                Market closed
+              </div>
+            )
+          )}
+        </div>
       </div>
 
       {/* Your Position card */}
       {(hasPosition || wallet.publicKey) && (
         <div
-          className="flex flex-col gap-4 p-5 rounded-lg"
+          className="flex flex-col gap-4 p-5 rounded-lg shrink-0"
           style={{ background: "#161616", border: "1px solid #222" }}
         >
           <div className="flex items-center gap-2">
