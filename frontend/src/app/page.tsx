@@ -65,7 +65,7 @@ function VideoTile({
         src={src} autoPlay loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-black/20" />
       {children && (
         <div className="relative z-10 h-full">{children}</div>
       )}
@@ -186,15 +186,10 @@ function Nav() {
 function Hero() {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden grid-bg noise">
-      {/* Radial glow behind headline */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                        w-[900px] h-[600px] rounded-full opacity-[0.07]
-                        bg-[radial-gradient(ellipse,#00e5ff_0%,transparent_70%)]" />
-      </div>
+      {/* Radial glow behind headline — removed to keep bg pure black */}
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-28 pb-20 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
           {/* LEFT: Copy */}
           <div>
@@ -203,17 +198,17 @@ function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full
-                              border border-white/10 text-white/40 text-xs mb-8 font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                              border border-white/10 text-white/50 text-sm mb-8 font-mono">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 Live on Stellar Testnet · Reflector oracle active
               </div>
-              <h1 className="text-5xl lg:text-6xl font-bold leading-[1.08] tracking-tight mb-6">
+              <h1 className="text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-7">
                 <span className="gradient-text">Hedge stablecoin</span>
                 <br />
                 <span className="gradient-text">risk on Stellar.</span>
               </h1>
-              <p className="text-white/50 text-lg leading-relaxed mb-8 max-w-lg">
+              <p className="text-white/50 text-xl leading-relaxed mb-10 max-w-lg">
                 Fully on-chain, oracle-driven hedging for stablecoin depegs.
                 Pay a small premium. Get an automatic payout if the peg breaks.
                 No claims. No humans. No waiting.
@@ -221,14 +216,14 @@ function Hero() {
               <div className="flex items-center gap-4">
                 <Link
                   href="/app"
-                  className="px-6 py-3 rounded-full bg-white text-black text-sm font-semibold
+                  className="px-7 py-3.5 rounded-full bg-white text-black text-base font-semibold
                              hover:bg-white/90 transition-all duration-200 hover:scale-[1.02]"
                 >
                   Explore Markets →
                 </Link>
                 <a
                   href="#how-it-works"
-                  className="px-6 py-3 rounded-full border border-white/10 text-white/70 text-sm
+                  className="px-7 py-3.5 rounded-full border border-white/10 text-white/70 text-base
                              hover:border-white/30 hover:text-white transition-all duration-200"
                 >
                   How it works
@@ -237,54 +232,14 @@ function Hero() {
             </motion.div>
           </div>
 
-          {/* RIGHT: Bento grid with blob video + sparkline */}
-          <div className="hidden lg:grid grid-cols-2 gap-3 h-[480px]">
-            {/* Big tile: blob video */}
-            <VideoTile src="/blob1.mp4" className="col-span-2 h-56">
+          {/* RIGHT: Blob video — full height, no fake cards */}
+          <div className="hidden lg:flex flex-col mt-8">
+            <VideoTile src="/blob1.mp4" className="w-full h-[420px]">
               <div className="p-5 flex flex-col justify-end h-full">
                 <p className="text-white/60 text-xs mb-1">Real-time oracle</p>
                 <p className="text-white font-medium text-sm">Reflector price feed · updates every 5 min</p>
               </div>
             </VideoTile>
-
-            {/* Sparkline tile */}
-            <motion.div
-              className="glass rounded-2xl p-4 flex flex-col justify-between"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-            >
-              <div>
-                <p className="text-white/40 text-xs mb-1">USDC / USD</p>
-                <p className="text-white font-semibold text-sm">Live price vs threshold</p>
-              </div>
-              <div className="h-16 mt-2">
-                <HeroSparkline />
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-[10px] text-red-400 font-mono">— $0.995 threshold</span>
-              </div>
-            </motion.div>
-
-            {/* Stats tile */}
-            <motion.div
-              className="glass rounded-2xl p-4 flex flex-col justify-between"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-            >
-              <p className="text-white/40 text-xs">Testnet live</p>
-              <div className="space-y-2 mt-2">
-                <div>
-                  <p className="text-2xl font-bold text-white">4</p>
-                  <p className="text-white/40 text-xs">Active markets</p>
-                </div>
-                <div>
-                  <p className="text-lg font-semibold gradient-text-accent">USDC · EURC · USDT · DAI</p>
-                  <p className="text-white/40 text-xs">Covered stablecoins</p>
-                </div>
-              </div>
-            </motion.div>
           </div>
         </div>
       </div>
@@ -303,7 +258,7 @@ function HudCard({
   scanDelay?: number;
 }) {
   return (
-    <div className={`relative bg-[#0a0a12] overflow-hidden ${className}`}>
+    <div className={`relative bg-black overflow-hidden ${className}`}>
       {/* Corner brackets — bigger, brighter */}
       <span className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/60" />
       <span className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/60" />
@@ -570,9 +525,9 @@ function LogoCarousel() {
       <div className="relative flex overflow-hidden">
         {/* Fade masks on edges */}
         <div className="absolute left-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
-             style={{ background: "linear-gradient(90deg, #080810 0%, transparent 100%)" }} />
+             style={{ background: "linear-gradient(90deg, #000000 0%, transparent 100%)" }} />
         <div className="absolute right-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
-             style={{ background: "linear-gradient(270deg, #080810 0%, transparent 100%)" }} />
+             style={{ background: "linear-gradient(270deg, #000000 0%, transparent 100%)" }} />
 
         {/* Track — duplicated for seamless loop */}
         <div
@@ -848,7 +803,7 @@ function MarketCard({
       <motion.div
         className="rounded-2xl overflow-hidden cursor-pointer relative"
         style={{
-          background: "linear-gradient(145deg, #0e0e1a 0%, #0a0a12 100%)",
+          background: "linear-gradient(145deg, #040408 0%, #000000 100%)",
           border: "1px solid rgba(255,255,255,0.07)",
         }}
         whileHover={{
@@ -1099,7 +1054,7 @@ function Footer() {
 // ── ROOT EXPORT ────────────────────────────────────────────────────
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-[#080810] text-white">
+    <main className="min-h-screen bg-black text-white">
       <Nav />
       <Hero />
       <StatsBar />
