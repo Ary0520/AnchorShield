@@ -201,7 +201,7 @@ function Hero() {
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full
                               border border-white/10 text-white/50 text-sm mb-8 font-mono">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                Live on Stellar Testnet · Reflector oracle active
+                Live on Stellar Testnet
               </div>
               <h1 className="text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-7">
                 <span className="gradient-text">Hedge stablecoin</span>
@@ -209,9 +209,8 @@ function Hero() {
                 <span className="gradient-text">risk on Stellar.</span>
               </h1>
               <p className="text-white/50 text-xl leading-relaxed mb-10 max-w-lg">
-                Fully on-chain, oracle-driven hedging for stablecoin depegs.
-                Pay a small premium. Get an automatic payout if the peg breaks.
-                No claims. No humans. No waiting.
+                When the peg breaks, you get paid.
+                the payout is automatic. No claims. No humans. No waiting.
               </p>
               <div className="flex items-center gap-4">
                 <Link
@@ -236,8 +235,8 @@ function Hero() {
           <div className="hidden lg:flex flex-col mt-8">
             <VideoTile src="/blob1.mp4" className="w-full h-[420px]">
               <div className="p-5 flex flex-col justify-end h-full">
-                <p className="text-white/60 text-xs mb-1">Real-time oracle</p>
-                <p className="text-white font-medium text-sm">Reflector price feed · updates every 5 min</p>
+                <p className="text-white/60 text-xs mb-1"></p>
+                <p className="text-white font-medium  text-sm">Reflector price feed · updates every 5 min</p>
               </div>
             </VideoTile>
           </div>
@@ -385,17 +384,17 @@ function HowItWorks() {
     {
       n: "01",
       title: "Pick a market",
-      body: "Choose the stablecoin you want to hedge — USDC, EURC, USDT, or DAI. Each market covers a specific depeg event: for example, USDC drops below $0.995 and stays there for 1 hour.",
+      body: "Choose the stablecoin you want protected. Each market has a specific trigger and a live risk price.",
     },
     {
       n: "02",
-      title: "Buy cover or underwrite",
-      body: "Cover buyers pay a small USDC premium and receive YES tokens. If the depeg happens, each YES token redeems for $1 USDC. Underwriters deposit USDC, mint YES + NO tokens, sell YES to collect premium, and keep NO.",
+      title: "Choose your side",
+      body: "Buying cover costs a small premium — paid out automatically if the peg breaks. Underwriting earns those premiums in exchange for covering the risk.",
     },
     {
       n: "03",
-      title: "Auto-settles on-chain",
-      body: "The Reflector oracle publishes prices every 5 minutes. Our settlement contract reads it automatically. No claims, no disputes. Winning tokens redeem for exactly $1 USDC.",
+      title: "Walk away",
+      body: "The oracle watches the price. The contract decides. If the peg breaks, winners are paid instantly.",
     },
   ];
   return (
@@ -408,8 +407,20 @@ function HowItWorks() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {steps.map((s, i) => (
             <FadeIn key={s.n} delay={i * 0.12}>
-              <div className="glass rounded-2xl p-7 h-full hover:border-white/[0.14] transition-colors">
-                <p className="text-6xl font-bold text-white/[0.06] mb-4 font-mono">{s.n}</p>
+              <div className="relative rounded-2xl p-7 h-full transition-all duration-300 step-card"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(0,229,255,0.18)",
+                  boxShadow: "0 0 18px rgba(0,229,255,0.07), inset 0 1px 0 rgba(255,255,255,0.05)",
+                }}>
+                <p className="text-6xl font-bold mb-4 font-mono"
+                  style={{
+                    background: "linear-gradient(135deg, #00e5ff 0%, rgba(0,229,255,0.4) 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                    filter: "drop-shadow(0 0 8px rgba(0,229,255,0.5))",
+                  }}>{s.n}</p>
                 <h3 className="text-white font-semibold text-lg mb-3">{s.title}</h3>
                 <p className="text-white/50 text-sm leading-relaxed">{s.body}</p>
               </div>
@@ -427,7 +438,7 @@ function WhySection() {
     <section className="py-28 border-t border-white/[0.05]">
       <div className="max-w-7xl mx-auto px-6">
         <FadeIn className="mb-16">
-          <p className="text-white/30 text-xs uppercase tracking-widest mb-3 font-mono">Why AnchorShield</p>
+          <p className="text-white/30 text-xs uppercase tracking-widest mb-3 font-mono"></p>
           <h2 className="text-4xl font-bold gradient-text">Built for Stellar&apos;s moment.</h2>
         </FadeIn>
 
@@ -439,30 +450,27 @@ function WhySection() {
             <div className="glass rounded-2xl p-8 h-full min-h-[260px] flex flex-col justify-between
                             hover:border-white/[0.14] transition-colors">
               <div>
-                <span className="text-xs font-mono text-white/30 uppercase tracking-widest">The risk</span>
+                <span className="text-xs font-mono text-white/3 uppercase tracking-widest">The risk</span>
                 <h3 className="text-2xl font-bold text-white mt-2 mb-4">
-                  The risk is real and growing.
+                  $3 billion in Stellar stablecoins. No protection layer.
                 </h3>
-                <p className="text-white/50 text-sm leading-relaxed max-w-lg">
-                  Stellar now holds over $3 billion in on-chain assets. MGUSD launched June 2026.
-                  YLDS launched May 2026. In February 2026, a single oracle manipulation drained
-                  $10M from a Stellar lending pool. The stablecoins are here. The risk infrastructure
-                  isn&apos;t — until now.
+                <p className="text-white/70 text-sm leading-relaxed max-w-lg">
+                  Stellar crossed $3 billion in on-chain assets this year. Three new stablecoins launched. One oracle attack already drained $10M from a lending pool. The assets arrived. The protection didn't.
                 </p>
               </div>
               <div className="flex gap-6 mt-6">
-                <div><p className="text-2xl font-bold text-white">$3B+</p><p className="text-xs text-white/30">On-chain assets on Stellar</p></div>
-                <div><p className="text-2xl font-bold text-red-400">$10M</p><p className="text-xs text-white/30">Lost in Feb 2026 oracle attack</p></div>
-                <div><p className="text-2xl font-bold text-white">4</p><p className="text-xs text-white/30">New stablecoins launched in 2026</p></div>
+                <div><p className="text-2xl font-bold text-white">$3B+</p><p className="text-xs text-white/70">On-chain assets on Stellar</p></div>
+                <div><p className="text-2xl font-bold text-red-400">$10M</p><p className="text-xs text-white/70">Lost in Feb 2026 oracle attack</p></div>
+                {/* <div><p className="text-2xl font-bold text-white">4</p><p className="text-xs text-white/70">New stablecoins launched in 2026</p></div> */}
               </div>
             </div>
           </FadeIn>
 
           {/* Right: currency video tile */}
           <FadeIn delay={0.1}>
-            <VideoTile src="/currencyAnimation.mp4" className="h-full min-h-[260px]">
+            <VideoTile src="/currencyAnimation.mp4" className="h-full min-h-[450px]">
               <div className="p-6 flex flex-col justify-end h-full">
-                <span className="text-xs font-mono text-white/40 mb-1 uppercase tracking-widest">Yield</span>
+                <span className="text-xs font-mono text-white/90 mb-1 uppercase tracking-widest">Yield</span>
                 <p className="text-white font-semibold text-sm leading-snug">
                   Idle collateral earns yield via DeFindex while waiting for expiry.
                 </p>
@@ -475,23 +483,20 @@ function WhySection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FadeIn delay={0.15}>
             <div className="glass rounded-2xl p-7 hover:border-white/[0.14] transition-colors">
-              <span className="text-xs font-mono text-white/30 uppercase tracking-widest">Mechanism</span>
+              <span className="text-xs font-mono text-white/3 uppercase tracking-widest">Mechanism</span>
               <h3 className="text-xl font-bold text-white mt-2 mb-3">Parametric, not indemnity.</h3>
-              <p className="text-white/50 text-sm leading-relaxed">
-                Traditional insurance requires proof of loss, adjusters, and weeks of waiting.
-                AnchorShield pays instantly when a machine-verifiable condition is met.
-                The oracle is the judge. The contract is the payout. Nothing else involved.
+              <p className="text-white/70 text-sm leading-relaxed">
+                Traditional insurance needs proof, adjusters, and weeks of waiting. AnchorShield pays the moment the oracle confirms a breach. No forms. No calls. No one to convince.
               </p>
             </div>
           </FadeIn>
           <FadeIn delay={0.2}>
             <div className="glass rounded-2xl p-7 hover:border-white/[0.14] transition-colors">
-              <span className="text-xs font-mono text-white/30 uppercase tracking-widest">Risk curve</span>
+              <span className="text-xs font-mono text-white/3 uppercase tracking-widest">Risk curve</span>
               <h3 className="text-xl font-bold text-white mt-2 mb-3">The price IS the signal.</h3>
-              <p className="text-white/50 text-sm leading-relaxed">
-                When you buy YES at 150 bps, you&apos;re contributing to a market-implied probability.
-                The YES price across all AnchorShield markets forms a live risk curve for
-                Stellar&apos;s stablecoin ecosystem — readable by any protocol, wallet, or indexer.
+              <p className="text-white/70 text-sm leading-relaxed">
+                Every trade prices real risk.
+The premium on each market tells you — and every protocol on Stellar — which stablecoins the market thinks are most likely to break.
               </p>
             </div>
           </FadeIn>
@@ -568,11 +573,11 @@ function LogoCarousel() {
 }
 function AcrSection() {
   const ratings = [
-    { rating: "AAA", range: "≥ 2.0x", color: "#4ade80", label: "Anchor staked double the cover" },
-    { rating: "AA",  range: "≥ 1.0x", color: "#34d399", label: "Fully backed — complete skin in game" },
-    { rating: "A",   range: "≥ 0.5x", color: "#fbbf24", label: "Covers more than half of outstanding risk" },
-    { rating: "BBB", range: "≥ 0.1x", color: "#fb923c", label: "Partial stake — limited signal" },
-    { rating: "C",   range: "< 0.1x", color: "#f87171", label: "Low confidence signal" },
+    { rating: "AAA", range: "≥ 2.0x", color: "#00e5ff", barColor: "#00e5ff",       label: "The anchor has twice as much at stake as all cover sold" },
+    { rating: "AA",  range: "≥ 1.0x", color: "#34d399", barColor: "#34d399",       label: "Fully backed — the anchor covers every dollar of risk" },
+    { rating: "A",   range: "≥ 0.5x", color: "#5eead4", barColor: "#5eead4",       label: "More than half covered with their own capital" },
+    { rating: "BBB", range: "≥ 0.1x", color: "#fbbf24", barColor: "#fbbf24",       label: "Some skin in the game" },
+    { rating: "C",   range: "< 0.1x", color: "#f87171", barColor: "#f87171",       label: "Minimal stake — use with awareness" },
   ];
 
   return (
@@ -587,9 +592,8 @@ function AcrSection() {
           <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
             Anchor Confidence Ratio.
           </h2>
-          <p className="text-white/40 text-base mt-3 max-w-xl">
+          <p className="text-white/70 text-base mt-3 max-w-xl">
             Open on-chain trust infrastructure for Stellar&apos;s anchor economy.
-            Not a dashboard feature — a public primitive.
           </p>
         </FadeIn>
 
@@ -605,15 +609,14 @@ function AcrSection() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-8">
-                <p className="text-white/40 text-xs font-mono uppercase tracking-widest mb-3">
+                {/* <p className="text-white/40 text-xs font-mono uppercase tracking-widest mb-3">
                   Anchor Confidence Ratio
-                </p>
+                </p> */}
                 <h3 className="text-3xl font-bold text-white mb-2">
-                  ACR = stake ÷ cover outstanding
+                  Anchors put their own money on the line.
                 </h3>
-                <p className="text-white/55 text-sm max-w-sm leading-relaxed">
-                  Anchors stake their own USDC against their stablecoin market.
-                  The ratio is published on-chain — readable by any contract, wallet, or indexer on Stellar.
+                <p className="text-white/70 text-sm max-w-sm leading-relaxed">
+                  If they fail, they lose it. The higher it is, the more aligned the anchor is with the people using them.
                 </p>
               </div>
             </div>
@@ -643,7 +646,7 @@ function AcrSection() {
                     // 10_000 = 1.0x · 20_000 = 2.0x · 5_000 = 0.5x
                   </p>
                 </div>
-                <p className="text-white/40 text-xs">
+                <p className="text-white/70 text-xs">
                   Any wallet, lending protocol, or DeFi app on Stellar can read
                   an anchor&apos;s confidence ratio in real time. No API key. No permission. Always on.
                 </p>
@@ -676,10 +679,10 @@ function AcrSection() {
                       {/* Range */}
                       <span className="text-white/30 font-mono text-xs w-14 shrink-0">{r.range}</span>
                       {/* Bar */}
-                      <div className="flex-1 h-px bg-white/[0.06] relative">
+                      <div className="flex-1 h-[3px] bg-white/[0.06] relative rounded-full">
                         <motion.div
-                          className="absolute left-0 top-0 h-px"
-                          style={{ background: r.color, opacity: 0.5 }}
+                          className="absolute left-0 top-0 h-[3px] rounded-full"
+                          style={{ background: r.barColor, opacity: 0.85, boxShadow: `0 0 6px ${r.barColor}` }}
                           initial={{ width: 0 }}
                           whileInView={{ width: `${(5 - i) * 20}%` }}
                           viewport={{ once: true }}

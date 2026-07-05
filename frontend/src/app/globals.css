@@ -142,5 +142,9 @@ body {
   50% { opacity: 0.4; }
 }
 
-/* ── JetBrains Mono import (terminal font for numbers/data) ────── */
+/* ── Step cards glow ───────────────────────────────────────────── */
+.step-card:hover {
+  border-color: rgba(0,229,255,0.35) !important;
+  box-shadow: 0 0 32px rgba(0,229,255,0.14), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
