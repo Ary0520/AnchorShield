@@ -33,7 +33,7 @@ export interface OHLCBar {
  */
 export async function fetchOraclePriceHistory(
   symbol: string,
-  records: number = 50  // Reflector testnet typically has 10-50 records; 288 causes null return
+  records: number = 11  // Reflector testnet returns NULL for >~11 records — stay safe
 ): Promise<PricePoint[]> {
   try {
     const {
