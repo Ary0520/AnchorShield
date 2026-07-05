@@ -55,8 +55,8 @@ body {
 .glass {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 /* ── Subtle grid background ────────────────────────────────────── */
@@ -140,6 +140,28 @@ body {
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
+}
+
+/* ── HUD scan line — CSS keyframe, runs on compositor thread ───── */
+@keyframes scan {
+  0%   { top: 0%;   opacity: 1; }
+  45%  { top: 100%; opacity: 1; }
+  46%  { top: 100%; opacity: 0; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.scan-line {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0,229,255,0.7) 20%,
+    rgba(0,229,255,0.9) 50%,
+    rgba(0,229,255,0.7) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px 2px rgba(0,229,255,0.4);
+  animation: scan 5.5s linear infinite;
+  will-change: top;
 }
 
 /* ── Step cards glow ───────────────────────────────────────────── */

@@ -55,15 +55,38 @@ function HeroSparkline() {
   );
 }
 
-// ── Video tile — no controls, no player chrome ─────────────────────
+// ── Video tile — lazy autoplay, no controls ────────────────────────
 function VideoTile({
-  src, className, children,
-}: { src: string; className?: string; children?: React.ReactNode }) {
+  src, className, children, eager = false,
+}: { src: string; className?: string; children?: React.ReactNode; eager?: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (eager) return; // hero video plays immediately
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.play().catch(() => {});
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [eager]);
+
   return (
     <div className={`video-tile relative overflow-hidden rounded-2xl ${className ?? ""}`}>
       <video
-        src={src} autoPlay loop muted playsInline
+        ref={ref}
+        src={src}
+        autoPlay={eager}
+        preload={eager ? "auto" : "none"}
+        loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover"
+        style={{ willChange: "transform" }}
       />
       <div className="absolute inset-0 bg-black/20" />
       {children && (
@@ -78,7 +101,7 @@ function FadeIn({
   children, delay = 0, className = "",
 }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "-60px" });
   return (
     <motion.div
       ref={ref} className={className}
@@ -125,10 +148,11 @@ function Nav() {
         className="flex items-center justify-between w-full max-w-5xl px-6 h-16 rounded-3xl"
         style={{
           background: "rgba(255, 255, 255, 0.07)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
           border: "1px solid rgba(255,255,255,0.18)",
           boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12)",
+          willChange: "transform",
         }}
       >
         {/* Logo */}
@@ -233,7 +257,7 @@ function Hero() {
 
           {/* RIGHT: Blob video — full height, no fake cards */}
           <div className="hidden lg:flex flex-col mt-8">
-            <VideoTile src="/blob1.mp4" className="w-full h-[420px]">
+            <VideoTile src="/blob1.mp4" className="w-full h-[420px]" eager>
               <div className="p-5 flex flex-col justify-end h-full">
                 <p className="text-white/60 text-xs mb-1"></p>
                 <p className="text-white font-medium  text-sm">Reflector price feed · updates every 5 min</p>
@@ -273,22 +297,10 @@ function HudCard({
         }}
       />
 
-      {/* Scan line — bright cyan */}
-      <motion.div
-        className="absolute left-0 right-0 h-[2px] pointer-events-none"
-        style={{
-          background: "linear-gradient(90deg, transparent 0%, rgba(0,229,255,0.7) 20%, rgba(0,229,255,0.9) 50%, rgba(0,229,255,0.7) 80%, transparent 100%)",
-          boxShadow: "0 0 12px 2px rgba(0,229,255,0.4)",
-        }}
-        initial={{ top: "0%" }}
-        animate={{ top: "100%" }}
-        transition={{
-          duration: 2.5,
-          delay: scanDelay,
-          repeat: Infinity,
-          repeatDelay: 3,
-          ease: "linear",
-        }}
+      {/* Scan line — CSS animation, off JS thread */}
+      <div
+        className="scan-line absolute left-0 right-0 h-[2px] pointer-events-none"
+        style={{ animationDelay: `${scanDelay}s` }}
       />
 
       <div className="relative z-10 p-8 h-full">{children}</div>
@@ -602,16 +614,9 @@ function AcrSection() {
 
           {/* LEFT — anchor video, full height */}
           <FadeIn delay={0}>
-            <div className="video-tile relative overflow-hidden rounded-2xl min-h-[480px] h-full">
-              <video
-                src="/acrAnimation.mp4" autoPlay loop muted playsInline
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+            <VideoTile src="/acrAnimation.mp4" className="min-h-[480px] h-full">
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-8">
-                {/* <p className="text-white/40 text-xs font-mono uppercase tracking-widest mb-3">
-                  Anchor Confidence Ratio
-                </p> */}
                 <h3 className="text-3xl font-bold text-white mb-2">
                   Anchors put their own money on the line.
                 </h3>
@@ -619,7 +624,7 @@ function AcrSection() {
                   If they fail, they lose it. The higher it is, the more aligned the anchor is with the people using them.
                 </p>
               </div>
-            </div>
+            </VideoTile>
           </FadeIn>
 
           {/* RIGHT — two stacked */}
@@ -679,12 +684,18 @@ function AcrSection() {
                       {/* Range */}
                       <span className="text-white/30 font-mono text-xs w-14 shrink-0">{r.range}</span>
                       {/* Bar */}
-                      <div className="flex-1 h-[3px] bg-white/[0.06] relative rounded-full">
+                      <div className="flex-1 h-[3px] bg-white/[0.06] relative rounded-full overflow-hidden">
                         <motion.div
-                          className="absolute left-0 top-0 h-[3px] rounded-full"
-                          style={{ background: r.barColor, opacity: 0.85, boxShadow: `0 0 6px ${r.barColor}` }}
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${(5 - i) * 20}%` }}
+                          className="absolute left-0 top-0 h-[3px] rounded-full origin-left"
+                          style={{
+                            background: r.barColor,
+                            opacity: 0.85,
+                            boxShadow: `0 0 6px ${r.barColor}`,
+                            width: `${(5 - i) * 20}%`,
+                            willChange: "transform",
+                          }}
+                          initial={{ scaleX: 0 }}
+                          whileInView={{ scaleX: 1 }}
                           viewport={{ once: true }}
                           transition={{ delay: 0.4 + i * 0.07, duration: 0.6 }}
                         />
