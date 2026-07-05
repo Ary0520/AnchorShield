@@ -33,7 +33,7 @@ export interface OHLCBar {
  */
 export async function fetchOraclePriceHistory(
   symbol: string,
-  records: number = 288
+  records: number = 50  // Reflector testnet typically has 10-50 records; 288 causes null return
 ): Promise<PricePoint[]> {
   try {
     const {
@@ -75,8 +75,11 @@ export async function fetchOraclePriceHistory(
       throw new Error("no data from oracle");
     }
 
+    // Reflector returns records newest-first — reverse so oldest is index 0
+    const sorted = [...raw].sort((a, b) => Number(a.timestamp) - Number(b.timestamp));
+
     // Reflector uses 14-decimal precision: price / 1e14 = USD value
-    return raw.map((r) => ({
+    return sorted.map((r) => ({
       price: Number(r.price) / 1e14,
       timestamp: Number(r.timestamp),
     }));

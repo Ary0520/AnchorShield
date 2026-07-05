@@ -32,10 +32,11 @@ const mono = "'JetBrains Mono', 'Fira Code', monospace";
 type Range = "1H" | "6H" | "1D";
 
 // How many raw 5-min oracle ticks to fetch per range
+// Reflector testnet has limited history — cap at 50 to avoid simulation errors
 const RANGE_RECORDS: Record<Range, number> = {
-  "1H": 12,   // 12 × 5min = 1H,  12 points
-  "6H": 72,   // 72 × 5min = 6H,  72 points
-  "1D": 288,  // 288 × 5min = 24H, 288 points
+  "1H": 12,   // 12 × 5min = 1H
+  "6H": 50,   // ~4H worth (oracle may not have 72 records)
+  "1D": 50,   // best effort — oracle returns what it has
 };
 
 interface Props {
