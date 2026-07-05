@@ -1073,7 +1073,7 @@ function Footer() {
               Parametric hedging infrastructure for Stellar&apos;s stablecoin economy.
             </p>
             <p className="text-white/20 text-xs mt-3">
-              Running on Stellar Testnet · Soroban SDK v26 · Oracle: Reflector Network
+              Running on Stellar · Soroban SDK
             </p>
           </div>
           <div className="flex gap-6 text-xs text-white/30">

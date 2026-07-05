@@ -118,19 +118,32 @@ export default function RiskCurvePage() {
 
   const deduped = (() => {
     const byAsset = new Map<string, EnrichedMarket>();
+    const expiredByAsset = new Map<string, EnrichedMarket>();
+
     for (const m of markets) {
       if (EXCLUDED_ASSETS.has(m.asset)) continue;
-      const existing = byAsset.get(m.asset);
-      // Prefer Open markets; among same state, prefer most collateral
-      if (!existing) {
-        byAsset.set(m.asset, m);
+
+      if (m.state === "Open") {
+        const existing = byAsset.get(m.asset);
+        if (!existing || m.collateral > existing.collateral) {
+          byAsset.set(m.asset, m);
+        }
       } else {
-        const mScore = (m.state === "Open" ? 1000n : 0n) + m.collateral;
-        const eScore = (existing.state === "Open" ? 1000n : 0n) + existing.collateral;
-        if (mScore > eScore) byAsset.set(m.asset, m);
+        // Keep the expired/settled market with most collateral per asset
+        const existing = expiredByAsset.get(m.asset);
+        if (!existing || m.collateral > existing.collateral) {
+          expiredByAsset.set(m.asset, m);
+        }
       }
     }
-    return [...byAsset.values()];
+
+    // Merge: open markets first, then up to 2 expired markets
+    const openList = [...byAsset.values()];
+    const closedList = [...expiredByAsset.values()]
+      .sort((a, b) => Number(b.collateral) - Number(a.collateral))
+      .slice(0, 2);
+
+    return [...openList, ...closedList];
   })();
 
   // Sorted + filtered market list — Open markets first, then expired/settled

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useWallet } from "@/hooks";
 
-// Nav items matching the Figma design exactly
 const NAV_ITEMS = [
   {
     href: "/app",
@@ -20,7 +19,7 @@ const NAV_ITEMS = [
     href: "/app/markets",
     label: "Hedge Markets",
     icon: (
-      <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+      <svg width="16" height="18" viewBox="0 0 16 18" fill="none">
         <path d="M8 1L1 5v5c0 4.4 3 8.5 7 9.5 4-1 7-5.1 7-9.5V5L8 1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
@@ -39,7 +38,7 @@ const NAV_ITEMS = [
     href: "/app/stats",
     label: "Protocol Stats",
     icon: (
-      <svg width="19" height="18" viewBox="0 0 19 18" fill="none">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
         <rect x="1" y="10" width="4" height="7" rx="1" stroke="currentColor" strokeWidth="1.5"/>
         <rect x="7.5" y="6" width="4" height="11" rx="1" stroke="currentColor" strokeWidth="1.5"/>
         <rect x="14" y="2" width="4" height="15" rx="1" stroke="currentColor" strokeWidth="1.5"/>
@@ -50,7 +49,7 @@ const NAV_ITEMS = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const wallet = useWallet();
+  const wallet   = useWallet();
 
   function isActive(href: string, exact?: boolean) {
     if (exact) return pathname === href;
@@ -58,14 +57,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "#0a0a0a", color: "white", overflow: "hidden" }}>
+    <div style={{ display: "flex", height: "100dvh", background: "#0a0a0a", color: "white", overflow: "hidden" }}>
 
-      {/* ── Sidebar ─────────────────────────────────────────── */}
+      {/* ── Desktop sidebar — hidden on mobile ──────────────────── */}
       <aside
+        className="hidden md:flex"
         style={{
           width: 240,
           flexShrink: 0,
-          display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
           background: "#111",
@@ -78,30 +77,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Brand */}
         <div>
           <div style={{ paddingLeft: 24, paddingBottom: 32 }}>
-            <p
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 700,
-                fontSize: 24,
-                color: "white",
-                letterSpacing: "-1.2px",
-                lineHeight: "32px",
-                margin: 0,
-              }}
-            >
-              AnchorShield
-            </p>
-            <p
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 400,
-                fontSize: 12,
-                color: "#888",
-                lineHeight: "16px",
-                margin: 0,
-              }}
-            >
-              Terminal v1.2.0
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+              <img src="/ANCHORSHIELDLOGO2.PNG" alt="AnchorShield" style={{ width: 32, height: 32, objectFit: "contain", flexShrink: 0 }} />
+              <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-1.2px", lineHeight: "32px", margin: 0 }}>
+                AnchorShield
+              </p>
+            </div>
+            <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 400, fontSize: 12, color: "#888", lineHeight: "16px", margin: 0, paddingLeft: 42 }}>
+              v1 - Testnet
             </p>
           </div>
 
@@ -114,44 +97,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   key={item.href}
                   href={item.href}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    paddingLeft: 16,
-                    paddingRight: active ? 18 : 16,
-                    paddingTop: 12,
-                    paddingBottom: 12,
-                    borderRadius: 0,
+                    display: "flex", alignItems: "center", gap: 12,
+                    paddingLeft: 16, paddingRight: active ? 18 : 16,
+                    paddingTop: 12, paddingBottom: 12,
                     background: active ? "#1c1b1b" : "transparent",
                     borderRight: active ? "2px solid #00ffc2" : "2px solid transparent",
                     color: active ? "#00ffc2" : "#888",
                     textDecoration: "none",
                     transition: "all 0.12s ease",
-                    width: "100%",
                     boxSizing: "border-box",
                   }}
-                  onMouseEnter={(e) => {
-                    if (!active) {
-                      (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!active) {
-                      (e.currentTarget as HTMLElement).style.color = "#888";
-                    }
-                  }}
+                  onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"; }}
+                  onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.color = "#888"; }}
                 >
-                  <span style={{ display: "flex", alignItems: "center", flexShrink: 0, width: active ? 16 : 18, height: active ? 20 : 18 }}>
-                    {item.icon}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "Inter, sans-serif",
-                      fontWeight: 400,
-                      fontSize: 14,
-                      lineHeight: "20px",
-                    }}
-                  >
+                  <span style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>{item.icon}</span>
+                  <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 400, fontSize: 14, lineHeight: "20px" }}>
                     {item.label}
                   </span>
                 </Link>
@@ -163,84 +123,30 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Footer */}
         <div style={{ borderTop: "1px solid #222", paddingTop: 17, paddingLeft: 16, paddingRight: 16 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <a
-              href="https://developers.stellar.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex", alignItems: "center", gap: 12,
-                paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8,
-                color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "Inter, sans-serif",
-                transition: "color 0.12s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"}
-              onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.color = "#888"}
+            <a href="https://developers.stellar.org" target="_blank" rel="noopener noreferrer"
+              style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8, color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "Inter, sans-serif" }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#888"}
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="10" r="8.5" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M10 6v4l2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="currentColor" strokeWidth="1.3"/><path d="M9 5.5v3.5l2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
               Settings
             </a>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex", alignItems: "center", gap: 12,
-                paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8,
-                color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "Inter, sans-serif",
-                transition: "color 0.12s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"}
-              onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.color = "#888"}
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+              style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8, color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "Inter, sans-serif" }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#888"}
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 1.5C5.3 1.5 1.5 5.3 1.5 10c0 3.75 2.43 6.93 5.8 8.06.42.08.57-.18.57-.4v-1.4c-2.35.51-2.84-1.13-2.84-1.13-.39-1-.95-1.26-.95-1.26-.77-.53.06-.52.06-.52.85.06 1.3.87 1.3.87.75 1.29 1.97.92 2.45.7.08-.54.3-.92.54-1.13-1.87-.21-3.84-.94-3.84-4.17 0-.92.33-1.67.87-2.26-.09-.21-.38-1.07.08-2.23 0 0 .71-.23 2.33.87A8.1 8.1 0 0110 5.8c.72 0 1.44.1 2.12.28 1.62-1.1 2.33-.87 2.33-.87.46 1.16.17 2.02.08 2.23.54.59.87 1.34.87 2.26 0 3.24-1.97 3.96-3.85 4.17.3.26.57.77.57 1.55v2.3c0 .22.15.48.58.4A8.51 8.51 0 0018.5 10c0-4.7-3.8-8.5-8.5-8.5z" fill="currentColor"/>
-              </svg>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.35C4.72 1.35 1.25 4.82 1.25 9.1c0 3.42 2.21 6.32 5.28 7.34.39.07.53-.17.53-.37v-1.3c-2.14.46-2.59-1.03-2.59-1.03-.35-.9-.86-1.14-.86-1.14-.7-.48.06-.47.06-.47.77.05 1.18.79 1.18.79.69 1.17 1.8.84 2.24.64.07-.5.27-.84.49-1.03-1.71-.19-3.5-.85-3.5-3.8 0-.84.3-1.52.79-2.06-.08-.19-.34-.97.07-2.02 0 0 .65-.21 2.12.79A7.38 7.38 0 019 5.27c.65 0 1.31.09 1.93.26 1.47-1 2.12-.79 2.12-.79.41 1.05.15 1.83.07 2.02.49.54.79 1.22.79 2.06 0 2.95-1.8 3.6-3.51 3.8.28.24.52.7.52 1.41v2.09c0 .2.14.44.53.37A7.76 7.76 0 0016.75 9.1C16.75 4.82 13.28 1.35 9 1.35z" fill="currentColor"/></svg>
               Support
             </a>
           </div>
-
-          {/* Connect Wallet button */}
           <div style={{ paddingTop: 16 }}>
             {wallet.publicKey ? (
-              <button
-                onClick={wallet.disconnect}
-                style={{
-                  width: "100%",
-                  background: "#1c1b1b",
-                  border: "1px solid #333",
-                  color: "#00ffc2",
-                  fontFamily: "Inter, sans-serif",
-                  fontWeight: 700,
-                  fontSize: 14,
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                  textAlign: "center",
-                  letterSpacing: "-0.14px",
-                }}
-              >
+              <button onClick={wallet.disconnect} style={{ width: "100%", background: "#1c1b1b", border: "1px solid #333", color: "#00ffc2", fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 14, padding: "8px 16px", cursor: "pointer", textAlign: "center" }}>
                 {wallet.shortKey}
               </button>
             ) : (
-              <button
-                onClick={wallet.connect}
-                disabled={wallet.isConnecting}
-                style={{
-                  width: "100%",
-                  background: "white",
-                  border: "none",
-                  color: "#111",
-                  fontFamily: "Inter, sans-serif",
-                  fontWeight: 700,
-                  fontSize: 14,
-                  padding: "8px 16px",
-                  cursor: wallet.isConnecting ? "not-allowed" : "pointer",
-                  opacity: wallet.isConnecting ? 0.6 : 1,
-                  textAlign: "center",
-                }}
-              >
+              <button onClick={wallet.connect} disabled={wallet.isConnecting} style={{ width: "100%", background: "white", border: "none", color: "#111", fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 14, padding: "8px 16px", cursor: wallet.isConnecting ? "not-allowed" : "pointer", opacity: wallet.isConnecting ? 0.6 : 1, textAlign: "center" }}>
                 {wallet.isConnecting ? "Connecting..." : "Connect Wallet"}
               </button>
             )}
@@ -248,74 +154,127 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* ── Main area ─────────────────────────────────────────── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        {/* Top bar — network + wallet (only when connected, acts as status strip) */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            gap: 8,
-            padding: "8px 24px",
-            borderBottom: "1px solid #222",
-            background: "#111",
-            flexShrink: 0,
-            minHeight: 40,
-          }}
-        >
-          {/* Testnet badge */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "4px 10px",
-              background: "rgba(0,230,118,0.1)",
-              border: "1px solid rgba(0,230,118,0.2)",
-              borderRadius: 9999,
-              fontSize: 11,
-              color: "#00e676",
-              fontFamily: "Inter, sans-serif",
-              fontWeight: 500,
-            }}
-          >
-            <span
-              style={{
-                width: 6, height: 6, borderRadius: "50%",
-                background: "#00e676",
-                display: "inline-block",
-                animation: "pulse 2s ease-in-out infinite",
-              }}
-            />
-            Testnet
+      {/* ── Main area ────────────────────────────────────────────── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
+        {/* Top bar */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "8px 16px", borderBottom: "1px solid #222", background: "#111", flexShrink: 0, minHeight: 44 }}>
+          {/* Mobile: show logo */}
+          <div className="flex md:hidden items-center gap-2">
+            <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 16, color: "white", letterSpacing: "-0.5px" }}>
+              AnchorShield
+            </span>
           </div>
+          <div className="hidden md:block" />
 
-          {/* Wallet address */}
-          {wallet.publicKey && (
-            <button
-              onClick={wallet.disconnect}
-              style={{
-                padding: "4px 10px",
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: 6,
-                color: "rgba(255,255,255,0.75)",
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 11,
-                cursor: "pointer",
-              }}
-            >
-              {wallet.shortKey}
-            </button>
-          )}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
+            {/* Testnet badge */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.2)", borderRadius: 9999, fontSize: 11, color: "#00e676", fontFamily: "Inter, sans-serif", fontWeight: 500 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#00e676", display: "inline-block", animation: "pulse 2s ease-in-out infinite" }} />
+              Testnet
+            </div>
+            {/* Wallet — desktop only */}
+            {wallet.publicKey && (
+              <button onClick={wallet.disconnect} className="hidden md:block" style={{ padding: "4px 10px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.75)", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, cursor: "pointer" }}>
+                {wallet.shortKey}
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Page content */}
-        <main style={{ flex: 1, overflow: "auto" }}>
+        {/* Page content — add bottom padding on mobile so content isn't hidden under nav */}
+        <main style={{ flex: 1, overflowY: "auto" }} className="pb-[68px] md:pb-0">
           {children}
         </main>
       </div>
+
+      {/* ── Mobile bottom nav — hidden on desktop ───────────────── */}
+      <nav
+        className="flex md:hidden"
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          background: "rgba(13,13,24,0.97)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        }}
+      >
+        <div style={{ display: "flex", width: "100%" }}>
+          {NAV_ITEMS.map((item) => {
+            const active = isActive(item.href, item.exact);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 4,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  color: active ? "#00ffc2" : "rgba(255,255,255,0.35)",
+                  textDecoration: "none",
+                  transition: "color 0.12s",
+                  position: "relative",
+                }}
+              >
+                {/* Active indicator line at top */}
+                {active && (
+                  <span style={{
+                    position: "absolute",
+                    top: 0, left: "25%", right: "25%",
+                    height: 2,
+                    borderRadius: "0 0 2px 2px",
+                    background: "#00ffc2",
+                  }} />
+                )}
+                <span style={{ display: "flex", alignItems: "center" }}>
+                  {item.icon}
+                </span>
+                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 10, fontWeight: active ? 600 : 400, letterSpacing: "0.01em", lineHeight: 1 }}>
+                  {item.label === "Hedge Markets" ? "Markets" : item.label === "Anchor Trust" ? "Anchors" : item.label === "Protocol Stats" ? "Stats" : item.label}
+                </span>
+              </Link>
+            );
+          })}
+
+          {/* Wallet button in bottom nav */}
+          <button
+            onClick={wallet.publicKey ? wallet.disconnect : wallet.connect}
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 4,
+              paddingTop: 10,
+              paddingBottom: 10,
+              color: wallet.publicKey ? "#00ffc2" : "rgba(255,255,255,0.35)",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="1" y="4" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M13 10a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/>
+              <path d="M1 7h16" stroke="currentColor" strokeWidth="1.5"/>
+            </svg>
+            <span style={{ fontFamily: "Inter, sans-serif", fontSize: 10, fontWeight: 400, letterSpacing: "0.01em", lineHeight: 1 }}>
+              {wallet.publicKey ? wallet.shortKey?.slice(0, 6) + "…" : "Wallet"}
+            </span>
+          </button>
+        </div>
+      </nav>
+
     </div>
   );
 }

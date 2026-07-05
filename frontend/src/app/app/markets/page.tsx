@@ -6,14 +6,18 @@ import {
   listMarkets, getMarket, getMarketState, getTotalCollateral,
   getOrders, formatUsdc, formatExpiry, type MarketConfig, type Order,
 } from "@/lib/contracts";
-import { ArrowRight, Shield } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 
-const ASSET_META: Record<string, { logo: string; symbol: string; threshold: number }> = {
+const mono = { fontFamily: "'JetBrains Mono', 'Fira Code', monospace" };
+
+const ASSET_META: Record<string, { logo: string | null; symbol: string; threshold: number }> = {
   USDC:  { logo: "/usdclogo.svg",  symbol: "USDC",  threshold: 0.995 },
   EURC:  { logo: "/eurclogo.svg",  symbol: "EURC",  threshold: 0.995 },
   PYUSD: { logo: "/pyusdlogo.svg", symbol: "PYUSD", threshold: 0.995 },
   MGUSD: { logo: "/mgusdlogo.jpg", symbol: "MGUSD", threshold: 0.995 },
 };
+
+const EXCLUDED_ASSETS = new Set(["DAI", "USDT"]);
 
 function assetFromLabel(label: string): string {
   const upper = label.toUpperCase();
@@ -27,18 +31,31 @@ interface EnrichedMarket {
   config: MarketConfig;
   state: string;
   collateral: bigint;
-  orders: Order[];
   asset: string;
   impliedPct: number | null;
-  bestAskBps: number | null;
 }
+
+function stateBadge(state: string, pct: number | null) {
+  if (state === "Settled") return { bg: "rgba(239,68,68,0.12)",  text: "#ef4444",           label: "YES WON" };
+  if (state === "Expired") return { bg: "rgba(136,136,136,0.1)", text: "rgba(255,255,255,0.4)", label: "NO WON" };
+  // Open
+  if (pct !== null && pct > 2)   return { bg: "rgba(239,68,68,0.12)",  text: "#ef4444",  label: "ELEVATED" };
+  if (pct !== null && pct > 0.5) return { bg: "rgba(245,158,11,0.1)",  text: "#f59e0b",  label: "WATCH" };
+  return { bg: "rgba(34,197,94,0.1)", text: "#22c55e", label: "OPEN" };
+}
+
+// Coming-soon assets not yet deployed as markets
+const COMING_SOON = [
+  { symbol: "PYUSD", logo: "/pyusdlogo.svg", name: "PayPal USD" },
+  { symbol: "MGUSD", logo: "/mgusdlogo.jpg", name: "MoneyGram USD" },
+];
 
 export default function HedgeMarketsPage() {
   const [markets, setMarkets] = useState<EnrichedMarket[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]  = useState(true);
 
   const load = useCallback(async () => {
-    const ids = await listMarkets();
+    const ids     = await listMarkets();
     const configs = await Promise.all(ids.map(getMarket));
     const enriched = await Promise.all(
       configs.map(async (config) => {
@@ -48,94 +65,208 @@ export default function HedgeMarketsPage() {
           getOrders(config.market_contract).catch(() => [] as Order[]),
         ]);
         const asset = assetFromLabel(config.label);
-        const sellOrders = (orders as Order[]).filter((o) => !o.is_buy);
+        if (EXCLUDED_ASSETS.has(asset)) return null;
+        const sellOrders = (orders as Order[]).filter(o => !o.is_buy);
         const bestAsk = sellOrders.length
           ? sellOrders.reduce((min, o) => Math.min(min, Number(o.price_bps)), Number(sellOrders[0].price_bps))
           : null;
-        return { config, state, collateral, orders: orders as Order[], asset, impliedPct: bestAsk !== null ? bestAsk / 100 : null, bestAskBps: bestAsk };
+        return { config, state, collateral, asset, impliedPct: bestAsk !== null ? bestAsk / 100 : null } as EnrichedMarket;
       })
     );
-    setMarkets(enriched.filter((m) => m.asset !== "USDT"));
+
+    // Deduplicate — best open per asset + up to 2 expired total
+    const byAsset    = new Map<string, EnrichedMarket>();
+    const expiredMap = new Map<string, EnrichedMarket>();
+
+    for (const m of enriched) {
+      if (!m) continue;
+      if (m.state === "Open") {
+        const ex = byAsset.get(m.asset);
+        if (!ex || m.collateral > ex.collateral) byAsset.set(m.asset, m);
+      } else {
+        const ex = expiredMap.get(m.asset);
+        if (!ex || m.collateral > ex.collateral) expiredMap.set(m.asset, m);
+      }
+    }
+
+    const openList   = [...byAsset.values()];
+    const closedList = [...expiredMap.values()]
+      .sort((a, b) => Number(b.collateral) - Number(a.collateral))
+      .slice(0, 2);
+
+    // Sort: Open first, then closed
+    const sorted = [...openList, ...closedList];
+
+    setMarkets(sorted);
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  function stateStyle(state: string) {
-    if (state === "Open")     return { bg: "rgba(34,197,94,0.12)",  text: "#22c55e" };
-    if (state === "Settled")  return { bg: "rgba(239,68,68,0.12)",  text: "#ef4444" };
-    if (state === "Expired")  return { bg: "rgba(255,255,255,0.06)", text: "rgba(255,255,255,0.4)" };
-    return { bg: "rgba(245,158,11,0.12)", text: "#f59e0b" };
-  }
+  // Which coming-soon symbols aren't already live?
+  const liveSymbols = new Set(markets.map(m => m.asset));
+  const comingSoonVisible = COMING_SOON.filter(c => !liveSymbols.has(c.symbol));
 
   return (
-    <div className="p-6 space-y-6" style={{ background: "#0a0a12", minHeight: "100%" }}>
+    <div className="p-6 space-y-5" style={{ background: "#0a0a12", minHeight: "100%" }}>
+      {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold text-white">Hedge Markets</h1>
-        <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <h1 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-0.44px", margin: 0 }}>
+          Hedge Markets
+        </h1>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
           Binary outcome contracts for stablecoin depeg events. Buy cover or underwrite.
         </p>
       </div>
 
-      {loading ? (
-        <div className="space-y-3">
-          {[1,2,3,4].map((i) => (
-            <div key={i} className="h-20 rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,0.03)" }} />
-          ))}
-        </div>
+      {/* Section: Open markets */}
+      <div className="space-y-2">
+        {loading ? (
+          Array.from({ length: 3 }, (_, i) => (
+            <div key={i} className="h-[72px] rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,0.03)" }} />
+          ))
+        ) : (
+          <>
+            {markets.filter(m => m.state === "Open").map(m => (
+              <MarketRow key={m.config.market_id} market={m} />
+            ))}
+
+            {/* Coming soon rows */}
+            {comingSoonVisible.map(c => (
+              <ComingSoonRow key={c.symbol} symbol={c.symbol} logo={c.logo} name={c.name} />
+            ))}
+
+            {/* Divider before closed markets */}
+            {markets.some(m => m.state !== "Open") && (
+              <div className="flex items-center gap-3 py-2">
+                <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+                <span style={{ ...mono, fontSize: 9, color: "rgba(255,255,255,0.25)", letterSpacing: "0.1em" }}>
+                  CLOSED MARKETS
+                </span>
+                <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+              </div>
+            )}
+
+            {markets.filter(m => m.state !== "Open").map(m => (
+              <MarketRow key={m.config.market_id} market={m} dimmed />
+            ))}
+
+            {markets.length === 0 && !loading && (
+              <div className="text-center py-16 text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>
+                No markets available.
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Live market row ───────────────────────────────────────────────────────
+function MarketRow({ market, dimmed }: { market: EnrichedMarket; dimmed?: boolean }) {
+  const meta  = ASSET_META[market.asset] ?? { logo: null, symbol: market.asset, threshold: 0.995 };
+  const badge = stateBadge(market.state, market.impliedPct);
+
+  return (
+    <Link
+      href={`/app/markets/${market.config.market_id}`}
+      className="flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-150 group"
+      style={{
+        background: "#0f0f1e",
+        border: "1px solid rgba(255,255,255,0.07)",
+        opacity: dimmed ? 0.6 : 1,
+        textDecoration: "none",
+      }}
+      onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = dimmed ? "rgba(255,255,255,0.1)" : "rgba(0,229,255,0.2)"}
+      onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"}
+    >
+      {/* Logo */}
+      {meta.logo ? (
+        <img src={meta.logo} alt={meta.symbol} className="w-9 h-9 rounded-full shrink-0"
+          style={{ filter: dimmed ? "grayscale(60%)" : "none" }} />
       ) : (
-        <div className="space-y-2">
-          {markets.map((m) => {
-            const meta = ASSET_META[m.asset] ?? { logo: null, symbol: m.asset, threshold: 0.995 };
-            const s = stateStyle(m.state);
-            return (
-              <Link
-                key={m.config.market_id}
-                href={`/app/markets/${m.config.market_id}`}
-                className="flex items-center gap-5 px-5 py-4 rounded-xl transition-all duration-150 group"
-                style={{
-                  background: "#0f0f1e",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                }}
-                onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.borderColor = "rgba(0,229,255,0.2)"}
-                onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"}
-              >
-                {meta.logo ? (
-                  <img src={meta.logo} alt={meta.symbol} className="w-9 h-9 rounded-full shrink-0" />
-                ) : (
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
-                    style={{ background: "rgba(255,255,255,0.08)" }}>
-                    {meta.symbol[0]}
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-medium text-sm">{m.config.label}</p>
-                  <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
-                    Expires {formatExpiry(m.config.expiry_timestamp)} · ${formatUsdc(m.collateral)} collateral
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 shrink-0">
-                  <div className="text-right">
-                    <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>Implied risk</p>
-                    <p className="text-sm font-medium text-white">
-                      {m.impliedPct !== null ? `${m.impliedPct.toFixed(2)}%` : "—"}
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase" style={{ background: s.bg, color: s.text }}>
-                    {m.state}
-                  </span>
-                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" style={{ color: "rgba(255,255,255,0.3)" }} />
-                </div>
-              </Link>
-            );
-          })}
-          {markets.length === 0 && (
-            <div className="text-center py-16 text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>
-              No markets available.
-            </div>
-          )}
+        <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+          style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)" }}>
+          {meta.symbol[0]}
         </div>
       )}
+
+      {/* Label + meta */}
+      <div className="flex-1 min-w-0">
+        <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 14, color: dimmed ? "rgba(255,255,255,0.5)" : "white" }}>
+          {market.config.label}
+        </p>
+        <p style={{ ...mono, fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
+          Expires {formatExpiry(market.config.expiry_timestamp)} · ${formatUsdc(market.collateral)} collateral
+        </p>
+      </div>
+
+      {/* Implied risk + badge + arrow */}
+      <div className="flex items-center gap-4 shrink-0">
+        <div className="text-right">
+          <p style={{ ...mono, fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.06em" }}>IMPLIED RISK</p>
+          <p style={{ ...mono, fontSize: 13, fontWeight: 700, color: market.impliedPct !== null ? "white" : "rgba(255,255,255,0.3)" }}>
+            {market.impliedPct !== null ? `${market.impliedPct.toFixed(2)}%` : "—"}
+          </p>
+        </div>
+        <span
+          className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase"
+          style={{ background: badge.bg, color: badge.text, fontFamily: "Inter, sans-serif", letterSpacing: "0.06em", whiteSpace: "nowrap" }}
+        >
+          {badge.label}
+        </span>
+        <ArrowRight size={15} className="transition-transform group-hover:translate-x-1"
+          style={{ color: dimmed ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.3)", flexShrink: 0 }} />
+      </div>
+    </Link>
+  );
+}
+
+// ── Coming soon row ───────────────────────────────────────────────────────
+function ComingSoonRow({ symbol, logo, name }: { symbol: string; logo: string; name: string }) {
+  return (
+    <div
+      className="flex items-center gap-4 px-5 py-4 rounded-xl"
+      style={{
+        background: "#0f0f1e",
+        border: "1px solid rgba(255,255,255,0.06)",
+        opacity: 0.75,
+        cursor: "not-allowed",
+      }}
+    >
+      <img src={logo} alt={symbol} className="w-9 h-9 rounded-full shrink-0"
+        style={{ filter: "grayscale(80%) opacity(0.6)" }} />
+
+      <div className="flex-1 min-w-0">
+        <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 14, color: "rgba(255,255,255,0.45)" }}>
+          {symbol} Depeg
+        </p>
+        <p style={{ ...mono, fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 2 }}>
+          {name} · Market coming soon
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3 shrink-0">
+        <div className="text-right">
+          <p style={{ ...mono, fontSize: 9, color: "rgba(255,255,255,0.2)", letterSpacing: "0.06em" }}>IMPLIED RISK</p>
+          <p style={{ ...mono, fontSize: 13, color: "rgba(255,255,255,0.2)" }}>—</p>
+        </div>
+        <span
+          className="flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase"
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            color: "rgba(255,255,255,0.35)",
+            fontFamily: "Inter, sans-serif",
+            letterSpacing: "0.06em",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <Lock size={9} />
+          Soon
+        </span>
+        <ArrowRight size={15} style={{ color: "rgba(255,255,255,0.1)", flexShrink: 0 }} />
+      </div>
     </div>
   );
 }
