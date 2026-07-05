@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   getMarket, getMarketState, getTotalCollateral, getOrders,
-  getBalances, mintCompleteSet, placeOrder, trySettle, claim,
+  getBalances, mintCompleteSet, placeOrder, cancelOrder, trySettle, claim,
   formatUsdc, formatExpiry,
   type MarketConfig, type Order,
 } from "@/lib/contracts";
@@ -302,31 +302,92 @@ export default function MarketDetailPage() {
 
               {/* Rows */}
               <div className="flex flex-1 min-h-0 overflow-hidden">
+                {/* BUY side — cover buyers */}
                 <div className="flex-1 flex flex-col" style={{ borderRight: "1px solid #111" }}>
                   {Array.from({ length: 5 }, (_, i) => {
                     const o = buyOrders[i];
+                    const isOwn = o && wallet.publicKey && String(o.owner) === wallet.publicKey;
                     return (
-                      <div key={i} className="relative flex items-center justify-between px-4" style={{ height: 22 }}>
-                        {o && <div className="absolute inset-y-0 right-0 left-[60%]" style={{ background: "rgba(38,166,154,0.08)" }} />}
+                      <div key={i} className="relative flex items-center justify-between px-3 group" style={{ height: 24 }}>
+                        {o && <div className="absolute inset-y-0 right-0 left-[55%]" style={{ background: "rgba(38,166,154,0.08)" }} />}
                         <span style={{ ...mono, fontSize: 10, color: "rgba(255,255,255,0.5)", position: "relative" }}>
                           {o ? parseInt(formatUsdc(o.amount - o.filled)).toLocaleString() : ""}
                         </span>
-                        <span style={{ ...mono, fontSize: 10, color: "#26a69a", position: "relative" }}>
-                          {o ? String(o.price_bps) : ""}
-                        </span>
+                        <div className="relative flex items-center gap-1.5">
+                          <span style={{ ...mono, fontSize: 10, color: "#26a69a" }}>
+                            {o ? String(o.price_bps) : ""}
+                          </span>
+                          {isOwn && (
+                            <button
+                              onClick={() => runTx(
+                                () => cancelOrder(wallet.publicKey!, config.market_contract, o.order_id),
+                                "Cancel order"
+                              )}
+                              title="Cancel your order"
+                              style={{
+                                width: 14, height: 14,
+                                borderRadius: 2,
+                                background: "rgba(239,83,80,0.15)",
+                                border: "1px solid rgba(239,83,80,0.3)",
+                                color: "#ef5350",
+                                fontSize: 9,
+                                lineHeight: 1,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexShrink: 0,
+                                fontFamily: mono.fontFamily,
+                              }}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
                 </div>
+
+                {/* SELL side — underwriters */}
                 <div className="flex-1 flex flex-col">
                   {Array.from({ length: 5 }, (_, i) => {
                     const o = sellOrders[i];
+                    const isOwn = o && wallet.publicKey && String(o.owner) === wallet.publicKey;
                     return (
-                      <div key={i} className="relative flex items-center justify-between px-4" style={{ height: 22 }}>
-                        {o && <div className="absolute inset-y-0 left-0 right-[60%]" style={{ background: "rgba(239,83,80,0.08)" }} />}
-                        <span style={{ ...mono, fontSize: 10, color: "#ef5350", position: "relative", paddingLeft: 8 }}>
-                          {o ? String(o.price_bps) : ""}
-                        </span>
+                      <div key={i} className="relative flex items-center justify-between px-3 group" style={{ height: 24 }}>
+                        {o && <div className="absolute inset-y-0 left-0 right-[55%]" style={{ background: "rgba(239,83,80,0.08)" }} />}
+                        <div className="relative flex items-center gap-1.5">
+                          {isOwn && (
+                            <button
+                              onClick={() => runTx(
+                                () => cancelOrder(wallet.publicKey!, config.market_contract, o.order_id),
+                                "Cancel order"
+                              )}
+                              title="Cancel your order"
+                              style={{
+                                width: 14, height: 14,
+                                borderRadius: 2,
+                                background: "rgba(239,83,80,0.15)",
+                                border: "1px solid rgba(239,83,80,0.3)",
+                                color: "#ef5350",
+                                fontSize: 9,
+                                lineHeight: 1,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexShrink: 0,
+                                fontFamily: mono.fontFamily,
+                              }}
+                            >
+                              ×
+                            </button>
+                          )}
+                          <span style={{ ...mono, fontSize: 10, color: "#ef5350", paddingLeft: isOwn ? 0 : 8 }}>
+                            {o ? String(o.price_bps) : ""}
+                          </span>
+                        </div>
                         <span style={{ ...mono, fontSize: 10, color: "rgba(255,255,255,0.5)", position: "relative" }}>
                           {o ? parseInt(formatUsdc(o.amount - o.filled)).toLocaleString() : ""}
                         </span>
