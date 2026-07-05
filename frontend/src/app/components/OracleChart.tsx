@@ -97,7 +97,6 @@ export default function OracleChart({ symbol, threshold }: Props) {
       },
       timeScale: {
         borderVisible: false,
-        textColor: "rgba(255,255,255,0.3)",
         timeVisible: true,
         secondsVisible: false,
         fixLeftEdge: true,
