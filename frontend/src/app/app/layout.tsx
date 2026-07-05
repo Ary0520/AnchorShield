@@ -78,7 +78,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div>
           <div style={{ paddingLeft: 24, paddingBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-              <img src="/ANCHORSHIELDLOGO2.PNG" alt="AnchorShield" style={{ width: 32, height: 32, objectFit: "contain", flexShrink: 0 }} />
+              <img src="/ANCHORSHIELDLOGO2.png" alt="AnchorShield" style={{ width: 32, height: 32, objectFit: "contain", flexShrink: 0 }} />
               <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-1.2px", lineHeight: "32px", margin: 0 }}>
                 AnchorShield
               </p>
@@ -160,7 +160,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "8px 16px", borderBottom: "1px solid #222", background: "#111", flexShrink: 0, minHeight: 44 }}>
           {/* Mobile: show logo + name */}
           <div className="flex md:hidden items-center gap-2">
-            <img src="/ANCHORSHIELDLOGO2.PNG" alt="AnchorShield" style={{ width: 26, height: 26, objectFit: "contain" }} />
+            <img src="/ANCHORSHIELDLOGO2.png" alt="AnchorShield" style={{ width: 26, height: 26, objectFit: "contain" }} />
             <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 16, color: "white", letterSpacing: "-0.5px" }}>
               AnchorShield
             </span>
