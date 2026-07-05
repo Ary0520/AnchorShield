@@ -134,7 +134,7 @@ function Nav() {
         {/* Logo */}
         <div className="flex items-center gap-1">
           <img
-            src="/ANCHORSHIELDLOGO2.PNG"
+            src="/ANCHORSHIELDLOGO2.png"
             alt="AnchorShield"
             className="h-12 w-12 object-contain"
           />
