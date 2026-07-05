@@ -71,7 +71,7 @@ function VideoTile({
           obs.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: "600px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -83,7 +83,7 @@ function VideoTile({
         ref={ref}
         src={src}
         autoPlay={eager}
-        preload={eager ? "auto" : "none"}
+        preload={eager ? "auto" : "metadata"}
         loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover"
         style={{ willChange: "transform" }}
