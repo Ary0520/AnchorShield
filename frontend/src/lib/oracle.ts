@@ -137,3 +137,51 @@ function generateFallbackData(symbol: string, records: number): PricePoint[] {
     };
   });
 }
+
+/**
+ * Fetch the single latest price point from Reflector oracle.
+ * Uses lastprice(asset) — returns one record, never null on testnet.
+ * Much faster than prices(asset, n) and doesn't have the >11 records null bug.
+ */
+export async function fetchOracleLastPrice(symbol: string): Promise<PricePoint | null> {
+  try {
+    const {
+      Contract, TransactionBuilder, Account, rpc, BASE_FEE, Networks, xdr, scValToNative,
+    } = await import("@stellar/stellar-sdk");
+
+    const server = new rpc.Server(ORACLE_RPC, { allowHttp: false });
+    const source = new Account(SIM_SOURCE, "0");
+
+    const assetArg = xdr.ScVal.scvVec([
+      xdr.ScVal.scvSymbol("Other"),
+      xdr.ScVal.scvSymbol(symbol),
+    ]);
+
+    const tx = new TransactionBuilder(source, {
+      fee: BASE_FEE,
+      networkPassphrase: Networks.TESTNET,
+    })
+      .addOperation(
+        new Contract(REFLECTOR_CONTRACT).call("lastprice", assetArg)
+      )
+      .setTimeout(30)
+      .build();
+
+    const sim = await server.simulateTransaction(tx);
+    if (rpc.Api.isSimulationError(sim)) return null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const raw = scValToNative((sim as any).result!.retval) as
+      | { price: bigint; timestamp: bigint }
+      | null;
+
+    if (!raw) return null;
+
+    return {
+      price: Number(raw.price) / 1e14,
+      timestamp: Number(raw.timestamp),
+    };
+  } catch {
+    return null;
+  }
+}
