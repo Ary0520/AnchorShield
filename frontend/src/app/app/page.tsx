@@ -34,15 +34,21 @@ function riskColor(pct: number | null): string {
   return "#22c55e";
 }
 
-function riskLabel(pct: number | null): string {
-  if (pct === null) return "No market";
-  if (pct > 2)   return "ALERT";
-  if (pct > 0.5) return "ELEVATED";
+// Badge label: state-first, implied risk only when meaningful
+function marketBadgeLabel(state: string, pct: number | null): string {
+  if (state === "Settled") return "YES WON";
+  if (state === "Expired") return "NO WON";
+  // Open market
+  if (pct === null) return "OPEN";
+  if (pct > 2)   return "ELEVATED";
+  if (pct > 0.5) return "WATCH";
   return "OPEN";
 }
 
-function riskBadgeStyle(pct: number | null) {
-  if (pct === null) return { bg: "rgba(255,255,255,0.06)", text: "rgba(255,255,255,0.4)" };
+function riskBadgeStyle(state: string, pct: number | null) {
+  if (state === "Settled") return { bg: "rgba(239,68,68,0.15)",    text: "#ef4444" };
+  if (state === "Expired") return { bg: "rgba(136,136,136,0.1)",   text: "#888" };
+  if (pct === null)        return { bg: "rgba(34,197,94,0.1)",     text: "#22c55e" };
   if (pct > 2)   return { bg: "rgba(239,68,68,0.15)",    text: "#ef4444" };
   if (pct > 0.5) return { bg: "rgba(245,158,11,0.15)",   text: "#f59e0b" };
   return              { bg: "rgba(34,197,94,0.12)",    text: "#22c55e" };
@@ -105,11 +111,37 @@ export default function RiskCurvePage() {
     return () => clearInterval(id);
   }, [load]);
 
-  // Sorted + filtered market list
-  const sorted = [...markets]
+  // Deduplicate: keep only the best market per asset (highest collateral)
+  // Filter out DAI (no oracle on Stellar), USDT (not on Stellar)
+  // For each unique asset, pick the market with most collateral (most active)
+  const EXCLUDED_ASSETS = new Set(["DAI", "USDT"]);
+
+  const deduped = (() => {
+    const byAsset = new Map<string, EnrichedMarket>();
+    for (const m of markets) {
+      if (EXCLUDED_ASSETS.has(m.asset)) continue;
+      const existing = byAsset.get(m.asset);
+      // Prefer Open markets; among same state, prefer most collateral
+      if (!existing) {
+        byAsset.set(m.asset, m);
+      } else {
+        const mScore = (m.state === "Open" ? 1000n : 0n) + m.collateral;
+        const eScore = (existing.state === "Open" ? 1000n : 0n) + existing.collateral;
+        if (mScore > eScore) byAsset.set(m.asset, m);
+      }
+    }
+    return [...byAsset.values()];
+  })();
+
+  // Sorted + filtered market list — Open markets first, then expired/settled
+  const sorted = [...deduped]
     .filter((m) => !openOnly || m.state === "Open")
-    .filter((m) => m.asset !== "USDT")
     .sort((a, b) => {
+      // Open always before non-open
+      const aOpen = a.state === "Open" ? 0 : 1;
+      const bOpen = b.state === "Open" ? 0 : 1;
+      if (aOpen !== bOpen) return aOpen - bOpen;
+      // Within same state, apply chosen sort
       if (sort === "risk-desc") return (b.impliedPct ?? -1) - (a.impliedPct ?? -1);
       if (sort === "risk-asc")  return (a.impliedPct ?? 9999) - (b.impliedPct ?? 9999);
       return Number(a.config.expiry_timestamp) - Number(b.config.expiry_timestamp);
@@ -174,11 +206,7 @@ export default function RiskCurvePage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {[1,2,3].map((i) => (
-            <div
-              key={i}
-              className="rounded-xl h-64 animate-pulse"
-              style={{ background: "rgba(255,255,255,0.03)" }}
-            />
+            <div key={i} className="rounded-xl h-64 animate-pulse" style={{ background: "rgba(255,255,255,0.03)" }} />
           ))}
         </div>
       ) : (
@@ -186,11 +214,21 @@ export default function RiskCurvePage() {
           {sorted.map((m) => (
             <MarketCard key={m.config.market_id} market={m} wallet={wallet} />
           ))}
+          {/* Static coming-soon cards for assets not yet live */}
+          <ComingSoonCard
+            symbol="PYUSD"
+            name="PayPal USD"
+            logo="/pyusdlogo.svg"
+            question="Will PYUSD lose its $1 peg?"
+          />
+          <ComingSoonCard
+            symbol="MGUSD"
+            name="MoneyGram USD"
+            logo="/mgusdlogo.jpg"
+            question="Will MGUSD lose its $1 peg?"
+          />
           {sorted.length === 0 && (
-            <div
-              className="col-span-3 text-center py-16 text-sm"
-              style={{ color: "rgba(255,255,255,0.3)" }}
-            >
+            <div className="col-span-3 text-center py-16 text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>
               No markets found.
             </div>
           )}
@@ -203,8 +241,8 @@ export default function RiskCurvePage() {
 // ── Market Card ─────────────────────────────────────────────────────────
 function MarketCard({ market, wallet }: { market: EnrichedMarket; wallet: ReturnType<typeof useWallet> }) {
   const meta = ASSET_META[market.asset] ?? { logo: null, symbol: market.asset, name: market.asset, threshold: 0.995 };
-  const badgeStyle = riskBadgeStyle(market.impliedPct);
-  const label = riskLabel(market.impliedPct);
+  const badgeStyle = riskBadgeStyle(market.state, market.impliedPct);
+  const badgeLabel = marketBadgeLabel(market.state, market.impliedPct);
   const isOpen = market.state === "Open";
   const isExpired = market.state === "Expired";
   const isSettled = market.state === "Settled";
@@ -251,7 +289,7 @@ function MarketCard({ market, wallet }: { market: EnrichedMarket; wallet: Return
           className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide"
           style={{ background: badgeStyle.bg, color: badgeStyle.text }}
         >
-          {isSettled ? "YES WON" : isExpired ? "NO WON" : label}
+          {badgeLabel}
         </span>
       </div>
 
@@ -342,6 +380,91 @@ function StatRow({ label, value, valueColor }: { label: string; value: string; v
       <p className="text-sm font-medium" style={{ color: valueColor ?? "rgba(255,255,255,0.85)" }}>
         {value}
       </p>
+    </div>
+  );
+}
+
+// ── Coming Soon Card ─────────────────────────────────────────────────────
+function ComingSoonCard({
+  symbol, name, logo, question,
+}: { symbol: string; name: string; logo: string; question: string }) {
+  return (
+    <div
+      className="rounded-xl p-5 flex flex-col gap-4 relative overflow-hidden select-none"
+      style={{
+        background: "#0f0f1e",
+        border: "1px solid rgba(255,255,255,0.07)",
+        opacity: 0.75,
+        cursor: "not-allowed",
+      }}
+    >
+      {/* Coming soon ribbon — top-right diagonal */}
+      <div
+        className="absolute top-4 right-[-22px] text-[9px] font-bold tracking-widest uppercase"
+        style={{
+          background: "rgba(255,255,255,0.08)",
+          color: "rgba(255,255,255,0.5)",
+          padding: "3px 28px",
+          transform: "rotate(45deg)",
+          transformOrigin: "center",
+          fontFamily: "Inter, sans-serif",
+          letterSpacing: "0.12em",
+          border: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
+        Soon
+      </div>
+
+      {/* Header row */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <img
+            src={logo}
+            alt={symbol}
+            className="w-8 h-8 rounded-full"
+            style={{ filter: "grayscale(100%) opacity(0.5)" }}
+            onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          />
+          <div>
+            <p className="font-semibold text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
+              {symbol} Depeg
+            </p>
+            <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>{question}</p>
+          </div>
+        </div>
+        <span
+          className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide"
+          style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)" }}
+        >
+          Coming Soon
+        </span>
+      </div>
+
+      {/* Placeholder stats */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+        {[["Implied prob", "—"], ["Cover $100", "—"], ["Collateral", "—"], ["Expires", "—"]].map(([l, v]) => (
+          <div key={l}>
+            <p className="text-[10px] uppercase tracking-wide mb-0.5" style={{ color: "rgba(255,255,255,0.2)" }}>{l}</p>
+            <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.25)" }}>{v}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Disabled buttons */}
+      <div className="flex gap-2 mt-auto">
+        <div
+          className="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg"
+          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.2)" }}
+        >
+          Buy Cover
+        </div>
+        <div
+          className="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg"
+          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.2)" }}
+        >
+          Underwrite
+        </div>
+      </div>
     </div>
   );
 }
