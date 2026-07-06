@@ -171,13 +171,13 @@ function Nav() {
         <div className="flex items-center gap-6">
           <Link
             href="/app"
-            className="text-sm text-white/45 hover:text-white transition-colors duration-150"
+            className="hidden sm:block text-sm text-white/45 hover:text-white transition-colors duration-150"
           >
             Markets
           </Link>
           <Link
             href="/app"
-            className="text-sm text-white/45 hover:text-white transition-colors duration-150"
+            className="hidden sm:block text-sm text-white/45 hover:text-white transition-colors duration-150"
           >
             ACR
           </Link>
