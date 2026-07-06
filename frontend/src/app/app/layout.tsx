@@ -78,7 +78,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div>
           <div style={{ paddingLeft: 24, paddingBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-              <img src="/ANCHORSHIELDLOGO2.png" alt="AnchorShield" style={{ width: 32, height: 32, objectFit: "contain", flexShrink: 0 }} />
+              <img src="/ANCHORSHIELDLOGO2.png" alt="AnchorShield" style={{ width: 42, height: 42, objectFit: "contain", flexShrink: 0 }} />
               <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-1.2px", lineHeight: "32px", margin: 0 }}>
                 AnchorShield
               </p>

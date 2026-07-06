@@ -125,9 +125,9 @@ export default function AnchorTrustPage() {
 
         {/* ── Loading / Error ──────────────────────────────────── */}
         {loading && (
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
             {[1,2,3].map(i => (
-              <div key={i} className="rounded-lg animate-pulse" style={{ height: 200, background: "#161616" }} />
+              <AnchorCardSkeleton key={i} />
             ))}
           </div>
         )}
@@ -270,6 +270,57 @@ function AnchorCard({ entry }: { entry: AcrEntry }) {
         <p style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "#555", margin: 0, lineHeight: 1.5 }}>
           {sentence}
         </p>
+      </div>
+    </div>
+  );
+}
+
+// ── Anchor Card Skeleton ──────────────────────────────────────────────────
+function AnchorCardSkeleton() {
+  return (
+    <div
+      className="flex flex-col rounded-lg overflow-hidden"
+      style={{ background: "#161616", border: "1px solid #222" }}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between p-4 pb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full shrink-0 skeleton-shimmer" />
+          <div className="flex flex-col gap-2">
+            <div className="h-4 w-28 rounded skeleton-shimmer" />
+            <div className="h-2.5 w-20 rounded skeleton-shimmer" />
+          </div>
+        </div>
+        <div className="h-5 w-10 rounded skeleton-shimmer" />
+      </div>
+      {/* Market covered */}
+      <div className="px-4 pb-3">
+        <div className="h-2.5 w-48 rounded skeleton-shimmer" />
+      </div>
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-0 px-4 pb-3 pt-3" style={{ borderTop: "1px solid rgba(34,34,34,0.6)" }}>
+        {[1,2,3].map(i => (
+          <div key={i} className="flex flex-col gap-2">
+            <div className="h-2 w-10 rounded skeleton-shimmer" />
+            <div className="h-4 w-14 rounded skeleton-shimmer" />
+          </div>
+        ))}
+      </div>
+      {/* Bar */}
+      <div className="px-4 pb-3">
+        <div className="h-1.5 w-full rounded-full skeleton-shimmer" />
+      </div>
+      {/* Footer */}
+      <div className="px-4 py-3" style={{ borderTop: "1px solid rgba(34,34,34,0.6)" }}>
+        <div className="flex items-center gap-2">
+          <span
+            className="inline-block w-1.5 h-1.5 rounded-full shrink-0"
+            style={{ background: "#00e5ff", boxShadow: "0 0 6px #00e5ff", animation: "pulse 1.5s ease-in-out infinite" }}
+          />
+          <span style={{ fontSize: 10, color: "rgba(0,229,255,0.5)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.05em" }}>
+            Reading anchor stakes from chain…
+          </span>
+        </div>
       </div>
     </div>
   );

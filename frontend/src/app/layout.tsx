@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AnchorShield — Parametric Insurance on Stellar",
-  description: "Decentralized parametric insurance for stablecoin depegs on Stellar Soroban.",
+  title: "AnchorShield — Hedge Stablecoin Risk on Stellar",
+  description: "On-chain hedging for stablecoin depegs on Stellar. Pay a small premium. Get an automatic payout if the peg breaks.",
 };
 
 export default function RootLayout({
