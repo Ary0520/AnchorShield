@@ -10,6 +10,7 @@
  */
 
 import cron from 'node-cron';
+import http from 'http';
 import { nativeToScVal } from '@stellar/stellar-sdk';
 import { CONFIG } from './config';
 import { queryContract } from './soroban';
@@ -79,6 +80,15 @@ async function tick(): Promise<void> {
     console.error('[Watcher] Tick error:', (err as Error).message);
   }
 }
+
+// ── Health server — keeps Render free tier awake ──────────────────────────
+const PORT = process.env.PORT ?? 3001;
+http.createServer((_, res) => {
+  res.writeHead(200);
+  res.end(`AnchorShield watcher alive. Tick #${tickCount}. Last run: ${new Date().toISOString()}`);
+}).listen(PORT, () => {
+  console.log(`[Watcher] Health endpoint listening on port ${PORT}`);
+});
 
 // ── Start ──────────────────────────────────────────────────────────────────
 
