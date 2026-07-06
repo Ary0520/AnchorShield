@@ -1,0 +1,7 @@
+[build]
+builder = "nixpacks"
+buildCommand = "npm ci && npm run build"
+
+[deploy]
+startCommand = "node dist/index.js"
+restartPolicyType = "always"
