@@ -317,9 +317,9 @@ function StatsBar() {
 
           {/* LEFT — big square: $3B+ */}
           <HudCard className="min-h-[340px] flex flex-col justify-between" scanDelay={0}>
-            <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
+            {/* <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
               Stellar ecosystem · RWA
-            </span>
+            </span> */}
             <div>
               <motion.p
                 className="text-[clamp(5rem,10vw,8.5rem)] font-bold leading-none tracking-tighter text-white"
@@ -330,7 +330,7 @@ function StatsBar() {
               >
                 $3B+
               </motion.p>
-              <p className="text-white/35 text-sm mt-4 max-w-xs leading-relaxed">
+              <p className="text-white/70 text-sm mt-4 max-w-xs leading-relaxed">
                 In tokenized real-world assets on Stellar.
                 USDC. EURC. MGUSD. USDT.
                 Every dollar carries peg risk.
@@ -343,9 +343,9 @@ function StatsBar() {
 
             {/* Top right: 4 markets */}
             <HudCard className="flex-1 flex flex-col justify-between min-h-[160px]" scanDelay={1}>
-              <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
+              {/* <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
                 Live on testnet
-              </span>
+              </span> */}
               <div>
                 <motion.p
                   className="text-[clamp(3.5rem,7vw,6rem)] font-bold leading-none tracking-tighter text-white"
@@ -356,17 +356,17 @@ function StatsBar() {
                 >
                   4
                 </motion.p>
-                <p className="text-white/35 text-sm mt-2">
-                  Active markets — USDC · EURC · USDT · DAI
+                <p className="text-white/70 text-sm mt-2">
+                  Active stablecoins — USDC · EURC · PYUSD · MGUSD
                 </p>
               </div>
             </HudCard>
 
             {/* Bottom right: $10M */}
             <HudCard className="flex-1 flex flex-col justify-between min-h-[160px]" scanDelay={2}>
-              <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
+              {/* <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
                 Why this exists
-              </span>
+              </span> */}
               <div>
                 <motion.p
                   className="text-[clamp(3.5rem,7vw,6rem)] font-bold leading-none tracking-tighter text-white"
@@ -377,7 +377,7 @@ function StatsBar() {
                 >
                   $10M
                 </motion.p>
-                <p className="text-white/35 text-sm mt-2">
+                <p className="text-white/70 text-sm mt-2">
                   Drained from Stellar in Feb 2026. No hedge existed. Now one does.
                 </p>
               </div>
