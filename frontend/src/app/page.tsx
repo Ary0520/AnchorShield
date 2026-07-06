@@ -86,7 +86,6 @@ function VideoTile({
         preload={eager ? "auto" : "metadata"}
         loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ willChange: "transform" }}
       />
       <div className="absolute inset-0 bg-black/20" />
       {children && (
@@ -152,7 +151,6 @@ function Nav() {
           WebkitBackdropFilter: "blur(16px)",
           border: "1px solid rgba(255,255,255,0.18)",
           boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12)",
-          willChange: "transform",
         }}
       >
         {/* Logo */}
@@ -413,7 +411,7 @@ function HowItWorks() {
     <section id="how-it-works" className="py-28">
       <div className="max-w-7xl mx-auto px-6">
         <FadeIn className="text-center mb-16">
-          <p className="text-white/30 text-xs uppercase tracking-widest mb-3 font-mono">How it works</p>
+          <p className="text-white/70 text-xs uppercase tracking-widest mb-3 font-mono">How it works</p>
           <h2 className="text-4xl font-bold gradient-text">Three steps. Fully automated.</h2>
         </FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -692,7 +690,6 @@ function AcrSection() {
                             opacity: 0.85,
                             boxShadow: `0 0 6px ${r.barColor}`,
                             width: `${(5 - i) * 20}%`,
-                            willChange: "transform",
                           }}
                           initial={{ scaleX: 0 }}
                           whileInView={{ scaleX: 1 }}
@@ -938,7 +935,7 @@ function MarketsPreview() {
                 Pick the market.<br />
                 <span className="text-white/60">Hedge the risk.</span>
               </h2>
-              <p className="text-white/35 text-sm mt-4 max-w-lg">
+              <p className="text-white/70 text-sm mt-4 max-w-lg">
                 Each market is a fully collateralized binary outcome contract.
                 Pay a small premium. Get an automatic $1 payout per token if the peg breaks.
               </p>
@@ -965,14 +962,14 @@ function MarketsPreview() {
         {/* Bottom CTA strip */}
         <FadeIn delay={0.35} className="mt-8">
           <div className="flex items-center justify-between border-t border-white/[0.05] pt-6">
-            <p className="text-white/25 text-xs">
+            {/* <p className="text-white/25 text-xs">
               Settlements are permissionless — anyone can trigger them.
               Our watcher calls <span className="font-mono text-white/40">try_settle()</span> every 60s.
-            </p>
+            </p> */}
             <Link
               href="/app"
-              className="text-sm px-5 py-2.5 rounded-full border border-white/10 text-white/60
-                         hover:border-white/30 hover:text-white transition-all duration-200 shrink-0 ml-6"
+              className="text-sm px-5 py-2.5 rounded-full border border-white/70 text-white/70
+                         hover:border-white/90 hover:text-white transition-all duration-200 shrink-0 ml-6"
             >
               Start hedging →
             </Link>
@@ -995,7 +992,7 @@ function CtaBanner() {
                               w-[600px] h-[400px] rounded-full opacity-[0.06]
                               bg-[radial-gradient(ellipse,#00e5ff_0%,transparent_70%)]" />
             </div>
-            <p className="text-white/30 text-xs uppercase tracking-widest mb-4 font-mono">
+            <p className="text-white/70 text-xs uppercase tracking-widest mb-4 font-mono">
               Ready to hedge onchain risk?
             </p>
             <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-6">

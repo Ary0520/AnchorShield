@@ -219,7 +219,7 @@ export default function RiskCurvePage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {[1,2,3].map((i) => (
-            <div key={i} className="rounded-xl h-64 animate-pulse" style={{ background: "rgba(255,255,255,0.03)" }} />
+            <MarketCardSkeleton key={i} />
           ))}
         </div>
       ) : (
@@ -397,7 +397,54 @@ function StatRow({ label, value, valueColor }: { label: string; value: string; v
   );
 }
 
-// ── Coming Soon Card ─────────────────────────────────────────────────────
+// ── Market Card Skeleton ──────────────────────────────────────────────────
+function MarketCardSkeleton() {
+  return (
+    <div
+      className="rounded-xl p-5 flex flex-col gap-4"
+      style={{ background: "#0f0f1e", border: "1px solid rgba(255,255,255,0.07)" }}
+    >
+      {/* Header row */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full skeleton-shimmer" />
+          <div className="flex flex-col gap-1.5">
+            <div className="h-3.5 w-24 rounded skeleton-shimmer" />
+            <div className="h-2.5 w-32 rounded skeleton-shimmer" />
+          </div>
+        </div>
+        <div className="h-5 w-14 rounded-full skeleton-shimmer" />
+      </div>
+
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+        {[1,2,3,4].map((i) => (
+          <div key={i} className="flex flex-col gap-1.5">
+            <div className="h-2 w-16 rounded skeleton-shimmer" />
+            <div className="h-3.5 w-20 rounded skeleton-shimmer" />
+          </div>
+        ))}
+      </div>
+
+      {/* Fetching label */}
+      <div className="flex items-center gap-2 mt-1">
+        <span
+          className="inline-block w-1.5 h-1.5 rounded-full"
+          style={{ background: "#00e5ff", boxShadow: "0 0 6px #00e5ff", animation: "pulse 1.5s ease-in-out infinite" }}
+        />
+        <span style={{ fontSize: 10, color: "rgba(0,229,255,0.5)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.05em" }}>
+          Fetching from Stellar…
+        </span>
+      </div>
+
+      {/* Buttons */}
+      <div className="flex gap-2 mt-auto">
+        <div className="flex-1 h-9 rounded-lg skeleton-shimmer" />
+        <div className="flex-1 h-9 rounded-lg skeleton-shimmer" />
+      </div>
+    </div>
+  );
+}
 function ComingSoonCard({
   symbol, name, logo, question,
 }: { symbol: string; name: string; logo: string; question: string }) {

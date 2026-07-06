@@ -101,13 +101,7 @@ export default function MarketDetailPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex flex-col h-full p-6 gap-3" style={{ background: "#0a0a0a" }}>
-        {[100, 300, 60].map((h, i) => (
-          <div key={i} className="rounded-lg animate-pulse w-full" style={{ height: h, background: "#161616" }} />
-        ))}
-      </div>
-    );
+    return <MarketDetailSkeleton />;
   }
   if (!config) {
     return (
@@ -429,6 +423,102 @@ export default function MarketDetailPage() {
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+// ── Market Detail Skeleton ────────────────────────────────────────────────
+function MarketDetailSkeleton() {
+  const [step, setStep] = useState(0);
+  const steps = [
+    "Connecting to Stellar testnet…",
+    "Loading market config…",
+    "Reading oracle prices…",
+    "Fetching order book…",
+  ];
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setStep((s) => (s + 1) % steps.length);
+    }, 1100);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="flex flex-col h-full" style={{ background: "#0a0a0a" }}>
+      {/* Fake header bar */}
+      <div style={{ borderBottom: "1px solid #222", padding: "16px 24px" }}>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full skeleton-shimmer" />
+          <div className="h-6 w-48 rounded skeleton-shimmer" />
+          <div className="h-5 w-16 rounded-full skeleton-shimmer" />
+        </div>
+      </div>
+
+      {/* Main content placeholder */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left: chart area */}
+        <div className="flex-1 flex flex-col p-4 gap-4" style={{ borderRight: "1px solid #1a1a1a" }}>
+          <div className="flex-1 rounded-lg skeleton-shimmer" style={{ minHeight: 260 }} />
+          <div className="h-[220px] rounded-lg skeleton-shimmer" />
+        </div>
+        {/* Right: trade panel */}
+        <div className="w-[320px] shrink-0 flex flex-col gap-3 p-4">
+          <div className="h-12 rounded-lg skeleton-shimmer" />
+          <div className="h-32 rounded-lg skeleton-shimmer" />
+          <div className="h-24 rounded-lg skeleton-shimmer" />
+          <div className="h-10 rounded-lg skeleton-shimmer" />
+        </div>
+      </div>
+
+      {/* Centered status overlay */}
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center gap-4 pointer-events-none"
+        style={{ zIndex: 10 }}
+      >
+        {/* Spinning ring */}
+        <div style={{ position: "relative", width: 48, height: 48 }}>
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style={{ animation: "spin 1.2s linear infinite" }}>
+            <circle cx="24" cy="24" r="20" stroke="rgba(0,229,255,0.12)" strokeWidth="3" />
+            <path d="M24 4 A20 20 0 0 1 44 24" stroke="#00e5ff" strokeWidth="3" strokeLinecap="round" />
+          </svg>
+          <div
+            style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#00e5ff", boxShadow: "0 0 10px #00e5ff" }} />
+          </div>
+        </div>
+
+        {/* Cycling status text */}
+        <div style={{ textAlign: "center" }}>
+          <p
+            key={step}
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 12,
+              color: "rgba(0,229,255,0.7)",
+              letterSpacing: "0.04em",
+              animation: "fadeInUp 0.35s ease",
+            }}
+          >
+            {steps[step]}
+          </p>
+          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginTop: 6, fontFamily: "Inter, sans-serif" }}>
+            Stellar testnet · Soroban RPC
+          </p>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }

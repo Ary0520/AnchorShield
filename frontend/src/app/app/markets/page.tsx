@@ -123,7 +123,7 @@ export default function HedgeMarketsPage() {
       <div className="space-y-2">
         {loading ? (
           Array.from({ length: 3 }, (_, i) => (
-            <div key={i} className="h-[72px] rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,0.03)" }} />
+            <MarketRowSkeleton key={i} />
           ))
         ) : (
           <>
@@ -223,7 +223,34 @@ function MarketRow({ market, dimmed }: { market: EnrichedMarket; dimmed?: boolea
   );
 }
 
-// ── Coming soon row ───────────────────────────────────────────────────────
+// ── Market row skeleton ───────────────────────────────────────────────────
+function MarketRowSkeleton() {
+  return (
+    <div
+      className="flex items-center gap-4 px-5 py-4 rounded-xl"
+      style={{ background: "#0f0f1e", border: "1px solid rgba(255,255,255,0.07)" }}
+    >
+      {/* Logo */}
+      <div className="w-9 h-9 rounded-full shrink-0 skeleton-shimmer" />
+
+      {/* Label + meta */}
+      <div className="flex-1 flex flex-col gap-2">
+        <div className="h-3.5 w-40 rounded skeleton-shimmer" />
+        <div className="h-2.5 w-56 rounded skeleton-shimmer" />
+      </div>
+
+      {/* Right side */}
+      <div className="flex items-center gap-4 shrink-0">
+        <div className="flex flex-col gap-1.5 items-end">
+          <div className="h-2 w-16 rounded skeleton-shimmer" />
+          <div className="h-3.5 w-10 rounded skeleton-shimmer" />
+        </div>
+        <div className="h-6 w-16 rounded-full skeleton-shimmer" />
+        <div className="w-4 h-4 rounded skeleton-shimmer" />
+      </div>
+    </div>
+  );
+}
 function ComingSoonRow({ symbol, logo, name }: { symbol: string; logo: string; name: string }) {
   return (
     <div
