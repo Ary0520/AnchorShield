@@ -966,7 +966,7 @@ function MarketsPreview() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {markets.map((m, i) => (
             <FadeIn key={m.asset} delay={i * 0.07}>
-              <MarketCard {...m} />
+              <MarketCard {...m} delay={i * 400} />
             </FadeIn>
           ))}
         </div>
