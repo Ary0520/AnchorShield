@@ -61,17 +61,25 @@ function VideoTile({
 }: { src: string; className?: string; children?: React.ReactNode; eager?: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
-    if (eager) return; // hero video plays immediately
     const el = ref.current;
     if (!el) return;
+
+    if (eager) {
+      // Hero video: start playing as soon as it's in view + enough buffered
+      el.play().catch(() => {});
+      return;
+    }
+
+    // Below-fold videos: only start loading + playing when near viewport
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          el.load();            // trigger network fetch now
           el.play().catch(() => {});
           obs.disconnect();
         }
       },
-      { threshold: 0.1, rootMargin: "600px" }
+      { threshold: 0.1, rootMargin: "400px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -82,8 +90,8 @@ function VideoTile({
       <video
         ref={ref}
         src={src}
-        autoPlay={eager}
-        preload={eager ? "auto" : "metadata"}
+        // Never preload="auto" — let IntersectionObserver control loading
+        preload="none"
         loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover"
       />
@@ -258,7 +266,7 @@ function Hero() {
             <VideoTile src="/blob1.mp4" className="w-full h-[420px]" eager>
               <div className="p-5 flex flex-col justify-end h-full">
                 <p className="text-white/60 text-xs mb-1"></p>
-                <p className="text-white font-medium  text-sm">Reflector price feed · updates every 5 min</p>
+                <p className="text-white font-medium  text-sm">Bringing the future of finance on Stellar</p>
               </div>
             </VideoTile>
           </div>
@@ -781,13 +789,14 @@ async function fetchOraclePrices(symbol: string): Promise<number[]> {
 
 // ── Single market card with sparkline ─────────────────────────────
 function MarketCard({
-  asset, symbol, logo, expires, marketId,
+  asset, symbol, logo, expires, marketId, delay = 0,
 }: {
   asset: string;
   symbol: string;
   logo: string | null;
   expires: string;
   marketId: number;
+  delay?: number; // ms to wait before firing oracle fetch — staggers RPC calls
 }) {
   const [prices, setPrices] = useState<{ v: number }[]>([]);
   const [coverCost, setCoverCost] = useState<string | null>(null);
