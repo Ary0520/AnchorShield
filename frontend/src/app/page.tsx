@@ -803,14 +803,17 @@ function MarketCard({
   const THRESHOLD = 0.995;
 
   useEffect(() => {
-    fetchOraclePrices(symbol).then((pts) => {
-      setPrices(pts.map((v) => ({ v })));
-      const latest = pts[pts.length - 1];
-      const impliedProb = Math.max(0, (THRESHOLD - latest + 0.005) / THRESHOLD);
-      const cost = Math.max(1, Math.round(impliedProb * 1000 * 100));
-      setCoverCost(`$${cost}`);
-    });
-  }, [symbol]);
+    const timer = setTimeout(() => {
+      fetchOraclePrices(symbol).then((pts) => {
+        setPrices(pts.map((v) => ({ v })));
+        const latest = pts[pts.length - 1];
+        const impliedProb = Math.max(0, (THRESHOLD - latest + 0.005) / THRESHOLD);
+        const cost = Math.max(1, Math.round(impliedProb * 1000 * 100));
+        setCoverCost(`$${cost}`);
+      });
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [symbol, delay]);
 
   const currentPrice = prices.length ? prices[prices.length - 1].v : null;
   const priceDisplay = currentPrice ? `$${currentPrice.toFixed(4)}` : "—";
