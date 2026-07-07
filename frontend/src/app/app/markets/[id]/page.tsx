@@ -87,16 +87,18 @@ export default function MarketDetailPage() {
 
   useEffect(() => { refresh(); }, [refresh]);
 
-  async function runTx(fn: () => Promise<string>, label: string) {
-    if (!wallet.publicKey) { setTxError("Connect wallet first"); return; }
+  async function runTx(fn: () => Promise<string>, label: string): Promise<boolean> {
+    if (!wallet.publicKey) { setTxError("Connect wallet first"); return false; }
     setTxStatus(`Sending ${label}...`); setTxError(null);
     try {
       const hash = await fn();
       setTxStatus(`✓ ${label} confirmed — ${hash.slice(0, 12)}...`);
       await refresh();
+      return true;
     } catch (e) {
       setTxError(e instanceof Error ? e.message : `${label} failed`);
       setTxStatus(null);
+      return false;
     }
   }
 
@@ -536,7 +538,7 @@ interface TradePanelProps {
   uwAmt: number; uwPremBps: number; uwEarned: number;
   config: MarketConfig; wallet: ReturnType<typeof useWallet>;
   balances: { yes: bigint; no: bigint };
-  runTx: (fn: () => Promise<string>, label: string) => void;
+  runTx: (fn: () => Promise<string>, label: string) => Promise<boolean>;
 }
 
 function TradePanel({
@@ -558,9 +560,22 @@ function TradePanel({
   async function handleMintAndSell() {
     if (!wallet.publicKey) return;
     const stroops = BigInt(Math.round(uwAmt * 10_000_000));
-    await runTx(() => mintCompleteSet(wallet.publicKey!, config.market_contract, stroops), "Mint");
+
+    // Step 1: mint — wait for full on-chain confirmation
+    const mintOk = await runTx(
+      () => mintCompleteSet(wallet.publicKey!, config.market_contract, stroops),
+      "Mint (1/2)"
+    );
+
+    // Only proceed to sell if mint actually succeeded
+    if (!mintOk) return;
+
+    // Step 2: place sell order against the freshly minted YES tokens
     if (uwPremBps > 0) {
-      runTx(() => placeOrder(wallet.publicKey!, config.market_contract, false, uwPremBps, stroops), "Place Sell Order");
+      await runTx(
+        () => placeOrder(wallet.publicKey!, config.market_contract, false, uwPremBps, stroops),
+        "Sell order (2/2)"
+      );
     }
   }
 

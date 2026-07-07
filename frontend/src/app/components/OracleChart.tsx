@@ -154,6 +154,10 @@ export default function OracleChart({ symbol, threshold }: Props) {
     try {
       const records = RANGE_RECORDS[range];
       const points: PricePoint[] = await fetchOraclePriceHistory(symbol, records);
+
+      // Re-check after async fetch — component may have unmounted during the request
+      if (!seriesRef.current || !chartRef.current) return;
+
       if (points.length === 0) return;
 
       // Plot every raw oracle tick as a point — no OHLC grouping for area chart
@@ -192,6 +196,8 @@ export default function OracleChart({ symbol, threshold }: Props) {
         topColor  = "rgba(0,255,194,0.1)";
       }
 
+      // Final null check before touching refs (unmount could have happened during color compute)
+      if (!seriesRef.current) return;
       seriesRef.current.applyOptions({
         lineColor,
         topColor,
