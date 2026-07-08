@@ -1,4 +1,5 @@
 # AnchorShield
+<img width="1012" height="569" alt="image" src="https://github.com/user-attachments/assets/606df59d-9f01-43da-8ba7-8b91a2bc1357" />
 
 **Parametric hedging and risk intelligence for Stellar's stablecoin economy.**
 
