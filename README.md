@@ -1,5 +1,6 @@
 # AnchorShield
 <img width="1012" height="569" alt="image" src="https://github.com/user-attachments/assets/606df59d-9f01-43da-8ba7-8b91a2bc1357" />
+
 **Parametric hedging and risk intelligence for Stellar's stablecoin economy.**
 
 AnchorShield is a fully on-chain protocol built on Stellar's Soroban platform. It lets users hedge against stablecoin depeg events — USDC, EURC, MGUSD, PYUSD — through permissionless binary outcome markets. Settlement is driven entirely by the Reflector oracle with no human claims process, no adjusters, and no waiting.
