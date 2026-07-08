@@ -591,11 +591,11 @@ function LogoCarousel() {
 }
 function AcrSection() {
   const ratings = [
-    { rating: "AAA", range: "≥ 2.0x", color: "#00e5ff", barColor: "#00e5ff",       label: "The anchor has twice as much at stake as all cover sold" },
-    { rating: "AA",  range: "≥ 1.0x", color: "#34d399", barColor: "#34d399",       label: "Fully backed — the anchor covers every dollar of risk" },
-    { rating: "A",   range: "≥ 0.5x", color: "#5eead4", barColor: "#5eead4",       label: "More than half covered with their own capital" },
-    { rating: "BBB", range: "≥ 0.1x", color: "#fbbf24", barColor: "#fbbf24",       label: "Some skin in the game" },
-    { rating: "C",   range: "< 0.1x", color: "#f87171", barColor: "#f87171",       label: "Minimal stake — use with awareness" },
+    { rating: "AAA", range: "≥ 2.0x", color: "#00e5ff", barColor: "#00e5ff",       label: "2× economic backing" },
+    { rating: "AA",  range: "≥ 1.0x", color: "#34d399", barColor: "#34d399",       label: "Fully economically backed" },
+    { rating: "A",   range: "≥ 0.5x", color: "#5eead4", barColor: "#5eead4",       label: "Majority economically backed" },
+    { rating: "BBB", range: "≥ 0.1x", color: "#fbbf24", barColor: "#fbbf24",       label: "Partial economic backing" },
+    { rating: "C",   range: "< 0.1x", color: "#f87171", barColor: "#f87171",       label: "Minimal economic backing" },
   ];
 
   return (
@@ -624,10 +624,10 @@ function AcrSection() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-8">
                 <h3 className="text-3xl font-bold text-white mb-2">
-                  Anchors put their own money on the line.
+                  An open signal of economic commitment.
                 </h3>
                 <p className="text-white/70 text-sm max-w-sm leading-relaxed">
-                  If they fail, they lose it. The higher it is, the more aligned the anchor is with the people using them.
+                  ACR is a public on-chain metric showing how much capital an anchor has voluntarily committed relative to the insurance protecting its ecosystem.
                 </p>
               </div>
             </VideoTile>
@@ -658,8 +658,7 @@ function AcrSection() {
                   </p>
                 </div>
                 <p className="text-white/70 text-xs">
-                  Any wallet, lending protocol, or DeFi app on Stellar can read
-                  an anchor&apos;s confidence ratio in real time. No API key. No permission. Always on.
+                  Any Stellar application can read an anchor's on-chain economic commitment in real time and incorporate it into routing, risk management, or user interfaces.
                 </p>
               </div>
             </FadeIn>
