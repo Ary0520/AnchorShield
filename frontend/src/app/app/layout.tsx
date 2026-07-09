@@ -85,7 +85,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div>
           <div style={{ paddingLeft: 24, paddingBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-              <img src="/ANCHORSHIELDLOGO2.png" alt="AnchorShield" style={{ width: 42, height: 42, objectFit: "contain", flexShrink: 0 }} />
+              <img src="/ANCHORSHIELDLOGO2.png" alt="AnchorShield" style={{ width: 50, height: 50, objectFit: "contain", flexShrink: 0 }} />
               <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-1.2px", lineHeight: "32px", margin: 0 }}>
                 AnchorShield
               </p>
@@ -130,20 +130,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Footer */}
         <div style={{ borderTop: "1px solid #222", paddingTop: 17, paddingLeft: 16, paddingRight: 16 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <a href="https://developers.stellar.org" target="_blank" rel="noopener noreferrer"
+            <a href="mailto:anchorshieldstellar@gmail.com"
               style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8, color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "Inter, sans-serif" }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#888"}
             >
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="currentColor" strokeWidth="1.3"/><path d="M9 5.5v3.5l2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
-              Settings
-            </a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer"
-              style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8, color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "Inter, sans-serif" }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"}
-              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#888"}
-            >
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.35C4.72 1.35 1.25 4.82 1.25 9.1c0 3.42 2.21 6.32 5.28 7.34.39.07.53-.17.53-.37v-1.3c-2.14.46-2.59-1.03-2.59-1.03-.35-.9-.86-1.14-.86-1.14-.7-.48.06-.47.06-.47.77.05 1.18.79 1.18.79.69 1.17 1.8.84 2.24.64.07-.5.27-.84.49-1.03-1.71-.19-3.5-.85-3.5-3.8 0-.84.3-1.52.79-2.06-.08-.19-.34-.97.07-2.02 0 0 .65-.21 2.12.79A7.38 7.38 0 019 5.27c.65 0 1.31.09 1.93.26 1.47-1 2.12-.79 2.12-.79.41 1.05.15 1.83.07 2.02.49.54.79 1.22.79 2.06 0 2.95-1.8 3.6-3.51 3.8.28.24.52.7.52 1.41v2.09c0 .2.14.44.53.37A7.76 7.76 0 0016.75 9.1C16.75 4.82 13.28 1.35 9 1.35z" fill="currentColor"/></svg>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1.5" y="3.5" width="15" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1.5 5.5l7.5 5 7.5-5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
               Support
             </a>
           </div>
