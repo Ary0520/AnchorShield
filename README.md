@@ -7,6 +7,8 @@ AnchorShield is a fully on-chain protocol built on Stellar's Soroban platform. I
 
 Live on Stellar Testnet · [anchorshield.vercel.app](https://anchorshield.vercel.app)
 
+X account: https://x.com/AnchorShieldApp
+
 Instawards/Small Grant Proposal: [Here](https://spangled-mulberry-ae7.notion.site/AnchorShield-Project-Grant-Proposal-3979180a7d1580c28ae6eb6534666496#009d3517540b4aa7ac45a5fecbbf9ddd)
 
 ---
