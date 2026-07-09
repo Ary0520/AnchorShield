@@ -994,45 +994,128 @@ function MarketsPreview() {
 // ── CTA BANNER ─────────────────────────────────────────────────────
 function CtaBanner() {
   return (
-    <section className="py-28 border-t border-white/[0.05]">
+    <section className="py-20" style={{ background: "#edecea" }}>
       <div className="max-w-7xl mx-auto px-6">
-        <FadeIn>
-          <div className="glass rounded-3xl p-12 md:p-16 text-center relative overflow-hidden">
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                              w-[600px] h-[400px] rounded-full opacity-[0.06]
-                              bg-[radial-gradient(ellipse,#00e5ff_0%,transparent_70%)]" />
-            </div>
-            <p className="text-white/70 text-xs uppercase tracking-widest mb-4 font-mono">
-              Ready to hedge onchain risk?
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+
+          {/* ── LEFT: CTA copy ───────────────────────────────── */}
+          <FadeIn className="flex flex-col justify-center py-4">
+            <p style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase" as const,
+              color: "rgba(0,0,0,0.35)",
+              marginBottom: "1.25rem",
+            }}>
+              
             </p>
-            <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-6">
-              AnchorShield is live.
+            <h2 style={{
+              fontFamily: "Inter, sans-serif",
+              fontWeight: 700,
+              fontSize: "clamp(2rem, 4vw, 3.2rem)",
+              lineHeight: 1.1,
+              letterSpacing: "-0.04em",
+              color: "#0a0a0a",
+              marginBottom: "1.25rem",
+            }}>
+              Ready to hedge <br/> onchain risk?
             </h2>
-            <p className="text-white/50 text-lg max-w-xl mx-auto mb-10">
-              Four markets. Real oracle data. Automatic settlement.
-              Connect your Freighter wallet and start hedging in under 60 seconds.
+            <p style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: 15,
+              lineHeight: 1.65,
+              color: "rgba(0,0,0,0.45)",
+              maxWidth: 380,
+              marginBottom: "2.25rem",
+            }}>
+              Four markets live on Stellar. <br/>
+              Connect your Freighter wallet and start in under 60 seconds.
             </p>
-            <div className="flex items-center justify-center gap-4 flex-wrap">
+            <div>
               <Link
                 href="/app"
-                className="px-8 py-4 rounded-full bg-white text-black font-semibold text-sm
-                           hover:bg-white/90 transition-all duration-200 hover:scale-[1.02]"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "13px 30px",
+                  borderRadius: 9999,
+                  fontFamily: "Inter, sans-serif",
+                  fontWeight: 600,
+                  fontSize: 14,
+                  letterSpacing: "-0.01em",
+                  background: "#0a0a0a",
+                  color: "white",
+                  textDecoration: "none",
+                }}
               >
                 Launch App →
               </Link>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-8 py-4 rounded-full border border-white/10 text-white/60 text-sm
-                           hover:border-white/30 hover:text-white transition-all duration-200"
-              >
-                View on GitHub
-              </a>
             </div>
-          </div>
-        </FadeIn>
+          </FadeIn>
+
+          {/* ── RIGHT: image card, 16:9 so nothing is cropped ── */}
+          <FadeIn delay={0.1}>
+            <div style={{
+              position: "relative",
+              width: "100%",
+              aspectRatio: "16 / 9",
+              borderRadius: 16,
+              overflow: "hidden",
+              border: "1px solid rgba(0,0,0,0.08)",
+              background: "#000",
+            }}>
+              <img
+                src="/lastimage.png"
+                alt="AnchorShield Community"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center center",
+                }}
+              />
+              {/* Bottom scrim */}
+              <div style={{
+                position: "absolute",
+                inset: 0,
+                background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)",
+              }} />
+              {/* Join Community button */}
+              <div style={{ position: "absolute", bottom: 20, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+                <a
+                  href="https://x.com/AnchorShieldApp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "10px 22px",
+                    borderRadius: 9999,
+                    fontFamily: "Inter, sans-serif",
+                    fontWeight: 600,
+                    fontSize: 13,
+                    letterSpacing: "-0.01em",
+                    background: "white",
+                    color: "#0a0a0a",
+                    textDecoration: "none",
+                    boxShadow: "0 2px 20px rgba(0,0,0,0.3)",
+                  }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                    <path d="M8.25 5.93L12.9 0.5H11.8L7.76 5.18 4.54 0.5H0.9L5.77 7.78 0.9 13.5H2L6.26 8.57 9.64 13.5H13.28L8.25 5.93ZM6.82 7.94L6.33 7.24 2.38 1.32H4.01L7.26 5.89L7.75 6.59L11.8 12.72H10.17L6.82 7.94Z" fill="currentColor"/>
+                  </svg>
+                  Join Community
+                </a>
+              </div>
+            </div>
+          </FadeIn>
+
+        </div>
       </div>
     </section>
   );
@@ -1041,28 +1124,28 @@ function CtaBanner() {
 // ── FOOTER ─────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="border-t border-white/[0.05] py-12">
+    <footer className="py-12" style={{ background: "#edecea", borderTop: "1px solid rgba(0,0,0,0.08)" }}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
-            <p className="text-white font-semibold mb-1">AnchorShield</p>
-            <p className="text-white/30 text-xs max-w-sm">
+            <p className="font-semibold mb-1" style={{ color: "#111" }}>AnchorShield</p>
+            <p className="text-xs max-w-sm" style={{ color: "rgba(0,0,0,0.4)" }}>
               Parametric hedging infrastructure for Stellar&apos;s stablecoin economy.
             </p>
-            <p className="text-white/20 text-xs mt-3">
+            <p className="text-xs mt-3" style={{ color: "rgba(0,0,0,0.25)" }}>
               Running on Stellar · Soroban SDK
             </p>
           </div>
-          <div className="flex gap-6 text-xs text-white/30">
-            <Link href="/app" className="hover:text-white transition-colors">App</Link>
+          <div className="flex gap-6 text-xs" style={{ color: "rgba(0,0,0,0.35)" }}>
+            <Link href="/app" className="hover:text-black transition-colors">App</Link>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer"
-               className="hover:text-white transition-colors">GitHub</a>
+               className="hover:text-black transition-colors">GitHub</a>
             <a href="https://developers.stellar.org" target="_blank" rel="noopener noreferrer"
-               className="hover:text-white transition-colors">Stellar Docs</a>
+               className="hover:text-black transition-colors">Stellar Docs</a>
           </div>
         </div>
-        <div className="mt-8 pt-6 border-t border-white/[0.04]">
-          <p className="text-white/20 text-xs">
+        <div className="mt-8 pt-6" style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}>
+          <p className="text-xs" style={{ color: "rgba(0,0,0,0.25)" }}>
             AnchorShield is a decentralized protocol. It is not a licensed insurance product.
             All outcomes are determined automatically by on-chain oracle data.
             Use at your own risk. Testnet deployment — not for production use.
