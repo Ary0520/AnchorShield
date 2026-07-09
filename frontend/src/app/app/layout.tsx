@@ -244,34 +244,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
-
-          {/* Wallet button in bottom nav */}
-          <button
-            onClick={wallet.publicKey ? wallet.disconnect : wallet.connect}
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 4,
-              paddingTop: 10,
-              paddingBottom: 10,
-              color: wallet.publicKey ? "#00ffc2" : "rgba(255,255,255,0.35)",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <rect x="1" y="4" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M13 10a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/>
-              <path d="M1 7h16" stroke="currentColor" strokeWidth="1.5"/>
-            </svg>
-            <span style={{ fontFamily: "Inter, sans-serif", fontSize: 10, fontWeight: 400, letterSpacing: "0.01em", lineHeight: 1 }}>
-              {wallet.publicKey ? wallet.shortKey?.slice(0, 6) + "…" : "Wallet"}
-            </span>
-          </button>
         </div>
       </nav>
 
