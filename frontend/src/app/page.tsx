@@ -166,7 +166,7 @@ function Nav() {
           <img
             src="/ANCHORSHIELDLOGO2.png"
             alt="AnchorShield"
-            className="h-12 w-12 object-contain"
+            className="h-14 w-14 object-contain"
           />
           <span className="text-white font-semibold text-[17px] tracking-tight">
             AnchorShield
@@ -175,18 +175,18 @@ function Nav() {
 
         {/* Links */}
         <div className="flex items-center gap-6">
-          <Link
-            href="/app"
-            className="hidden sm:block text-sm text-white/45 hover:text-white transition-colors duration-150"
+          <span
+            className="hidden sm:block text-sm text-white/45 cursor-not-allowed select-none"
+            title="Coming soon"
           >
-            Markets
-          </Link>
-          <Link
-            href="/app"
-            className="hidden sm:block text-sm text-white/45 hover:text-white transition-colors duration-150"
+            Whitepaper
+          </span>
+          <span
+            className="hidden sm:block text-sm text-white/45 cursor-not-allowed select-none"
+            title="Coming soon"
           >
-            ACR
-          </Link>
+            Docs
+          </span>
           <Link
             href="/app"
             className="text-sm px-4 py-1.5 rounded-xl font-medium text-white

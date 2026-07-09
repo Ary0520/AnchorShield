@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useWallet } from "@/hooks";
+import { Suspense } from "react";
+import TopLoader from "@/app/components/TopLoader";
 
 const NAV_ITEMS = [
   {
@@ -59,6 +61,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", height: "100dvh", background: "#0a0a0a", color: "white", overflow: "hidden" }}>
 
+      {/* ── Top loader — page transition progress bar ────── */}
+      <Suspense fallback={null}>
+        <TopLoader />
+      </Suspense>
+
       {/* ── Desktop sidebar — hidden on mobile ──────────────────── */}
       <aside
         className="hidden md:flex"
@@ -77,7 +84,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Brand */}
         <div>
           <div style={{ paddingLeft: 24, paddingBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
               <img src="/ANCHORSHIELDLOGO2.png" alt="AnchorShield" style={{ width: 42, height: 42, objectFit: "contain", flexShrink: 0 }} />
               <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-1.2px", lineHeight: "32px", margin: 0 }}>
                 AnchorShield
