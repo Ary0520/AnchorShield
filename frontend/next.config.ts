@@ -2,10 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // SDK v16 uses ESM-only exports — Next.js needs to transpile it
+  transpilePackages: ["@stellar/stellar-sdk", "@stellar/stellar-base"],
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // sodium-native and require-addon are Node.js-only native modules.
-      // Tell webpack to ignore them on the client bundle.
       config.resolve.fallback = {
         ...config.resolve.fallback,
         "sodium-native": false,
