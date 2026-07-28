@@ -278,7 +278,7 @@ export async function placeOrder(
 ): Promise<string> {
   return invokeContract(publicKey, marketContract, "place_order", [
     nativeToScVal(Address.fromString(publicKey), { type: "address" }),
-    nativeToScVal(isBuy, { type: "bool" }),
+    xdr.ScVal.scvBool(isBuy),
     nativeToScVal(priceBps, { type: "i64" }),
     nativeToScVal(amountStroops, { type: "i128" }),
   ]);
