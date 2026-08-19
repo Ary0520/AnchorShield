@@ -237,7 +237,7 @@ fn test_cannot_initialize_twice() {
         &0u32,
         &String::from_str(&t.env, "duplicate"),
         &t.usdc,
-        &Asset::Generic(Symbol::new(&t.env, "USDC")),
+        &Asset::Other(Symbol::new(&t.env, "USDC")),
         &t.oracle,
         &DEPEG_THRESHOLD,
         &BREACH_DURATION,

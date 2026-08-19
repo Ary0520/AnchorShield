@@ -297,6 +297,18 @@
                       "key": {
                         "vec": [
                           {
+                            "symbol": "AnchorMetricsMap"
+                          }
+                        ]
+                      },
+                      "val": {
+                        "map": []
+                      }
+                    },
+                    {
+                      "key": {
+                        "vec": [
+                          {
                             "symbol": "Factory"
                           }
                         ]
@@ -345,18 +357,6 @@
                             }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "key": {
-                        "vec": [
-                          {
-                            "symbol": "Stakes"
-                          }
-                        ]
-                      },
-                      "val": {
-                        "map": []
                       }
                     },
                     {
@@ -518,7 +518,7 @@
                       "val": {
                         "vec": [
                           {
-                            "symbol": "Generic"
+                            "symbol": "Other"
                           },
                           {
                             "symbol": "USDC"

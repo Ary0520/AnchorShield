@@ -4,7 +4,6 @@ extern crate std;
 
 use soroban_sdk::{
     testutils::Address as _,
-    token::{Client as TokenClient, StellarAssetClient},
     Address, Env,
 };
 
@@ -15,14 +14,10 @@ fn setup_env() -> (Env, AnchorStakeClient<'static>, Address, Address, Address) {
     env.mock_all_auths();
 
     let admin = Address::generate(&env);
-    let usdc_id = env.register_stellar_asset_contract_v2(admin.clone());
-    let usdc_address = usdc_id.address();
-
+    let usdc_address = Address::generate(&env); // Mocked for setup
     let anchor = Address::generate(&env);
-    let usdc_client = StellarAssetClient::new(&env, &usdc_address);
-    usdc_client.mint(&anchor, &1_000_000_000i128);
-
     let factory = Address::generate(&env);
+
     let contract_id = env.register(AnchorStake, ());
     let client = AnchorStakeClient::new(&env, &contract_id);
     client.initialize(&admin, &factory, &usdc_address);
@@ -33,81 +28,143 @@ fn setup_env() -> (Env, AnchorStakeClient<'static>, Address, Address, Address) {
 #[test]
 fn test_register_anchor() {
     let (_env, client, anchor, _admin, _usdc) = setup_env();
-    client.register_anchor(&anchor, &0u32);
-    // No stake yet, no cover → ACR = 0
-    assert_eq!(client.get_acr(&anchor), 0);
-}
+    
+    // Test that an unregistered anchor has 0 ACR
+    let dummy = Address::generate(&_env);
+    assert_eq!(client.get_acr(&dummy), 0);
 
-#[test]
-fn test_stake_with_no_cover_gives_full_acr() {
-    let (_env, client, anchor, _admin, _usdc) = setup_env();
+    // After registration, it defaults to 10,000 (perfect score) before metrics are pushed
     client.register_anchor(&anchor, &0u32);
-    client.stake(&anchor, &500_000_000i128);
-    // No cover outstanding yet → ACR = ACR_PRECISION (10_000)
     assert_eq!(client.get_acr(&anchor), 10_000);
 }
 
 #[test]
-fn test_acr_equals_stake_over_cover() {
-    let (_env, client, anchor, _admin, _usdc) = setup_env();
+fn test_update_anchor_metrics_basic() {
+    let (_env, client, anchor, admin, _usdc) = setup_env();
     client.register_anchor(&anchor, &0u32);
-    client.stake(&anchor, &500_000_000i128);
 
-    // Simulate 500 cover sold → ACR = 500/500 = 1.0 = 10_000 bps
-    client.update_cover_outstanding(&0u32, &500_000_000i128, &true);
+    // Push perfect metrics
+    client.update_anchor_metrics(
+        &admin,
+        &anchor,
+        &10_000u32, // success_rate_bps
+        &60u32,     // avg_latency_seconds (under 120s limit)
+        &0u32,      // failed_withdrawals
+        &10_000u32, // oracle_uptime_bps
+        &0i128,     // historical_payouts
+    );
+
+    assert_eq!(client.get_acr(&anchor), 10_000);
+}
+
+#[test]
+fn test_update_anchor_metrics_penalties() {
+    let (_env, client, anchor, admin, _usdc) = setup_env();
+    client.register_anchor(&anchor, &0u32);
+
+    // Success rate penalty
+    client.update_anchor_metrics(
+        &admin, &anchor,
+        &9950u32, // success_rate_bps (99.5%)
+        &60u32, &0u32, &10_000u32, &0i128
+    );
+    assert_eq!(client.get_acr(&anchor), 9950);
+
+    // Latency penalty: 180s = 60s over 120s limit -> 60 * 10 = 600 bps penalty
+    client.update_anchor_metrics(
+        &admin, &anchor,
+        &10_000u32,
+        &180u32, // avg_latency_seconds
+        &0u32, &10_000u32, &0i128
+    );
+    assert_eq!(client.get_acr(&anchor), 9400); // 10000 - 600
+
+    // Failed withdrawals penalty: 3 failures -> 3 * 50 = 150 bps penalty
+    client.update_anchor_metrics(
+        &admin, &anchor,
+        &10_000u32,
+        &60u32,
+        &3u32, // failed_withdrawals
+        &10_000u32, &0i128
+    );
+    assert_eq!(client.get_acr(&anchor), 9850); // 10000 - 150
+
+    // Oracle uptime penalty: 9900 bps
+    client.update_anchor_metrics(
+        &admin, &anchor,
+        &10_000u32, &60u32, &0u32,
+        &9900u32, // oracle_uptime_bps
+        &0i128
+    );
+    assert_eq!(client.get_acr(&anchor), 9900);
+}
+
+#[test]
+fn test_update_anchor_metrics_bonus() {
+    let (_env, client, anchor, admin, _usdc) = setup_env();
+    client.register_anchor(&anchor, &0u32);
+
+    // Historical payouts bonus: 20k USDC = 200,000,000,000 stroops
+    // 200B / 1B = +200 bps bonus
+    client.update_anchor_metrics(
+        &admin, &anchor,
+        &10_000u32,
+        &60u32,
+        &0u32,
+        &10_000u32,
+        &200_000_000_000i128 // historical_payouts
+    );
+
+    // Clamps at 10,000 so we shouldn't see it go over
     assert_eq!(client.get_acr(&anchor), 10_000);
 
-    // Simulate 500 more cover → total 1000, stake 500 → ACR = 5_000 (0.5x)
-    client.update_cover_outstanding(&0u32, &500_000_000i128, &true);
-    assert_eq!(client.get_acr(&anchor), 5_000);
+    // Apply some penalty so we can see the bonus take effect
+    client.update_anchor_metrics(
+        &admin, &anchor,
+        &9000u32, // success_rate_bps drops it to 9000
+        &60u32,
+        &0u32,
+        &10_000u32,
+        &200_000_000_000i128 // historical_payouts adds 200 back
+    );
+    assert_eq!(client.get_acr(&anchor), 9200); // 9000 + 200
 }
 
 #[test]
-fn test_acr_double_stake_over_cover() {
+#[should_panic(expected = "unauthorized")]
+fn test_unauthorized_metrics_update_fails() {
     let (_env, client, anchor, _admin, _usdc) = setup_env();
-    client.register_anchor(&anchor, &1u32);
-    client.stake(&anchor, &200_000_000i128);
-    client.update_cover_outstanding(&1u32, &100_000_000i128, &true);
-    // staked=200, cover=100 → ACR = 200/100 * 10_000 = 20_000 (2.0x)
-    assert_eq!(client.get_acr(&anchor), 20_000);
-    assert_eq!(client.get_stake(&anchor), 200_000_000i128);
-}
-
-#[test]
-#[should_panic(expected = "market not yet settled")]
-fn test_unstake_before_settlement_fails() {
-    let (_env, client, anchor, _admin, _usdc) = setup_env();
-    client.register_anchor(&anchor, &0u32);
-    client.stake(&anchor, &100_000_000i128);
-    client.unstake(&anchor, &100_000_000i128);
-}
-
-#[test]
-fn test_unstake_after_settlement() {
-    let (env, client, anchor, _admin, usdc) = setup_env();
-    client.register_anchor(&anchor, &0u32);
-    client.stake(&anchor, &100_000_000i128);
-    client.on_market_settled(&0u32, &false); // NO wins
-
-    let usdc_client = TokenClient::new(&env, &usdc);
-    let before = usdc_client.balance(&anchor);
-    client.unstake(&anchor, &100_000_000i128);
-    let after = usdc_client.balance(&anchor);
-
-    assert_eq!(after - before, 100_000_000i128);
-    assert_eq!(client.get_stake(&anchor), 0);
+    let imposter = Address::generate(&_env);
+    
+    // Should panic because imposter is not admin
+    client.update_anchor_metrics(
+        &imposter,
+        &anchor,
+        &10_000u32,
+        &60u32,
+        &0u32,
+        &10_000u32,
+        &0i128,
+    );
 }
 
 #[test]
 fn test_get_all_acr() {
-    let (env, client, anchor1, _admin, usdc) = setup_env();
+    let (env, client, anchor1, admin, _usdc) = setup_env();
     let anchor2 = Address::generate(&env);
-    StellarAssetClient::new(&env, &usdc).mint(&anchor2, &500_000_000i128);
 
     client.register_anchor(&anchor1, &0u32);
     client.register_anchor(&anchor2, &1u32);
-    client.stake(&anchor1, &300_000_000i128);
-    client.stake(&anchor2, &200_000_000i128);
 
-    assert_eq!(client.get_all_acr().len(), 2);
+    client.update_anchor_metrics(
+        &admin, &anchor1,
+        &9500u32, &60u32, &0u32, &10_000u32, &0i128
+    );
+    client.update_anchor_metrics(
+        &admin, &anchor2,
+        &9900u32, &60u32, &0u32, &10_000u32, &0i128
+    );
+
+    let all_acr = client.get_all_acr();
+    assert_eq!(all_acr.len(), 2);
 }
