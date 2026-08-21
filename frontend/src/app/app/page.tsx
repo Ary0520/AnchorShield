@@ -125,13 +125,13 @@ export default function RiskCurvePage() {
 
       if (m.state === "Open") {
         const existing = byAsset.get(m.asset);
-        if (!existing || m.collateral > existing.collateral) {
+        // If collateral is tied (e.g. both 0), prefer the newest market ID
+        if (!existing || m.collateral > existing.collateral || (m.collateral === existing.collateral && m.config.market_id > existing.config.market_id)) {
           byAsset.set(m.asset, m);
         }
       } else {
-        // Keep the expired/settled market with most collateral per asset
         const existing = expiredByAsset.get(m.asset);
-        if (!existing || m.collateral > existing.collateral) {
+        if (!existing || m.collateral > existing.collateral || (m.collateral === existing.collateral && m.config.market_id > existing.config.market_id)) {
           expiredByAsset.set(m.asset, m);
         }
       }
