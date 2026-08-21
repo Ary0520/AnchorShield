@@ -339,6 +339,36 @@ export async function getAllAcr(): Promise<
   });
 }
 
+export interface AnchorMetrics {
+  success_rate_bps: number;
+  avg_latency_seconds: number;
+  failed_withdrawals: number;
+  oracle_uptime_bps: number;
+  historical_payouts: bigint;
+}
+
+export async function getAllMetrics(): Promise<
+  Array<{ anchor: string; metrics: AnchorMetrics; acr: bigint }>
+> {
+  const result = await queryContract(ANCHOR_STAKE_ID, "get_all_metrics");
+  if (!Array.isArray(result)) return [];
+  return result.map((item: unknown) => {
+    const tuple = item as [string, Record<string, unknown>, unknown];
+    const rawMetrics = tuple[1];
+    return {
+      anchor: tuple[0],
+      metrics: {
+        success_rate_bps: Number(rawMetrics.success_rate_bps),
+        avg_latency_seconds: Number(rawMetrics.avg_latency_seconds),
+        failed_withdrawals: Number(rawMetrics.failed_withdrawals),
+        oracle_uptime_bps: Number(rawMetrics.oracle_uptime_bps),
+        historical_payouts: BigInt(rawMetrics.historical_payouts as string | number),
+      },
+      acr: BigInt(tuple[2] as string | number),
+    };
+  });
+}
+
 export async function getAcr(anchorAddress: string): Promise<bigint> {
   const result = await queryContract(ANCHOR_STAKE_ID, "get_acr", [
     nativeToScVal(Address.fromString(anchorAddress), { type: "address" }),

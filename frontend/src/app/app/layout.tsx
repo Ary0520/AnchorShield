@@ -28,7 +28,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/app/anchors",
-    label: "Anchor Trust",
+    label: "ACR",
     icon: (
       <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
         <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5"/>

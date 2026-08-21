@@ -158,20 +158,34 @@ impl AnchorStake {
 
     /// Returns all registered anchors and their ACR scores.
     pub fn get_all_acr(env: Env) -> Vec<(Address, i128)> {
-        let anchor_market: Map<Address, u32> = env
+        let metrics_map: Map<Address, AnchorMetrics> = env
             .storage()
             .instance()
-            .get(&DataKey::AnchorMarket)
+            .get(&DataKey::AnchorMetricsMap)
             .unwrap_or(Map::new(&env));
-
-        let mut results = Vec::new(&env);
-        let anchors = anchor_market.keys();
-        for i in 0..anchors.len() {
-            let anchor = anchors.get(i).unwrap();
-            let acr = Self::compute_acr_internal(&env, &anchor);
-            results.push_back((anchor, acr));
+        
+        let mut result = Vec::new(&env);
+        for k in metrics_map.keys() {
+            let acr = Self::compute_acr_internal(&env, &k);
+            result.push_back((k, acr));
         }
-        results
+        result
+    }
+
+    pub fn get_all_metrics(env: Env) -> Vec<(Address, AnchorMetrics, i128)> {
+        let metrics_map: Map<Address, AnchorMetrics> = env
+            .storage()
+            .instance()
+            .get(&DataKey::AnchorMetricsMap)
+            .unwrap_or(Map::new(&env));
+        
+        let mut result = Vec::new(&env);
+        for k in metrics_map.keys() {
+            let metrics = metrics_map.get(k.clone()).unwrap();
+            let acr = Self::compute_acr_internal(&env, &k);
+            result.push_back((k, metrics, acr));
+        }
+        result
     }
 
     pub fn get_cover_outstanding(env: Env, market_id: u32) -> i128 {
