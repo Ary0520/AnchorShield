@@ -1,6 +1,6 @@
 #![no_std]
 
-use soroban_sdk::{contract, contractimpl, Address, Env, Map, Vec};
+use soroban_sdk::{contract, contractimpl, Address, Env, IntoVal, Map, Symbol, Vec};
 
 use crate::storage::{AnchorMetrics, DataKey};
 
@@ -97,6 +97,7 @@ impl AnchorStake {
     // -------------------------------------------------------------------------
 
     pub fn update_cover_outstanding(env: Env, market_id: u32, delta: i128, increase: bool) {
+        Self::verify_market_auth(&env, market_id);
         assert!(delta >= 0, "delta must be non-negative");
 
         let mut market_cover: Map<u32, i128> = env
@@ -120,6 +121,7 @@ impl AnchorStake {
     }
 
     pub fn on_market_settled(env: Env, market_id: u32, yes_won: bool) {
+        Self::verify_market_auth(&env, market_id);
         let mut settled_map: Map<u32, bool> = env
             .storage()
             .instance()
@@ -230,6 +232,16 @@ impl AnchorStake {
 
     fn bump_ttl(env: &Env) {
         env.storage().instance().extend_ttl(100_000, 200_000);
+    }
+
+    fn verify_market_auth(env: &Env, market_id: u32) {
+        let factory: Address = env.storage().instance().get(&DataKey::Factory).unwrap();
+        let market_contract: Address = env.invoke_contract(
+            &factory,
+            &Symbol::new(env, "get_market_contract"),
+            (market_id,).into_val(env),
+        );
+        market_contract.require_auth();
     }
 }
 

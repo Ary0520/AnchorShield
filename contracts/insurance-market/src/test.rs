@@ -28,6 +28,19 @@ struct TestSetup {
     bob: Address,
 }
 
+#[soroban_sdk::contract]
+pub struct DummyFactory;
+#[soroban_sdk::contractimpl]
+impl DummyFactory {
+    pub fn init(e: Env, market: Address) {
+        e.storage().instance().set(&Symbol::new(&e, "market"), &market);
+        e.storage().instance().extend_ttl(100_000, 200_000);
+    }
+    pub fn get_market_contract(e: Env, _id: u32) -> Address {
+        e.storage().instance().get(&Symbol::new(&e, "market")).unwrap()
+    }
+}
+
 fn setup(expiry_offset: u64) -> TestSetup {
     let env = Env::default();
     env.mock_all_auths();
@@ -54,14 +67,20 @@ fn setup(expiry_offset: u64) -> TestSetup {
 
     let oracle = Address::generate(&env);
 
+    // Deploy insurance-market FIRST so we know its address for the dummy factory
+    let market_id = env.register(InsuranceMarket, ());
+
+    // Deploy a dummy factory
+    let factory_id = env.register(DummyFactory, ());
+    let dummy_client = DummyFactoryClient::new(&env, &factory_id);
+    dummy_client.init(&market_id);
+
     // Deploy anchor-stake
     let anchor_stake_id = env.register(AnchorStake, ());
     let anchor_stake_client = AnchorStakeClient::new(&env, &anchor_stake_id);
-    anchor_stake_client.initialize(&admin, &admin, &usdc);
+    anchor_stake_client.initialize(&admin, &factory_id, &usdc);
 
-    // Deploy insurance-market
     let expiry = env.ledger().timestamp() + expiry_offset;
-    let market_id = env.register(InsuranceMarket, ());
     let market = InsuranceMarketClient::new(&env, &market_id);
     market.initialize(
         &0u32,
@@ -367,12 +386,18 @@ where
     let alice = Address::generate(&env);
     sac.mint(&alice, &(100 * ONE_USDC));
 
+    let market_contract_id = env.register(InsuranceMarket, ());
+    
+    // Deploy a dummy factory
+    let factory_id = env.register(DummyFactory, ());
+    let dummy_client = DummyFactoryClient::new(&env, &factory_id);
+    dummy_client.init(&market_contract_id);
+
     let anchor_stake_id = env.register(AnchorStake, ());
     let anchor_stake_client = AnchorStakeClient::new(&env, &anchor_stake_id);
-    anchor_stake_client.initialize(&admin, &admin, &usdc);
+    anchor_stake_client.initialize(&admin, &factory_id, &usdc);
 
     let expiry = env.ledger().timestamp() + expiry_offset;
-    let market_contract_id = env.register(InsuranceMarket, ());
     let market = InsuranceMarketClient::new(&env, &market_contract_id);
     market.initialize(
         &0u32,

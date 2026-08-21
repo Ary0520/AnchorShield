@@ -371,7 +371,7 @@ export default function MarketDetail({ market, wallet, onBack }: Props) {
         )}
 
         {/* Claim (after settlement) */}
-        {isSettled && (
+        {isSettled && (state === "Settled" ? balances.yes > 0n : balances.no > 0n) && (
           <section className="bg-white border border-gray-200 rounded p-4">
             <h2 className="text-sm font-semibold mb-1">Claim Winnings</h2>
             <p className="text-xs text-gray-400 mb-3">

@@ -177,6 +177,11 @@ impl MarketFactory {
         markets.get(market_id).expect("market not found")
     }
 
+    /// Returns just the contract address for a given market_id.
+    pub fn get_market_contract(env: Env, market_id: u32) -> Address {
+        Self::get_market(env, market_id).market_contract
+    }
+
     /// Returns all market IDs that have been created.
     pub fn list_markets(env: Env) -> Vec<u32> {
         let markets: Map<u32, MarketConfig> = env

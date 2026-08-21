@@ -304,7 +304,17 @@ export default function MarketDetailPage() {
                     const o = buyOrders[i];
                     const isOwn = o && wallet.publicKey && String(o.owner) === wallet.publicKey;
                     return (
-                      <div key={i} className="relative flex items-center justify-between px-3 group" style={{ height: 24 }}>
+                      <div
+                        key={i}
+                        className="relative flex items-center justify-between px-3 group cursor-pointer hover:bg-white/5"
+                        style={{ height: 24 }}
+                        onClick={() => {
+                          if (o) {
+                            setTradeTab("underwrite");
+                            setUwPremiumBps(String(o.price_bps));
+                          }
+                        }}
+                      >
                         {o && <div className="absolute inset-y-0 right-0 left-[55%]" style={{ background: "rgba(38,166,154,0.08)" }} />}
                         <span style={{ ...mono, fontSize: 10, color: "rgba(255,255,255,0.5)", position: "relative" }}>
                           {o ? parseInt(formatUsdc(o.amount - o.filled)).toLocaleString() : ""}
@@ -315,10 +325,13 @@ export default function MarketDetailPage() {
                           </span>
                           {isOwn && (
                             <button
-                              onClick={() => runTx(
-                                () => cancelOrder(wallet.publicKey!, config.market_contract, o.order_id),
-                                "Cancel order"
-                              )}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                runTx(
+                                  () => cancelOrder(wallet.publicKey!, config.market_contract, o.order_id),
+                                  "Cancel order"
+                                );
+                              }}
                               title="Cancel your order"
                               style={{
                                 width: 14, height: 14,
@@ -351,15 +364,29 @@ export default function MarketDetailPage() {
                     const o = sellOrders[i];
                     const isOwn = o && wallet.publicKey && String(o.owner) === wallet.publicKey;
                     return (
-                      <div key={i} className="relative flex items-center justify-between px-3 group" style={{ height: 24 }}>
+                      <div
+                        key={i}
+                        className="relative flex items-center justify-between px-3 group cursor-pointer hover:bg-white/5"
+                        style={{ height: 24 }}
+                        onClick={() => {
+                          if (o) {
+                            setTradeTab("cover");
+                            setCoverOrderType("limit");
+                            setCoverLimitBps(String(o.price_bps));
+                          }
+                        }}
+                      >
                         {o && <div className="absolute inset-y-0 left-0 right-[55%]" style={{ background: "rgba(239,83,80,0.08)" }} />}
                         <div className="relative flex items-center gap-1.5">
                           {isOwn && (
                             <button
-                              onClick={() => runTx(
-                                () => cancelOrder(wallet.publicKey!, config.market_contract, o.order_id),
-                                "Cancel order"
-                              )}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                runTx(
+                                  () => cancelOrder(wallet.publicKey!, config.market_contract, o.order_id),
+                                  "Cancel order"
+                                );
+                              }}
                               title="Cancel your order"
                               style={{
                                 width: 14, height: 14,
@@ -628,10 +655,10 @@ function TradePanel({
               {/* Amount input */}
               <div className="flex flex-col gap-2">
                 <span
-                  className="font-bold"
+                  className="font-bold uppercase"
                   style={{ color: "#888", fontSize: 11, letterSpacing: "0.55px", fontFamily: "Inter, sans-serif" }}
                 >
-                  I WANT TO PROTECT
+                  Desired Cover Payout
                 </span>
                 <div
                   className="relative flex items-center rounded-lg"
@@ -882,7 +909,7 @@ function TradePanel({
               </span>
             </div>
           </div>
-          {isSettled && (balances.yes > 0n || balances.no > 0n) && (
+          {isSettled && (yesWon ? balances.yes > 0n : balances.no > 0n) && (
             <button
               onClick={handleClaim}
               className="w-full py-3 rounded-lg text-sm font-bold mt-1"
