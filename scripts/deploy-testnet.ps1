@@ -18,17 +18,17 @@ Write-Host "WASM Directory: $WasmDir`n"
 Write-Host "[1/7] Verifying toolchain..." -ForegroundColor Yellow
 try {
     stellar --version | Out-Null
-    Write-Host "✅ Stellar CLI found" -ForegroundColor Green
+    Write-Host " Stellar CLI found" -ForegroundColor Green
 } catch {
-    Write-Host "❌ Stellar CLI not found! Install via: winget install Stellar.StellarCLI" -ForegroundColor Red
+    Write-Host " Stellar CLI not found! Install via: winget install Stellar.StellarCLI" -ForegroundColor Red
     exit 1
 }
 
 try {
     cargo --version | Out-Null
-    Write-Host "✅ Cargo found" -ForegroundColor Green
+    Write-Host " Cargo found" -ForegroundColor Green
 } catch {
-    Write-Host "❌ Cargo not found!" -ForegroundColor Red
+    Write-Host " Cargo not found!" -ForegroundColor Red
     exit 1
 }
 
@@ -45,10 +45,10 @@ $marketFactoryWasm = Join-Path $WasmDir "market_factory.wasm"
 $filesToCheck = @($anchorStakeWasm, $insuranceMarketWasm, $marketFactoryWasm)
 foreach ($file in $filesToCheck) {
     if (-not (Test-Path $file)) {
-        Write-Host "❌ Missing $file" -ForegroundColor Red
+        Write-Host " Missing $file" -ForegroundColor Red
         exit 1
     }
-    Write-Host "✅ Found $(Split-Path -Leaf $file)" -ForegroundColor Green
+    Write-Host " Found $(Split-Path -Leaf $file)" -ForegroundColor Green
 }
 
 # Step 2: Create/deployer identity
@@ -65,14 +65,14 @@ try {
 }
 
 if ($identityExists) {
-    Write-Host "⚠️ Using existing identity '$identityName'" -ForegroundColor Yellow
+    Write-Host " Using existing identity '$identityName'" -ForegroundColor Yellow
 } else {
     stellar keys generate $identityName --network testnet
-    Write-Host "✅ Identity '$identityName' created" -ForegroundColor Green
+    Write-Host " Identity '$identityName' created" -ForegroundColor Green
     
     # Fund the identity
     stellar keys fund $identityName --network testnet
-    Write-Host "✅ Identity '$identityName' funded with testnet XLM" -ForegroundColor Green
+    Write-Host " Identity '$identityName' funded with testnet XLM" -ForegroundColor Green
     Start-Sleep -Seconds 5
 }
 
@@ -98,10 +98,10 @@ $imWasmHash = $uploadOutput | Select-String -Pattern "^[a-f0-9]{64}$" | Select-O
 if ([string]::IsNullOrWhiteSpace($imWasmHash)) {
     # Try to get the existing hash from the error/warning output (if already installed)
     $imWasmHash = "5e29ec52360f1c538ff5466ee9adbb105a1acc31840b53ae1a28f7728d3c42a5"
-    Write-Host "ℹ️ Using pre-calculated insurance-market WASM hash (already installed)" -ForegroundColor Yellow
+    Write-Host " Using pre-calculated insurance-market WASM hash (already installed)" -ForegroundColor Yellow
 }
 
-Write-Host "✅ Insurance-market WASM hash: $imWasmHash" -ForegroundColor Green
+Write-Host " Insurance-market WASM hash: $imWasmHash" -ForegroundColor Green
 Start-Sleep -Seconds 10
 
 # Step 4: Deploy anchor-stake
@@ -110,12 +110,12 @@ $deployOutput = Invoke-StellarCommand "stellar contract deploy --source-account 
 $anchorStakeId = $deployOutput | Select-String -Pattern "^C[A-Z2-7]{55}$" | Select-Object -ExpandProperty Line
 
 if ([string]::IsNullOrWhiteSpace($anchorStakeId)) {
-    Write-Host "❌ Failed to get anchor-stake contract ID" -ForegroundColor Red
+    Write-Host " Failed to get anchor-stake contract ID" -ForegroundColor Red
     Write-Host "Output: $deployOutput" -ForegroundColor Red
     exit 1
 }
 
-Write-Host "✅ Anchor-stake contract ID: $anchorStakeId" -ForegroundColor Green
+Write-Host " Anchor-stake contract ID: $anchorStakeId" -ForegroundColor Green
 Start-Sleep -Seconds 20
 
 # Initialize anchor-stake
@@ -124,9 +124,9 @@ $testnetUsdcSac = "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
 
 try {
     Invoke-StellarCommand "stellar contract invoke --id $anchorStakeId --source-account $identityName --network testnet -- initialize --admin $deployerAddress --factory $deployerAddress --usdc $testnetUsdcSac" | Out-Null
-    Write-Host "✅ Anchor-stake initialized" -ForegroundColor Green
+    Write-Host " Anchor-stake initialized" -ForegroundColor Green
 } catch {
-    Write-Host "⚠️ Initialization might have failed or already completed" -ForegroundColor Yellow
+    Write-Host " Initialization might have failed or already completed" -ForegroundColor Yellow
 }
 Start-Sleep -Seconds 10
 
@@ -136,21 +136,21 @@ $deployOutput = Invoke-StellarCommand "stellar contract deploy --source-account 
 $factoryId = $deployOutput | Select-String -Pattern "^C[A-Z2-7]{55}$" | Select-Object -ExpandProperty Line
 
 if ([string]::IsNullOrWhiteSpace($factoryId)) {
-    Write-Host "❌ Failed to get market-factory contract ID" -ForegroundColor Red
+    Write-Host " Failed to get market-factory contract ID" -ForegroundColor Red
     Write-Host "Output: $deployOutput" -ForegroundColor Red
     exit 1
 }
 
-Write-Host "✅ Market-factory contract ID: $factoryId" -ForegroundColor Green
+Write-Host " Market-factory contract ID: $factoryId" -ForegroundColor Green
 Start-Sleep -Seconds 20
 
 # Initialize market-factory
 Write-Host "`nInitializing market-factory..." -ForegroundColor Yellow
 try {
     Invoke-StellarCommand "stellar contract invoke --id $factoryId --source-account $identityName --network testnet -- initialize --admin $deployerAddress --insurance_market_wasm_hash $imWasmHash --anchor_stake_contract $anchorStakeId" | Out-Null
-    Write-Host "✅ Market-factory initialized" -ForegroundColor Green
+    Write-Host " Market-factory initialized" -ForegroundColor Green
 } catch {
-    Write-Host "⚠️ Initialization might have failed or already completed" -ForegroundColor Yellow
+    Write-Host " Initialization might have failed or already completed" -ForegroundColor Yellow
 }
 Start-Sleep -Seconds 10
 
@@ -168,10 +168,10 @@ $expiryTimestamp = [int][double]::Parse((Get-Date -Date (Get-Date).AddDays(30) -
 Write-Host "Expiry timestamp: $expiryTimestamp"
 
 try {
-    Invoke-StellarCommand "stellar contract invoke --id $factoryId --source-account $identityName --network testnet -- create_market --label `"USDC depeg < `$0.995 for 1hr`" --collateral_token $testnetUsdcSac --covered_asset_symbol USDC --oracle_contract $oracleContract --depeg_threshold 99500000000000 --breach_duration_seconds 3600 --expiry_timestamp $expiryTimestamp" | Out-Null
-    Write-Host "✅ USDC depeg market created" -ForegroundColor Green
+    Invoke-StellarCommand "stellar contract invoke --id $factoryId --source-account $identityName --network testnet -- create_market --label `"USDC depeg under `$0.995 for 1hr`" --collateral_token $testnetUsdcSac --covered_asset_symbol USDC --oracle_contract $oracleContract --depeg_threshold 99500000000000 --breach_duration_seconds 3600 --expiry_timestamp $expiryTimestamp" | Out-Null
+    Write-Host " USDC depeg market created" -ForegroundColor Green
 } catch {
-    Write-Host "⚠️ Market creation might have failed or already completed" -ForegroundColor Yellow
+    Write-Host " Market creation might have failed or already completed" -ForegroundColor Yellow
 }
 
 # Step 7: Write watcher env file
@@ -188,7 +188,7 @@ ANCHOR_STAKE_CONTRACT=$anchorStakeId
 ORACLE_CONTRACT=$oracleContract
 "@ | Out-File -FilePath $envFile -Encoding utf8
 
-Write-Host "✅ Watcher env file written: $envFile`n" -ForegroundColor Green
+Write-Host " Watcher env file written: $envFile`n" -ForegroundColor Green
 
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host "Deployment Complete!" -ForegroundColor Green
@@ -202,3 +202,4 @@ Write-Host "  1. Create watcher identity: stellar keys generate watcher --networ
 Write-Host "  2. Fund watcher: stellar keys fund watcher --network testnet"
 Write-Host "  3. Get watcher secret: stellar keys secret watcher"
 Write-Host "  4. Update watcher/.env with watcher secret key`n"
+

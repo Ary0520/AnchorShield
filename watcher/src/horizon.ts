@@ -110,10 +110,8 @@ export async function checkAllAnchors(): Promise<void> {
     );
 
     // Instead of fake data, we push the live latency and uptime!
-    // Since we don't know their real Soroban address, we use a placeholder or their known ID
-    // For testnet, we can just use the watcher's own address or a derived one.
-    // Here we'll use a hardcoded dummy G address for the anchor to satisfy the contract types
-    const anchorAddress = 'GBJNB63W5K62R4Q2MNDF5U34BHLJ2L4YZU2OQ7LIVH6D2L2QY6GSE7ON'; // Example fallback
+    // We use the watcher's own address as the anchor ID for the MVP demonstration
+    const anchorAddress = (await import('./soroban')).keypair.publicKey();
     
     await pushLiveMetrics(anchorAddress, pingResult.latencyMs, pingResult.isUp);
   }

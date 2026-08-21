@@ -48,7 +48,7 @@ export const CONFIG = {
   ANCHORS: [
     {
       id: 'moneygram',
-      domain: 'moneygram.com',
+      domain: 'extstellar.moneygram.com',
       sep24_url: 'https://extstellar.moneygram.com/stellartoml/transferserver',
       stuck_tx_threshold_hours: 24,
     },
