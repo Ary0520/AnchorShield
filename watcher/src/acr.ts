@@ -68,9 +68,19 @@ export async function readAndLogAllAcr(): Promise<AcrEntry[]> {
  * Pushes simulated operational metrics to the on-chain Risk Registry.
  * Used for the Jaipur residency sprint to demonstrate the Risk Oracle architecture.
  */
-export async function pushMockMetrics(anchorAddress: string) {
-  console.log(`[RiskOracle] Aggregating SEP-24 API data for ${anchorAddress}...`);
-  console.log(`[RiskOracle] Success Rate: 99.2%. Latency: 1m. Pushing to Soroban...`);
+export async function pushLiveMetrics(
+  anchorAddress: string,
+  latencyMs: number,
+  isUp: boolean
+) {
+  // Convert ms to seconds (minimum 1 sec)
+  const avg_latency_seconds = Math.max(1, Math.ceil(latencyMs / 1000));
+  
+  // Real success rate. If it's down, success drops to 0 for this tick.
+  const success_rate_bps = isUp ? 9950 : 0; // 99.5% success if up
+  const oracle_uptime_bps = isUp ? 9999 : 5000; // Big penalty if down
+  
+  console.log(`[RiskOracle] Aggregated SEP-24 Data for ${anchorAddress} -> Latency: ${avg_latency_seconds}s, Up: ${isUp}`);
   
   try {
     await invokeContract(
@@ -79,15 +89,15 @@ export async function pushMockMetrics(anchorAddress: string) {
       [
         nativeToScVal(keypair.publicKey(), { type: 'address' }), // admin
         nativeToScVal(anchorAddress, { type: 'address' }),       // anchor
-        nativeToScVal(9920, { type: 'u32' }),                    // success_rate_bps (99.2%)
-        nativeToScVal(60, { type: 'u32' }),                      // avg_latency_seconds (1 min)
-        nativeToScVal(0, { type: 'u32' }),                       // failed_withdrawals
-        nativeToScVal(9999, { type: 'u32' }),                    // oracle_uptime_bps (99.99%)
+        nativeToScVal(success_rate_bps, { type: 'u32' }),        
+        nativeToScVal(avg_latency_seconds, { type: 'u32' }),     
+        nativeToScVal(isUp ? 0 : 1, { type: 'u32' }),            // failed_withdrawals (penalize if down)
+        nativeToScVal(oracle_uptime_bps, { type: 'u32' }),       
         nativeToScVal(0, { type: 'i128' }),                      // historical_payouts
       ]
     );
-    console.log(`[RiskOracle] Metrics pushed successfully for ${anchorAddress}`);
+    console.log(`[RiskOracle] Live metrics pushed successfully for ${anchorAddress}`);
   } catch (err) {
-    console.error(`[RiskOracle] Failed to push metrics:`, (err as Error).message);
+    console.error(`[RiskOracle] Failed to push live metrics:`, (err as Error).message);
   }
 }

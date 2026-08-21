@@ -55,9 +55,17 @@ async function getMarketContracts(): Promise<Map<number, string>> {
 
 async function tick(): Promise<void> {
   tickCount++;
-  console.log(`\n[Watcher] ── Tick #${tickCount} at ${new Date().toISOString()} ──`);
+  const currentTick = tickCount; // Capture it locally to avoid race conditions
+  console.log(`\n[Watcher] ── Tick #${currentTick} at ${new Date().toISOString()} ──`);
 
   try {
+    // 1. Run the Oracle first so it's instantly visible on demo
+    if (currentTick === 1 || currentTick % 3 === 0) {
+      await readAndLogAllAcr();
+      await checkAllAnchors();
+    }
+
+    // 2. Then run the slow on-chain stuff
     const marketContracts = await getMarketContracts();
 
     if (marketContracts.size === 0) {
@@ -67,15 +75,7 @@ async function tick(): Promise<void> {
       await runSettlementCheck(marketContracts);
       await runOrderMatching(marketContracts);
     }
-
-    // Read ACR scores and check anchor health every 10 ticks (~10 minutes)
-    // to reduce unnecessary RPC calls when there's no activity
-    if (tickCount % 10 === 0) {
-      await readAndLogAllAcr();
-      await checkAllAnchors();
-    }
   } catch (err) {
-    // Top-level catch — a single tick error should never crash the process
     console.error('[Watcher] Tick error:', (err as Error).message);
   }
 }
