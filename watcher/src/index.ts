@@ -96,7 +96,7 @@ console.log(`[Watcher] Factory: ${CONFIG.MARKET_FACTORY_CONTRACT}`);
 console.log('[Watcher] Polling every 60 seconds. Press Ctrl+C to stop.\n');
 
 // Run once immediately on startup
-tick();
+tick().catch((err) => console.error('[Watcher] Unhandled tick error:', err));
 
 // Then every minute
 cron.schedule('*/1 * * * *', () => {

@@ -115,17 +115,19 @@ export default function AnchorTrustPage() {
                 <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>SEP-24 SUCCESS</th>
                 <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>AVG LATENCY</th>
                 <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>ORACLE UPTIME</th>
-                <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>COMPOSITE ACR</th>
+                <th className="px-5 py-3 font-normal text-right" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>STUCK TXS</th>
+                <th className="px-5 py-3 font-normal text-right" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>PAYOUT VOL (USDC)</th>
+                <th className="px-5 py-3 font-normal text-right" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>COMPOSITE ACR</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-5 py-8 text-center" style={{ color: "#666", ...mono }}>Loading registry data...</td>
+                  <td colSpan={7} className="px-5 py-8 text-center" style={{ color: "#666", ...mono }}>Loading registry data...</td>
                 </tr>
               ) : entries.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-5 py-8 text-center" style={{ color: "#666", ...mono }}>No anchors registered yet.<br/>(Run the Watcher to push metrics)</td>
+                  <td colSpan={7} className="px-5 py-8 text-center" style={{ color: "#666", ...mono }}>No anchors registered yet.<br/>(Run the Watcher to push metrics)</td>
                 </tr>
               ) : (
                 entries.map(e => {
@@ -153,8 +155,14 @@ export default function AnchorTrustPage() {
                       <td className="px-5 py-4" style={{ color: "#ccc", ...mono, fontSize: 13 }}>
                         {(e.metrics.oracle_uptime_bps / 100).toFixed(2)}%
                       </td>
-                      <td className="px-5 py-4">
-                        <div className="inline-flex items-center gap-3 px-3 py-1.5 rounded" style={{ background: rating.bg, border: `1px solid ${rating.color}20` }}>
+                      <td className="px-5 py-4 text-right" style={{ color: e.metrics.failed_withdrawals > 0 ? "#ff4444" : "#ccc", ...mono, fontSize: 13 }}>
+                        {e.metrics.failed_withdrawals}
+                      </td>
+                      <td className="px-5 py-4 text-right" style={{ color: "#00ffc2", ...mono, fontSize: 13 }}>
+                        ${(Number(e.metrics.historical_payouts) / 10_000_000).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </td>
+                      <td className="px-5 py-4 text-right">
+                        <div className="inline-flex items-center gap-3 px-3 py-1.5 rounded justify-center" style={{ background: rating.bg, border: `1px solid ${rating.color}20` }}>
                           <span style={{ color: rating.color, ...mono, fontSize: 13 }}>{fmtAcr(e.acr)}</span>
                           <span style={{ color: rating.color, opacity: 0.3 }}>|</span>
                           <span style={{ color: rating.color, ...mono, fontSize: 11, fontWeight: 600 }}>{rating.label}</span>

@@ -44,12 +44,18 @@ export const CONFIG = {
     { id: 4, symbol: 'USDC',  threshold_pct: 0.995, breach_hours: 1 }, // short-expiry test
   ] as const,
 
-  // ── Anchor accounts to monitor via Horizon ───────────────────────────────────
+  // ── Anchor accounts to monitor via Horizon ─────────────────────────────────
   ANCHORS: [
+    {
+      id: 'circle',
+      domain: 'circle.com',
+      publicKey: 'GB4FRPZQ3AILWMBEOVQ6DDNMRDJVREPVDPZ2WMFDPTGODUXOFTUKS777',
+      stuck_tx_threshold_hours: 24,
+    },
     {
       id: 'moneygram',
       domain: 'extstellar.moneygram.com',
-      sep24_url: 'https://extstellar.moneygram.com/stellartoml/transferserver',
+      publicKey: 'GDMXS7S7CFSVRLMEPF55ZNKYNBNDNIC6FNFU6DMT4TY62IRYPC6IPX24',
       stuck_tx_threshold_hours: 24,
     },
   ] as const,
