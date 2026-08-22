@@ -590,18 +590,9 @@ function LogoCarousel() {
   );
 }
 function AcrSection() {
-  const ratings = [
-    { rating: "AAA", range: "≥ 2.0x", color: "#00e5ff", barColor: "#00e5ff",       label: "2× economic backing" },
-    { rating: "AA",  range: "≥ 1.0x", color: "#34d399", barColor: "#34d399",       label: "Fully economically backed" },
-    { rating: "A",   range: "≥ 0.5x", color: "#5eead4", barColor: "#5eead4",       label: "Majority economically backed" },
-    { rating: "BBB", range: "≥ 0.1x", color: "#fbbf24", barColor: "#fbbf24",       label: "Partial economic backing" },
-    { rating: "C",   range: "< 0.1x", color: "#f87171", barColor: "#f87171",       label: "Minimal economic backing" },
-  ];
-
   return (
     <section className="py-20 border-t border-white/[0.05]">
       <div className="max-w-7xl mx-auto px-6">
-
         {/* Section heading */}
         <FadeIn className="mb-12">
           <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-3">
@@ -617,111 +608,143 @@ function AcrSection() {
 
         {/* Bento: big left + two stacked right */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
           {/* LEFT — anchor video, full height */}
           <FadeIn delay={0}>
             <VideoTile src="/acrAnimation.mp4" className="min-h-[480px] h-full">
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-8">
                 <h3 className="text-3xl font-bold text-white mb-2">
-                  An open signal of economic commitment.
+                  An open signal of operational reliability.
                 </h3>
                 <p className="text-white/70 text-sm max-w-sm leading-relaxed">
-                  ACR is a public on-chain metric showing how much capital an anchor has voluntarily committed relative to the insurance protecting its ecosystem.
+                  ACR is a public on-chain composite score evaluating an anchor's historical success rate, latency, uptime, and payout performance in real-time.
                 </p>
               </div>
             </VideoTile>
           </FadeIn>
 
-          {/* RIGHT — two stacked */}
-          <div className="flex flex-col gap-4">
+          {/* RIGHT — Next-Gen HUD UI */}
+          <div className="flex flex-col gap-6 relative group">
+            {/* Ambient hover glow behind the entire section */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[radial-gradient(ellipse_at_center,rgba(0,255,170,0.12)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none blur-3xl" />
 
-            {/* Top right: the code call as a feature */}
+            {/* Top Card: macOS-style IDE Terminal */}
             <FadeIn delay={0.1}>
-              <div className="glass rounded-2xl p-8 flex flex-col justify-between min-h-[200px]">
-                <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-4">
-                  Public on-chain API
-                </p>
-                <div className="bg-black/50 rounded-xl px-6 py-5 border border-white/[0.06] font-mono mb-4">
-                  <p className="text-white/30 text-xs mb-2">// callable from any Soroban contract</p>
-                  <p className="text-[clamp(0.85rem,2vw,1.05rem)] leading-snug">
-                    <span className="text-white/40">let acr = </span>
-                    <span className="text-[#00e5ff]">anchor_stake</span>
-                    <span className="text-white/60">.</span>
-                    <span className="text-white font-semibold">get_acr</span>
-                    <span className="text-white/60">(</span>
-                    <span className="text-[#00ff88]">&anchor_address</span>
-                    <span className="text-white/60">);</span>
-                  </p>
-                  <p className="text-white/30 text-xs mt-3">
-                    // 10_000 = 1.0x · 20_000 = 2.0x · 5_000 = 0.5x
-                  </p>
+              <div className="relative overflow-hidden rounded-2xl bg-[#09090b] border border-white/[0.08] shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-500 hover:border-white/[0.2]">
+                {/* Top Glass Highlight */}
+                <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                
+                {/* IDE Header */}
+                <div className="flex items-center px-4 py-3 bg-white/[0.02] border-b border-white/[0.06]">
+                  <div className="flex gap-1.5 absolute left-4">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
+                  </div>
+                  <div className="mx-auto text-[10px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2">
+                    <svg className="w-3 h-3 opacity-60" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+                    risk_engine.rs
+                  </div>
                 </div>
-                <p className="text-white/70 text-xs">
-                  Any Stellar application can read an anchor's on-chain economic commitment in real time and incorporate it into routing, risk management, or user interfaces.
-                </p>
+
+                {/* Code Body */}
+                <div className="p-6 font-mono text-[13px] leading-loose overflow-x-auto">
+                  <div className="flex min-w-max">
+                    {/* Line Numbers */}
+                    <div className="text-white/20 select-none text-right pr-4 border-r border-white/5 mr-4 flex flex-col">
+                      <span>1</span><span>2</span><span>3</span><span>4</span>
+                    </div>
+                    {/* Code (Rust Syntax Highlighting) */}
+                    <div className="flex-1">
+                      <p className="text-white/30 italic mb-2">// Fetch operational risk score directly from Soroban</p>
+                      <p className="flex items-center">
+                        <span className="text-[#ff7b72] mr-2">let</span>
+                        <span className="text-[#79c0ff] mr-2">acr_score</span>
+                        <span className="text-[#ff7b72] mr-2">=</span>
+                        <span className="text-[#d2a8ff]">AnchorStake</span>
+                        <span className="text-white/70">::</span>
+                        <span className="text-[#d2a8ff]">get_acr</span>
+                        <span className="text-white/70">(</span>
+                        <span className="text-[#a5d6ff]">&anchor</span>
+                        <span className="text-white/70">);</span>
+                      </p>
+                      <p className="text-white/30 italic mt-2">// 10_000 = Flawless · 8_000 = Good · 5_000 = Poor</p>
+                      <p className="mt-1 text-[#7ee787] flex items-center gap-1">
+                        <span className="text-[#ff7b72]">assert!</span>
+                        <span className="text-white/70">(acr_score &gt;= </span>
+                        <span className="text-[#79c0ff]">8500</span>
+                        <span className="text-white/70">);</span>
+                        <span className="w-1.5 h-3.5 bg-[#00ffaa] animate-pulse ml-1 shadow-[0_0_8px_#00ffaa]" />
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </FadeIn>
 
-            {/* Bottom right: ratings table */}
+            {/* Bottom Card: Live Telemetry Dashboard */}
             <FadeIn delay={0.2}>
-              <div className="glass rounded-2xl p-8 flex flex-col min-h-[260px]">
-                <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-5">
-                  ACR ratings
-                </p>
-                <div className="space-y-3 flex-1">
-                  {ratings.map((r, i) => (
-                    <motion.div
-                      key={r.rating}
-                      className="flex items-center gap-4"
-                      initial={{ opacity: 0, x: -12 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.3 + i * 0.07, duration: 0.4 }}
-                    >
-                      {/* Rating badge */}
-                      <span
-                        className="font-mono font-bold text-sm w-12 shrink-0"
-                        style={{ color: r.color }}
-                      >
-                        {r.rating}
-                      </span>
-                      {/* Range */}
-                      <span className="text-white/30 font-mono text-xs w-14 shrink-0">{r.range}</span>
-                      {/* Bar */}
-                      <div className="flex-1 h-[3px] bg-white/[0.06] relative rounded-full overflow-hidden">
-                        <motion.div
-                          className="absolute left-0 top-0 h-[3px] rounded-full origin-left"
-                          style={{
-                            background: r.barColor,
-                            opacity: 0.85,
-                            boxShadow: `0 0 6px ${r.barColor}`,
-                            width: `${(5 - i) * 20}%`,
-                          }}
-                          initial={{ scaleX: 0 }}
-                          whileInView={{ scaleX: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: 0.4 + i * 0.07, duration: 0.6 }}
-                        />
+              <div className="relative rounded-2xl bg-[#09090b] border border-white/[0.08] p-8 backdrop-blur-xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] transition-all duration-500 hover:border-white/[0.2]">
+                {/* Tech Grid Background */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-50 pointer-events-none" />
+                
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-8">
+                     <span className="text-[10px] font-mono text-white/50 uppercase tracking-[0.2em]">Anchor Telemetry</span>
+                     <span className="flex items-center gap-1.5 text-[9px] font-mono text-[#00ffaa] uppercase tracking-widest bg-[#00ffaa]/10 px-2.5 py-1 rounded-full border border-[#00ffaa]/20 shadow-[0_0_10px_rgba(0,255,170,0.1)]">
+                       <span className="w-1.5 h-1.5 rounded-full bg-[#00ffaa] animate-ping" /> Live Sync
+                     </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* The Main Score Circular UI */}
+                    <div className="flex flex-col items-center justify-center md:border-r border-white/10 md:pr-4">
+                      <div className="relative flex items-center justify-center w-32 h-32 mb-2">
+                        <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                           <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                           <circle cx="50" cy="50" r="45" fill="none" stroke="#00e5ff" strokeWidth="4" strokeDasharray="283" strokeDashoffset="20" className="animate-[spin_4s_linear_infinite]" style={{ filter: "drop-shadow(0 0 8px rgba(0,229,255,0.4))" }} />
+                        </svg>
+                        <div className="text-center z-10">
+                          <span className="block text-3xl font-bold text-white tracking-tighter" style={{ textShadow: "0 0 20px rgba(0,229,255,0.4)" }}>9,450</span>
+                          <span className="block text-[9px] font-mono text-[#00e5ff] uppercase tracking-widest mt-1">ACR Score</span>
+                        </div>
                       </div>
-                      {/* Label */}
-                      <span className="text-white/40 text-xs text-right w-44 shrink-0 hidden md:block">
-                        {r.label}
-                      </span>
-                    </motion.div>
-                  ))}
-                </div>
-                <div className="mt-5 pt-4 border-t border-white/[0.05]">
-                  <Link
-                    href="/app"
-                    className="text-sm text-white/40 hover:text-white transition-colors"
-                  >
-                    View live anchor scores →
-                  </Link>
+                    </div>
+
+                    {/* The Component Metrics */}
+                    <div className="md:col-span-2 flex flex-col justify-center gap-5">
+                      <div className="flex items-center justify-between group cursor-default">
+                        <div className="flex flex-col">
+                          <span className="text-white text-sm font-medium mb-1 group-hover:text-white transition-colors">Oracle Uptime</span>
+                          <span className="text-white/40 text-[9px] font-mono uppercase tracking-widest">30-day trailing</span>
+                        </div>
+                        <span className="text-[#34d399] font-mono text-sm tracking-tight group-hover:drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] transition-all">99.99%</span>
+                      </div>
+                      
+                      <div className="w-full h-[1px] bg-white/5" />
+
+                      <div className="flex items-center justify-between group cursor-default">
+                        <div className="flex flex-col">
+                          <span className="text-white text-sm font-medium mb-1 group-hover:text-white transition-colors">Network Latency</span>
+                          <span className="text-white/40 text-[9px] font-mono uppercase tracking-widest">Avg fulfillment</span>
+                        </div>
+                        <span className="text-[#00e5ff] font-mono text-sm tracking-tight group-hover:drop-shadow-[0_0_8px_rgba(0,229,255,0.6)] transition-all">45ms</span>
+                      </div>
+
+                      <div className="w-full h-[1px] bg-white/5" />
+
+                      <div className="flex items-center justify-between group cursor-default">
+                        <div className="flex flex-col">
+                          <span className="text-white text-sm font-medium mb-1 group-hover:text-white transition-colors">Success Rate</span>
+                          <span className="text-white/40 text-[9px] font-mono uppercase tracking-widest">Payout executions</span>
+                        </div>
+                        <span className="text-white font-mono text-sm tracking-tight group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] transition-all">100.0%</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </FadeIn>
-
           </div>
         </div>
       </div>

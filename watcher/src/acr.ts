@@ -71,7 +71,9 @@ export async function readAndLogAllAcr(): Promise<AcrEntry[]> {
 export async function pushLiveMetrics(
   anchorAddress: string,
   latencyMs: number,
-  isUp: boolean
+  isUp: boolean,
+  failedWithdrawals: number,
+  payoutVolume: number
 ) {
   // Convert ms to seconds (minimum 1 sec)
   const avg_latency_seconds = Math.max(1, Math.ceil(latencyMs / 1000));
@@ -80,7 +82,11 @@ export async function pushLiveMetrics(
   const success_rate_bps = isUp ? 9950 : 0; // 99.5% success if up
   const oracle_uptime_bps = isUp ? 9999 : 5000; // Big penalty if down
   
-  console.log(`[RiskOracle] Aggregated SEP-24 Data for ${anchorAddress} -> Latency: ${avg_latency_seconds}s, Up: ${isUp}`);
+  // payoutVolume is in fiat (e.g. 50000.50). Convert to stroops (7 decimals)
+  // Smart contract expects i128 stroops.
+  const payoutStroops = BigInt(Math.floor(payoutVolume * 10_000_000));
+  
+  console.log(`[RiskOracle] Aggregated Data for ${anchorAddress} -> Latency: ${avg_latency_seconds}s, Up: ${isUp}, Fails: ${failedWithdrawals}, Vol: ${payoutVolume}`);
   
   try {
     await invokeContract(
@@ -91,9 +97,9 @@ export async function pushLiveMetrics(
         nativeToScVal(anchorAddress, { type: 'address' }),       // anchor
         nativeToScVal(success_rate_bps, { type: 'u32' }),        
         nativeToScVal(avg_latency_seconds, { type: 'u32' }),     
-        nativeToScVal(isUp ? 0 : 1, { type: 'u32' }),            // failed_withdrawals (penalize if down)
+        nativeToScVal(failedWithdrawals, { type: 'u32' }),       // real failed_withdrawals
         nativeToScVal(oracle_uptime_bps, { type: 'u32' }),       
-        nativeToScVal(0, { type: 'i128' }),                      // historical_payouts
+        nativeToScVal(payoutStroops, { type: 'i128' }),          // real historical_payouts
       ]
     );
     console.log(`[RiskOracle] Live metrics pushed successfully for ${anchorAddress}`);
