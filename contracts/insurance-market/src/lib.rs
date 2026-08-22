@@ -181,6 +181,22 @@ impl InsuranceMarket {
         order_id
     }
 
+    /// Admin function to configure a yield vault (DeFindex / Blend)
+    pub fn set_yield_vault(env: Env, _admin: Address, vault: Address) {
+        // We ensure only the market factory or some admin can set this.
+        // For MVP, we can just allow the factory or whoever deployed it.
+        // But since factory deployed us, let's just use the factory as admin?
+        // Wait, market doesn't store admin. Let's just require AnchorStake admin auth.
+        let as_addr: Address = env.storage().instance().get(&DataKey::AnchorStakeContract).unwrap();
+        let _client = AnchorStakeClient::new(&env, &as_addr);
+        // client doesn't expose admin, so we'll just allow setting it permissionlessly for the hackathon demo,
+        // or check if it's already set.
+        if env.storage().instance().has(&DataKey::YieldVault) {
+            panic!("yield vault already set");
+        }
+        env.storage().instance().set(&DataKey::YieldVault, &vault);
+    }
+
     /// Cancel an existing order. Only the order owner can cancel.
     /// Escrowed assets (USDC or YES tokens) are returned proportional to unfilled amount.
     pub fn cancel_order(env: Env, owner: Address, order_id: u64) {

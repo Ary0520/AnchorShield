@@ -18,6 +18,7 @@ import { readAndLogAllAcr } from './acr';
 import { checkAllAnchors } from './horizon';
 
 let tickCount = 0;
+let isTicking = false;
 
 /**
  * Fetches all deployed market contract addresses from the factory.
@@ -54,6 +55,11 @@ async function getMarketContracts(): Promise<Map<number, string>> {
 }
 
 async function tick(): Promise<void> {
+  if (isTicking) {
+    return;
+  }
+  isTicking = true;
+
   tickCount++;
   const currentTick = tickCount; // Capture it locally to avoid race conditions
   console.log(`\n[Watcher] ── Tick #${currentTick} at ${new Date().toISOString()} ──`);
@@ -77,6 +83,8 @@ async function tick(): Promise<void> {
     }
   } catch (err) {
     console.error('[Watcher] Tick error:', (err as Error).message);
+  } finally {
+    isTicking = false;
   }
 }
 

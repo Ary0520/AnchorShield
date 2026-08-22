@@ -66,5 +66,6 @@ pub enum DataKey {
     NextOrderId, // u64
 
     // ── DeFindex yield tracking (for post-MVP) ───────────────────────────────
+    YieldVault,     // Option<Address> - The address of the yield vault (e.g. Blend/DeFindex)
     DefindexShares, // i128 — vault shares held (0 for MVP)
 }
