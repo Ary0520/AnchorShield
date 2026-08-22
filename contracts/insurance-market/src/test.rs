@@ -354,6 +354,7 @@ struct OracleTestSetup {
     market: InsuranceMarketClient<'static>,
     usdc: Address,
     alice: Address,
+    admin: Address,
 }
 
 /// Creates one Env, registers the oracle mock INTO that env, then sets up the market.
@@ -412,7 +413,7 @@ where
         &anchor_stake_id,
     );
 
-    OracleTestSetup { env, market, usdc, alice }
+    OracleTestSetup { env, market, usdc, alice, admin }
 }
 
 // ─── Oracle-path settlement tests ────────────────────────────────────────────
@@ -506,4 +507,83 @@ fn test_claim_yes_wins_pays_yes_holders() {
     let after = usdc_client.balance(&t.alice);
 
     assert_eq!(after - before, 10 * ONE_USDC, "alice claims 10 USDC via YES");
+}
+
+mod mock_defindex_vault {
+    use super::*;
+    use soroban_sdk::{contract, contractimpl, Env, Vec, vec, IntoVal};
+
+    #[contract]
+    pub struct MockVault;
+
+    #[contractimpl]
+    impl MockVault {
+        pub fn deposit(
+            e: Env,
+            amounts_desired: Vec<i128>,
+            _amounts_min: Vec<i128>,
+            _from: Address,
+            _invest: bool,
+        ) -> (Vec<i128>, i128, soroban_sdk::Val) {
+            let amount = amounts_desired.get(0).unwrap();
+            (vec![&e, amount], amount, ().into_val(&e))
+        }
+
+        pub fn withdraw(
+            _e: Env,
+            _df_amount: i128,
+            _min_amounts_out: Vec<i128>,
+            _from: Address,
+        ) -> Vec<i128> {
+            vec![&_e, 0]
+        }
+    }
+}
+
+#[test]
+fn test_defindex_yield_distribution() {
+    let t = setup_oracle_env(
+        |env| env.register(oracle_below::MockOracle, ()),
+        86400,
+    );
+
+    let vault_id = t.env.register(mock_defindex_vault::MockVault, ());
+
+    t.env.mock_all_auths();
+    t.market.set_yield_vault(&t.admin, &vault_id);
+
+    t.market.mint_complete_set(&t.alice, &(100 * ONE_USDC));
+
+    // Manually simulate DeFindex Yield generation by minting an extra 50 USDC to the market contract!
+    let sac = StellarAssetClient::new(&t.env, &t.usdc);
+    sac.mint(&t.market.address, &(50 * ONE_USDC));
+
+    // Start breach
+    t.market.try_settle();
+
+    // Cross breach duration
+    t.env.ledger().set(LedgerInfo {
+        timestamp: 1_000_000 + BREACH_DURATION + 1,
+        protocol_version: 26,
+        sequence_number: 200,
+        network_id: Default::default(),
+        base_reserve: 10,
+        min_temp_entry_ttl: 1,
+        min_persistent_entry_ttl: 1,
+        max_entry_ttl: 6_312_000,
+    });
+
+    t.market.try_settle();
+    assert_eq!(t.market.get_state(), MarketState::Settled, "YES wins (Depeg)");
+
+    let usdc_client = TokenClient::new(&t.env, &t.usdc);
+    let before = usdc_client.balance(&t.alice);
+    t.market.claim(&t.alice);
+    let after = usdc_client.balance(&t.alice);
+
+    // Alice holds 100 YES and 100 NO
+    // YES wins -> 100 USDC principal
+    // NO token -> 100% of yield = 50 USDC
+    // Total = 150 USDC
+    assert_eq!(after - before, 150 * ONE_USDC, "alice claims principal + all yield via NO tokens!");
 }

@@ -65,6 +65,37 @@ export default function MarketDetailPage() {
   const [uwAmount, setUwAmount]             = useState("");
   const [uwPremiumBps, setUwPremiumBps]     = useState("150");
 
+  const [aiReport, setAiReport] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const generateAiReport = async () => {
+    if (!config || aiLoading) return;
+    setAiLoading(true);
+    setAiReport(null);
+    try {
+      const res = await fetch("/api/ai-risk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          asset: asset,
+          currentPrice: 1.0006, // Fallback mock or live oracle price if available
+          threshold: meta.threshold,
+          durationHours: 1,
+          premiumPct: "2.0",
+          yieldApy: "8.5",
+          expiryDate: formatExpiry(config.expiry_timestamp),
+          liquidity: parseInt(formatUsdc(collateral)).toLocaleString()
+        })
+      });
+      const data = await res.json();
+      setAiReport(data.text);
+    } catch (e) {
+      setAiReport("Failed to generate report.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   const refresh = useCallback(async () => {
     if (isNaN(marketId)) return;
     try {
@@ -269,11 +300,35 @@ export default function MarketDetailPage() {
                   <span style={{ ...mono, fontSize: 10, color: "rgba(255,255,255,0.6)", textAlign: "right" }}>{row.value}</span>
                 </div>
               ))}
-              <div className="mt-auto pt-2" style={{ borderTop: "1px solid #1a1a1a" }}>
-                <span style={{ ...mono, fontSize: 9, color: "#444", lineHeight: 1.5 }}>
-                  Permissionless · watcher calls{" "}
-                  <span style={{ color: "#555" }}>try_settle()</span> every 60s
-                </span>
+              <div className="mt-auto pt-2 flex flex-col gap-2" style={{ borderTop: "1px solid #1a1a1a" }}>
+                {!aiReport ? (
+                  <button
+                    onClick={generateAiReport}
+                    disabled={aiLoading}
+                    className="flex items-center justify-center gap-2 w-full py-1.5 rounded transition-all"
+                    style={{
+                      background: "rgba(0, 255, 170, 0.08)",
+                      border: "1px solid rgba(0, 255, 170, 0.2)",
+                      color: "#00ffaa",
+                      fontSize: 10,
+                      fontFamily: "Inter, sans-serif",
+                      fontWeight: 600,
+                      cursor: aiLoading ? "not-allowed" : "pointer"
+                    }}
+                  >
+                    <span>🤖</span> {aiLoading ? "Analyzing..." : "Generate AI Risk Brief"}
+                  </button>
+                ) : (
+                  <div className="flex flex-col gap-1 p-2 rounded" style={{ background: "rgba(0,255,170,0.05)", border: "1px solid rgba(0,255,170,0.1)" }}>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span style={{ fontSize: 12 }}>🤖</span>
+                      <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 10, color: "#00ffaa" }}>AI Risk Brief</span>
+                    </div>
+                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 10, color: "rgba(255,255,255,0.8)", lineHeight: 1.5 }}>
+                      {aiReport}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

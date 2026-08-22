@@ -32,17 +32,19 @@ pub fn deposit_to_defindex(env: &Env, _collateral: &Address, amount: i128) {
             ),
         ]);
 
-        // fn deposit(e: Env, amounts_desired: Vec<i128>, amounts_min: Vec<i128>, from: Address, invest: bool) -> (Vec<i128>, i128, ...)
-        let res: (Vec<i128>, i128, soroban_sdk::Val) = env.invoke_contract(
+        let res = env.try_invoke_contract::<(Vec<i128>, i128, soroban_sdk::Val), soroban_sdk::Error>(
             &vault,
             &Symbol::new(env, "deposit"),
             (amounts_desired, amounts_min, from, invest).into_val(env),
         );
 
-        let minted_shares = res.1;
-        let mut total_shares: i128 = env.storage().instance().get(&DataKey::DefindexShares).unwrap_or(0);
-        total_shares += minted_shares;
-        env.storage().instance().set(&DataKey::DefindexShares, &total_shares);
+        if let Ok(Ok(success_res)) = res {
+            let minted_shares = success_res.1;
+            let mut total_shares: i128 = env.storage().instance().get(&DataKey::DefindexShares).unwrap_or(0);
+            total_shares += minted_shares;
+            env.storage().instance().set(&DataKey::DefindexShares, &total_shares);
+        }
+        // If it fails, we gracefully do nothing. The USDC remains in our contract balance.
     }
 }
 
@@ -55,8 +57,7 @@ pub fn withdraw_from_defindex(env: &Env, _collateral: &Address, _amount: i128) {
             let min_amounts_out: Vec<i128> = vec![&env, 0];
             let from: Address = env.current_contract_address();
 
-            // fn withdraw(e: Env, df_amount: i128, min_amounts_out: Vec<i128>, from: Address) -> Vec<i128>
-            let _out_amounts: Vec<i128> = env.invoke_contract(
+            let _res = env.try_invoke_contract::<Vec<i128>, soroban_sdk::Error>(
                 &vault,
                 &Symbol::new(env, "withdraw"),
                 (df_amount, min_amounts_out, from).into_val(env),
