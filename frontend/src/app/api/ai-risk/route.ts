@@ -36,7 +36,10 @@ Sentence 3: Summarize the total upside for underwriters (premium + yield) versus
 Keep it strictly to 3 concise sentences. No bold formatting.
 `;
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.AI_API_KEY;
+    // Default to OpenRouter's completely free Llama 3 model, but can be overridden for Groq
+    const apiUrl = process.env.AI_API_URL || "https://openrouter.ai/api/v1/chat/completions";
+    const model = process.env.AI_MODEL || "meta-llama/llama-3.1-8b-instruct:free";
 
     if (!apiKey) {
       // Fallback: If no API key is provided, generate a deterministic response using the variables
@@ -48,22 +51,29 @@ Keep it strictly to 3 concise sentences. No bold formatting.
       return NextResponse.json({ text });
     }
 
-    // Call Gemini API
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    // Call OpenAI-compatible API (OpenRouter, Groq, etc.)
+    const res = await fetch(apiUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://anchorshield.io", // Required by OpenRouter
+        "X-Title": "AnchorShield" // Required by OpenRouter
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 256 }
+        model: model,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        max_tokens: 256
       })
     });
 
     if (!res.ok) {
-      throw new Error(`Gemini API error: ${res.statusText}`);
+      throw new Error(`AI API error: ${res.statusText}`);
     }
 
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Unable to generate report.";
+    const text = data.choices?.[0]?.message?.content?.trim() || "Unable to generate report.";
     
     return NextResponse.json({ text });
     

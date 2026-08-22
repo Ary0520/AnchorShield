@@ -67,9 +67,11 @@ export default function MarketDetailPage() {
 
   const [aiReport, setAiReport] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
   const generateAiReport = async () => {
     if (!config || aiLoading) return;
+    setIsAiModalOpen(true);
     setAiLoading(true);
     setAiReport(null);
     try {
@@ -300,35 +302,27 @@ export default function MarketDetailPage() {
                   <span style={{ ...mono, fontSize: 10, color: "rgba(255,255,255,0.6)", textAlign: "right" }}>{row.value}</span>
                 </div>
               ))}
-              <div className="mt-auto pt-2 flex flex-col gap-2" style={{ borderTop: "1px solid #1a1a1a" }}>
-                {!aiReport ? (
-                  <button
-                    onClick={generateAiReport}
-                    disabled={aiLoading}
-                    className="flex items-center justify-center gap-2 w-full py-1.5 rounded transition-all"
-                    style={{
-                      background: "rgba(0, 255, 170, 0.08)",
-                      border: "1px solid rgba(0, 255, 170, 0.2)",
-                      color: "#00ffaa",
-                      fontSize: 10,
-                      fontFamily: "Inter, sans-serif",
-                      fontWeight: 600,
-                      cursor: aiLoading ? "not-allowed" : "pointer"
-                    }}
-                  >
-                    <span>🤖</span> {aiLoading ? "Analyzing..." : "Generate AI Risk Brief"}
-                  </button>
-                ) : (
-                  <div className="flex flex-col gap-1 p-2 rounded" style={{ background: "rgba(0,255,170,0.05)", border: "1px solid rgba(0,255,170,0.1)" }}>
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span style={{ fontSize: 12 }}>🤖</span>
-                      <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 10, color: "#00ffaa" }}>AI Risk Brief</span>
-                    </div>
-                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 10, color: "rgba(255,255,255,0.8)", lineHeight: 1.5 }}>
-                      {aiReport}
-                    </span>
-                  </div>
-                )}
+              <div className="mt-auto pt-4 flex flex-col gap-2" style={{ borderTop: "1px solid #1a1a1a" }}>
+                <button
+                  onClick={generateAiReport}
+                  className="relative flex items-center justify-center gap-2 w-full py-2 rounded overflow-hidden transition-all group"
+                  style={{
+                    background: "rgba(10, 10, 10, 0.8)",
+                    border: "1px solid rgba(0, 255, 170, 0.3)",
+                    color: "#00ffaa",
+                    fontSize: 11,
+                    fontFamily: "Inter, sans-serif",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    boxShadow: "0 0 10px rgba(0, 255, 170, 0.1), inset 0 0 10px rgba(0, 255, 170, 0.05)"
+                  }}
+                >
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                    background: "radial-gradient(circle at center, rgba(0,255,170,0.15) 0%, transparent 70%)"
+                  }} />
+                  <span style={{ fontSize: 13 }}>✨</span>
+                  <span className="relative z-10 tracking-wide">Ask AI Risk Analyst</span>
+                </button>
               </div>
             </div>
 
@@ -507,6 +501,86 @@ export default function MarketDetailPage() {
           />
         </div>
       </div>
+
+      {/* ── AI Risk Analyst Modal ──────────────────────────── */}
+      {isAiModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300"
+          style={{ background: "rgba(0, 0, 0, 0.7)", backdropFilter: "blur(6px)" }}
+        >
+          <div 
+            className="relative w-full max-w-lg rounded-xl overflow-hidden flex flex-col shadow-2xl"
+            style={{
+              background: "#0a0a0a",
+              border: "1px solid rgba(0, 255, 170, 0.2)",
+              boxShadow: "0 0 40px rgba(0, 255, 170, 0.05), inset 0 0 20px rgba(0, 255, 170, 0.02)",
+              animation: "fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: "1px solid #1a1a1a" }}>
+              <div className="flex items-center gap-2">
+                <span className="animate-pulse" style={{ fontSize: 16 }}>✨</span>
+                <h3 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 14, color: "#00ffaa", letterSpacing: "0.02em" }}>
+                  AnchorShield AI Analyst
+                </h3>
+              </div>
+              <button 
+                onClick={() => setIsAiModalOpen(false)}
+                className="flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+                style={{ width: 24, height: 24, color: "#888" }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 min-h-[160px] flex flex-col justify-center relative">
+              {aiLoading ? (
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-4 h-4 rounded-full border-2 border-t-[#00ffaa] border-r-transparent border-b-[#00ffaa]/20 border-l-[#00ffaa]/20 animate-spin" />
+                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+                      Synthesizing market parameters...
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded bg-white/5 overflow-hidden">
+                    <div className="h-full bg-[#00ffaa]/30 rounded w-1/3 animate-ping" style={{ animationDuration: '1.5s' }} />
+                  </div>
+                  <div className="w-3/4 h-2 rounded bg-white/5 overflow-hidden">
+                    <div className="h-full bg-[#00ffaa]/20 rounded w-1/2 animate-ping" style={{ animationDuration: '2s', animationDelay: '0.2s' }} />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3" style={{ animation: "fadeIn 0.5s ease" }}>
+                  {aiReport?.split('. ').map((sentence, i) => {
+                    if (!sentence.trim()) return null;
+                    return (
+                      <p key={i} style={{ 
+                        fontFamily: "Inter, sans-serif", 
+                        fontSize: 14, 
+                        color: "rgba(255,255,255,0.85)", 
+                        lineHeight: 1.6,
+                        animation: `fadeInUp 0.4s ease ${i * 0.1}s both`
+                      }}>
+                        {sentence.trim() + (sentence.endsWith('.') ? '' : '.')}
+                      </p>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            
+            {/* Footer gradient line */}
+            <div className="h-1 w-full" style={{ background: "linear-gradient(90deg, rgba(0,255,170,0) 0%, rgba(0,255,170,0.5) 50%, rgba(0,255,170,0) 100%)" }} />
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
     </div>
   );
 }
