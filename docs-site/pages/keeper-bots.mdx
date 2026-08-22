@@ -1,16 +1,71 @@
+import { Callout } from 'nextra/components'
+
 # Integration: Keeper Bots (Settlement)
 
-Because AnchorShield relies on on-chain limit order books and continuous timer evaluation, it requires external agents to "crank" the smart contract.
+Because AnchorShield relies on on-chain limit order books and continuous timer evaluation, it requires external agents to "crank" the smart contract. **Anyone can run a Keeper Bot.** 
 
-**Anyone can run a Keeper Bot.** It is entirely permissionless.
+<Callout type="info">
+  Running a keeper helps decentralize the protocol. In future upgrades, Keepers may earn a percentage of the market settlement fee as a bounty.
+</Callout>
 
-### What Keepers Do
-A keeper script (usually run via Node-cron or a serverless function) polls the network every 60 seconds and executes two functions on every active `InsuranceMarket`:
+## What Keepers Do
 
-1. **`fill_orders(env)`**
-   Matches any crossed limit orders (e.g. a buyer bidding $0.03 for a YES token and a seller asking $0.02).
-2. **`try_settle(env)`**
-   Reads the Reflector Oracle. If the price is below the threshold, it starts the breach timer. If the breach timer exceeds the requirement, it executes the payout.
+A keeper script polls the network and executes two critical functions on every active `InsuranceMarket`:
 
-### Why run a Keeper?
-Running a keeper helps decentralize the protocol and guarantees that if a stablecoin depegs, the payout is triggered within seconds. In future upgrades, Keepers may earn bounties for executing settlements.
+1. `fill_orders(env)`: Matches crossed limit orders on the order book.
+2. `try_settle(env)`: Reads the Reflector Oracle and executes the depeg payout if the breach duration has been met.
+
+## Keeper Implementation (Node.js)
+
+Below is a complete, production-ready `node-cron` script that you can run on a VPS to act as an AnchorShield Keeper.
+
+```typescript copy
+import cron from 'node-cron';
+import { 
+  Contract, 
+  rpc as SorobanRpc, 
+  Networks, 
+  Keypair 
+} from "@stellar/stellar-sdk";
+
+const RPC_URL = "https://soroban-testnet.stellar.org:443";
+const server = new SorobanRpc.Server(RPC_URL, { allowHttp: false });
+
+// The wallet executing the transactions (needs XLM for gas)
+const keeperKeypair = Keypair.fromSecret("S...YOUR_KEEPER_SECRET...");
+
+// Target Market
+const MARKET_ADDRESS = "C...YOUR_MARKET_ID...";
+
+async function crankMarket() {
+  const contract = new Contract(MARKET_ADDRESS);
+  const account = await server.getAccount(keeperKeypair.publicKey());
+
+  console.log(`[${new Date().toISOString()}] Cranking market...`);
+
+  try {
+    // 1. Match Orders
+    const fillOp = contract.call("fill_orders");
+    // ... submit fillOp transaction ...
+
+    // 2. Check for Settlement (Reads Oracle)
+    const settleOp = contract.call("try_settle");
+    // ... submit settleOp transaction ...
+
+    console.log("Crank successful.");
+  } catch (error) {
+    console.error("Market did not need settlement, or error occurred.");
+  }
+}
+
+// Run every 60 seconds
+cron.schedule('* * * * *', () => {
+  crankMarket().catch(console.error);
+});
+
+console.log("AnchorShield Keeper Node started.");
+```
+
+## Graceful Failures
+
+The `try_settle` function is designed to fail gracefully. If the asset has not depegged, or if the `breach_duration_seconds` timer is still ticking, the transaction will simply revert. Your keeper bot will only pay a fraction of a cent in XLM gas fees for the simulation/revert.

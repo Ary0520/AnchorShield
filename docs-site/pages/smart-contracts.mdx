@@ -1,27 +1,74 @@
-# Smart Contracts API
+import { Callout } from 'nextra/components'
 
-Since AnchorShield does not rely on a centralized backend for core operations, **the Smart Contract is the API.**
+# Smart Contracts API Reference
+
+AnchorShield does not rely on a centralized backend for core operations. **The Smart Contract is the API.** Integrators can interact with the protocol directly via Soroban RPC.
+
+<Callout type="info">
+  All contract addresses and ABIs can be found in the [Deployments](/deployments) section.
+</Callout>
 
 ## 1. Market Factory
-The Factory is responsible for tracking all deployed markets.
 
-- **`list_markets(env: Env) -> Vec<u32>`**
-  Returns an array of all market IDs.
-- **`get_market(env: Env, market_id: u32) -> MarketConfig`**
-  Returns the exact parameters of the market (threshold, duration, expiry, oracle address).
-- **`get_market_contract(env: Env, market_id: u32) -> Address`**
-  Returns the underlying Soroban contract address for the specific market.
+The Factory (`market-factory`) is the central registry for all deployed AnchorShield markets. 
+
+### `get_market`
+Fetches the configuration of a specific market by its ID.
+
+**Parameters**
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `env` | `Env` | The Soroban environment. |
+| `market_id` | `u32` | The integer ID of the market. |
+
+**Returns:** `MarketConfig` struct
+```rust
+pub struct MarketConfig {
+    pub market_id: u32,
+    pub label: String,
+    pub collateral_token: Address,
+    pub covered_asset: String, // e.g., "USDC"
+    pub oracle_contract: Address,
+    pub depeg_threshold: i128,
+    pub breach_duration_seconds: u64,
+    pub expiry_timestamp: u64,
+    pub anchor_id: Option<Address>,
+}
+```
+
+---
 
 ## 2. Insurance Market
-This is where the actual token minting and order book trading happens.
 
-- **`mint_complete_set(env: Env, underwriter: Address, amount: i128)`**
-  Locks `amount` of USDC. Mints exactly `amount` of YES tokens and `amount` of NO tokens to the underwriter.
-- **`place_order(env: Env, owner: Address, is_buy: bool, price_bps: i64, amount: i128) -> u64`**
-  Places a limit order on the on-chain order book.
-- **`fill_orders(env: Env)`**
-  Permissionless function to match crossed limit orders.
-- **`try_settle(env: Env)`**
-  Permissionless function that reads the Reflector oracle. If the asset has depegged for the required duration, it closes the market and allows YES tokens to claim.
-- **`claim(env: Env, holder: Address)`**
-  Burns the winning tokens (YES or NO) and transfers the collateral + yield to the holder.
+The Insurance Market handles the minting of YES/NO tokens, order book limit orders, and settlement execution. Each market has its own isolated contract address.
+
+### `mint_complete_set`
+Locks USDC collateral to mint an equivalent amount of YES and NO tokens. This is the entry point for both hedgers and underwriters.
+
+**Parameters**
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `underwriter` | `Address` | The wallet authorizing the transaction. |
+| `amount` | `i128` | The amount of USDC to lock (in stroops, e.g., `10000000` = 1 USDC). |
+
+<Callout type="warning">
+  **Authorization Required:** The caller must approve the Insurance Market to transfer `amount` from their USDC balance.
+</Callout>
+
+### `place_order`
+Places a limit order on the on-chain order book to trade YES or NO tokens.
+
+**Parameters**
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `owner` | `Address` | The wallet placing the order. |
+| `is_buy` | `bool` | `true` if bidding for tokens, `false` if asking (selling). |
+| `price_bps` | `i64` | The price in basis points (e.g., `9800` = $0.98). |
+| `amount` | `i128` | The quantity of tokens to trade. |
+
+### `try_settle`
+Permissionless endpoint that checks the Reflector Oracle. If a sustained depeg has occurred (exceeding the `breach_duration_seconds`), it permanently closes the market and allows YES tokens to be claimed.
+
+```rust
+pub fn try_settle(env: Env)
+```
