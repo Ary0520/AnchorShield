@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
+import { GeistSans } from 'geist/font/sans';
 import {
   LineChart, Line, ResponsiveContainer, ReferenceLine, YAxis,
 } from "recharts";
@@ -233,12 +234,11 @@ function Hero() {
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 Live on Stellar Testnet
               </div>
-              <h1 className="text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-7">
-                <span className="gradient-text">Hedge stablecoin</span>
-                <br />
-                <span className="gradient-text">risk on Stellar.</span>
+              <h1 className={`font-extrabold tracking-tighter mb-7 flex flex-col ${GeistSans.className}`}>
+                <span className="gradient-text text-7xl lg:text-[5.5rem] leading-[1.0] pb-2">Hedge stablecoin</span>
+                <span className="gradient-text text-5xl lg:text-[3.5rem] leading-[1.0] text-white/80">risk on Stellar.</span>
               </h1>
-              <p className="text-white/50 text-xl leading-relaxed mb-10 max-w-lg">
+              <p className="text-white/50 text-xl leading-relaxed mb-10 max-w-lg" style={{ fontFamily: "'General Sans', sans-serif" }}>
                 When the peg breaks, you get paid.
                 the payout is automatic. No claims. No humans. No waiting.
               </p>
@@ -317,7 +317,7 @@ function HudCard({
 // ── STATS — HUD cards, pure typography ────────────────────────────
 function StatsBar() {
   return (
-    <section className="py-20">
+    <section className="py-20" style={{ fontFamily: "'General Sans', sans-serif" }}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -328,7 +328,7 @@ function StatsBar() {
             </span> */}
             <div>
               <motion.p
-                className="text-[clamp(5rem,10vw,8.5rem)] font-bold leading-none tracking-tighter text-white"
+                className="text-[clamp(5rem,10vw,8.5rem)] font-semibold leading-none tracking-tighter text-white"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -354,7 +354,7 @@ function StatsBar() {
               </span> */}
               <div>
                 <motion.p
-                  className="text-[clamp(3.5rem,7vw,6rem)] font-bold leading-none tracking-tighter text-white"
+                  className="text-[clamp(3.5rem,7vw,6rem)] font-semibold leading-none tracking-tighter text-white"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -375,7 +375,7 @@ function StatsBar() {
               </span> */}
               <div>
                 <motion.p
-                  className="text-[clamp(3.5rem,7vw,6rem)] font-bold leading-none tracking-tighter text-white"
+                  className="text-[clamp(3.5rem,7vw,6rem)] font-semibold leading-none tracking-tighter text-white"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -416,11 +416,11 @@ function HowItWorks() {
     },
   ];
   return (
-    <section id="how-it-works" className="py-28">
+    <section id="how-it-works" className="py-28" style={{ fontFamily: "'General Sans', sans-serif" }}>
       <div className="max-w-7xl mx-auto px-6">
         <FadeIn className="text-center mb-16">
           <p className="text-white/70 text-xs uppercase tracking-widest mb-3 font-mono">How it works</p>
-          <h2 className="text-4xl font-bold gradient-text">Three steps. Fully automated.</h2>
+          <h2 className={`text-4xl font-semibold gradient-text ${GeistSans.className}`}>Three steps. Fully automated.</h2>
         </FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {steps.map((s, i) => (
@@ -431,7 +431,7 @@ function HowItWorks() {
                   border: "1px solid rgba(0,229,255,0.18)",
                   boxShadow: "0 0 18px rgba(0,229,255,0.07), inset 0 1px 0 rgba(255,255,255,0.05)",
                 }}>
-                <p className="text-6xl font-bold mb-4 font-mono"
+                <p className="text-6xl font-semibold mb-4"
                   style={{
                     background: "linear-gradient(135deg, #00e5ff 0%, rgba(0,229,255,0.4) 100%)",
                     WebkitBackgroundClip: "text",
@@ -457,7 +457,7 @@ function WhySection() {
       <div className="max-w-7xl mx-auto px-6">
         <FadeIn className="mb-16">
           <p className="text-white/30 text-xs uppercase tracking-widest mb-3 font-mono"></p>
-          <h2 className="text-4xl font-bold gradient-text">Built for Stellar&apos;s moment.</h2>
+          <h2 className={`text-4xl font-bold gradient-text ${GeistSans.className}`}>Built for Stellar&apos;s moment.</h2>
         </FadeIn>
 
         {/* Row 1: big left + two right */}
@@ -598,7 +598,7 @@ function AcrSection() {
           <p className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em] mb-3">
             The differentiator
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+          <h2 className={`text-4xl md:text-5xl font-bold text-white leading-tight ${GeistSans.className}`}>
             Anchor Confidence Ratio.
           </h2>
           <p className="text-white/70 text-base mt-3 max-w-xl">
@@ -965,7 +965,7 @@ function MarketsPreview() {
               <p className="text-white/3 text-[12px] font-mono uppercase tracking-[0.25em] mb-3 ">
                 Live markets
               </p>
-              <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+              <h2 className={`text-4xl md:text-5xl font-bold text-white leading-tight ${GeistSans.className}`}>
                 Pick the market.<br />
                 <span className="text-white/60">Hedge the risk.</span>
               </h2>
@@ -1034,15 +1034,14 @@ function CtaBanner() {
             }}>
               
             </p>
-            <h2 style={{
-              fontFamily: "Inter, sans-serif",
-              fontWeight: 700,
-              fontSize: "clamp(2rem, 4vw, 3.2rem)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.04em",
-              color: "#0a0a0a",
-              marginBottom: "1.25rem",
-            }}>
+              <h2 className={GeistSans.className} style={{
+                fontWeight: 700,
+                fontSize: "clamp(2rem, 4vw, 3.2rem)",
+                lineHeight: 1.1,
+                letterSpacing: "-0.04em",
+                color: "#0a0a0a",
+                marginBottom: "1.25rem",
+              }}>
               Ready to hedge <br/> onchain risk?
             </h2>
             <p style={{
@@ -1182,7 +1181,7 @@ function Footer() {
 // ── ROOT EXPORT ────────────────────────────────────────────────────
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-black text-white" style={{ fontFamily: "'General Sans', sans-serif" }}>
       <Nav />
       <Hero />
       <StatsBar />
