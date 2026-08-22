@@ -235,7 +235,25 @@ impl InsuranceMarket {
             state == MarketState::Open,
             "market already settled or expired"
         );
+
         check_and_settle(&env);
+
+        // If market state changed (Settled/Expired), withdraw everything from Yield Vault
+        let new_state: MarketState = env
+            .storage()
+            .instance()
+            .get(&DataKey::State)
+            .unwrap_or(MarketState::Open);
+            
+        if new_state != MarketState::Open {
+            let collateral: Address = env
+                .storage()
+                .instance()
+                .get(&DataKey::CollateralToken)
+                .unwrap();
+            crate::yield_::withdraw_from_defindex(&env, &collateral, 0);
+        }
+
         Self::bump_ttl(&env);
     }
 
