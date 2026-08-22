@@ -137,10 +137,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Footer */}
-        <div style={{ borderTop: "1px solid #222", paddingTop: 17, paddingLeft: 16, paddingRight: 16 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <a href="mailto:anchorshieldstellar@gmail.com"
+          {/* Footer */}
+          <div style={{ borderTop: "1px solid #222", paddingTop: 17, paddingLeft: 16, paddingRight: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <a href="https://docs.anchorshield.xyz" target="_blank" rel="noopener noreferrer"
+                style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8, color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "'General Sans', sans-serif" }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#888"}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                Documentation
+              </a>
+              <a href="mailto:anchorshieldstellar@gmail.com"
               style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8, color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "'General Sans', sans-serif" }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#888"}
