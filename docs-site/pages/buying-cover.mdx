@@ -1,0 +1,16 @@
+# Buying Cover (Hedging)
+
+AnchorShield allows you to buy protection against stablecoin depegs. When you buy cover, you are acquiring **YES Tokens**.
+
+## The Economics
+- 1 YES Token mathematically guarantees a $1.00 USDC payout if the target asset depegs.
+- If no depeg occurs before Expiry, the YES Token expires worthless ($0.00).
+
+## How to Buy via the UI
+1. Navigate to the **Hedge Markets** tab.
+2. Select an active market (e.g. USDC Depeg).
+3. In the **Buy Cover** tab, enter how much payout coverage you want (e.g., $1,000).
+4. The system will look at the on-chain Limit Order Book to calculate the premium.
+5. Sign the transaction in Freighter. You will instantly receive YES Tokens in your wallet.
+
+*Note: Since you are buying from a limit order book, your transaction may partially fill if there isn't enough underwriting liquidity at your specified price.*

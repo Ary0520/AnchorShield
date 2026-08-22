@@ -1,0 +1,14 @@
+# How It Works (The Dual-Timer System)
+
+To protect underwriters from being scammed by a 1-second API glitch, AnchorShield markets use two separate timers.
+
+### 1. Sustained Breach Duration
+When a market is created, it sets a breach duration (e.g., 15 minutes, or 1 hour). 
+If the oracle price drops below the threshold (e.g., `$0.995`), the contract's `BreachStartedAt` stopwatch begins. 
+If the price recovers to $1.00 before the duration is met, the stopwatch is completely wiped. A depeg must be **sustained continuously** to trigger a payout.
+
+### 2. Market Lifespan (Expiry)
+The maximum amount of time the market exists. (e.g., 7 Days).
+If the Expiry Date is reached and no sustained breach has occurred, the market permanently closes, YES tokens become worthless, and NO tokens can claim the locked collateral.
+
+**Important:** If a sustained breach *does* happen on Day 1, the market settles immediately. It does not wait for the 7-day expiry!

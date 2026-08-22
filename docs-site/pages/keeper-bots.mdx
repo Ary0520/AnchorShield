@@ -1,0 +1,16 @@
+# Integration: Keeper Bots (Settlement)
+
+Because AnchorShield relies on on-chain limit order books and continuous timer evaluation, it requires external agents to "crank" the smart contract.
+
+**Anyone can run a Keeper Bot.** It is entirely permissionless.
+
+### What Keepers Do
+A keeper script (usually run via Node-cron or a serverless function) polls the network every 60 seconds and executes two functions on every active `InsuranceMarket`:
+
+1. **`fill_orders(env)`**
+   Matches any crossed limit orders (e.g. a buyer bidding $0.03 for a YES token and a seller asking $0.02).
+2. **`try_settle(env)`**
+   Reads the Reflector Oracle. If the price is below the threshold, it starts the breach timer. If the breach timer exceeds the requirement, it executes the payout.
+
+### Why run a Keeper?
+Running a keeper helps decentralize the protocol and guarantees that if a stablecoin depegs, the payout is triggered within seconds. In future upgrades, Keepers may earn bounties for executing settlements.

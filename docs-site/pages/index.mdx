@@ -1,0 +1,15 @@
+# AnchorShield Protocol
+
+AnchorShield is a parametric insurance protocol built on Stellar (Soroban) designed to protect stablecoin holders and DAO treasuries from depeg events (like USDC or EURC losing their $1.00 peg).
+
+## Why AnchorShield?
+
+DeFi relies entirely on stablecoins remaining stable. When a stablecoin depegs (even temporarily), cascading liquidations occur. AnchorShield provides a fully decentralized, mathematically guaranteed payout if a depeg happens.
+
+- **Parametric:** Payouts trigger automatically based on on-chain Oracles (Reflector). No claims adjusters. No waiting periods.
+- **Flash-Crash Protected:** Features a **Sustained Breach Duration** timer to ignore 1-second oracle glitches.
+- **Fully Collateralized:** Every $1.00 of coverage sold is backed by $1.00 of USDC sitting in the smart contract.
+
+## Developer First
+
+AnchorShield's primary interface is the Soroban smart contract itself. DAOs can programmatically hedge their treasuries via `mint_complete_set`, and keepers can permissionlessly trigger settlements via `try_settle`.

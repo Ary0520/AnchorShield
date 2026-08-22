@@ -1,0 +1,14 @@
+# Underwriting (Earning Yield)
+
+AnchorShield allows liquidity providers to earn premiums by underwriting the risk of stablecoin depegs. When you underwrite, you are acquiring and holding **NO Tokens**.
+
+## The Economics
+- To underwrite, you must lock $1.00 of USDC to mint 1 YES token and 1 NO token.
+- You then sell the YES token to a hedger for a premium (e.g., $0.05).
+- If the market expires safely (no depeg), your NO token can be redeemed for the underlying $1.00 USDC.
+- **Profit:** You put in $1.00, got $0.05 instantly, and got your $1.00 back at the end. Total return: +5%.
+
+*Risk Warning: If a sustained depeg DOES occur, the NO token expires worthless. You keep the $0.05 premium, but you lose the $1.00 locked principal.*
+
+## Idle Yield (DeFindex)
+While your USDC is locked in the smart contract waiting for the market to expire, AnchorShield attempts to route it into yield-generating strategies (like DeFindex / Blend) so you earn native DeFi yield *on top* of the insurance premiums!

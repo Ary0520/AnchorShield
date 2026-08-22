@@ -1,0 +1,25 @@
+# Integration: Programmatic Hedging
+
+For DAOs or automated treasuries holding significant USDC/EURC on Stellar, you can programmatically buy protection without using the AnchorShield UI.
+
+## The "Buy Protection" Flow
+
+To acquire YES tokens (Insurance Cover), your bot or smart contract should execute the following flow:
+
+### 1. Fetch Market
+Call `get_market_contract(market_id)` on the Market Factory to get the current USDC depeg market address.
+
+### 2. Lock Collateral
+Invoke `mint_complete_set(your_address, 1000)` on the Insurance Market contract. 
+*Requires you to authorize pulling 1,000 USDC.*
+You now possess 1,000 YES tokens and 1,000 NO tokens.
+
+### 3. Sell the NO Tokens (Yielding the Premium)
+You only want the YES tokens. You must sell the NO tokens to underwriters on the order book.
+Invoke `place_order`:
+- `owner`: your address
+- `is_buy`: false (selling)
+- `price_bps`: e.g., 9800 ($0.98)
+- `amount`: 1000
+
+Once the order is filled, you have effectively paid $0.02 (200 bps) per YES token, locking in your downside protection!

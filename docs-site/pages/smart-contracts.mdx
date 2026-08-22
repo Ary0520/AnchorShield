@@ -1,0 +1,27 @@
+# Smart Contracts API
+
+Since AnchorShield does not rely on a centralized backend for core operations, **the Smart Contract is the API.**
+
+## 1. Market Factory
+The Factory is responsible for tracking all deployed markets.
+
+- **`list_markets(env: Env) -> Vec<u32>`**
+  Returns an array of all market IDs.
+- **`get_market(env: Env, market_id: u32) -> MarketConfig`**
+  Returns the exact parameters of the market (threshold, duration, expiry, oracle address).
+- **`get_market_contract(env: Env, market_id: u32) -> Address`**
+  Returns the underlying Soroban contract address for the specific market.
+
+## 2. Insurance Market
+This is where the actual token minting and order book trading happens.
+
+- **`mint_complete_set(env: Env, underwriter: Address, amount: i128)`**
+  Locks `amount` of USDC. Mints exactly `amount` of YES tokens and `amount` of NO tokens to the underwriter.
+- **`place_order(env: Env, owner: Address, is_buy: bool, price_bps: i64, amount: i128) -> u64`**
+  Places a limit order on the on-chain order book.
+- **`fill_orders(env: Env)`**
+  Permissionless function to match crossed limit orders.
+- **`try_settle(env: Env)`**
+  Permissionless function that reads the Reflector oracle. If the asset has depegged for the required duration, it closes the market and allows YES tokens to claim.
+- **`claim(env: Env, holder: Address)`**
+  Burns the winning tokens (YES or NO) and transfers the collateral + yield to the holder.

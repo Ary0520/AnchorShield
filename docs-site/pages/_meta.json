@@ -1,0 +1,10 @@
+{
+  "index": "Introduction",
+  "how-it-works": "How It Works",
+  "buying-cover": "Buying Cover",
+  "underwriting": "Underwriting",
+  "smart-contracts": "Smart Contracts API",
+  "programmatic-hedging": "Integration: Hedging",
+  "keeper-bots": "Integration: Keepers",
+  "deployments": "Live Deployments"
+}

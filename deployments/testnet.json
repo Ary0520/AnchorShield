@@ -1,0 +1,28 @@
+{
+  "network": "testnet",
+  "rpc": "https://soroban-testnet.stellar.org:443",
+  "contracts": {
+    "market_factory": {
+      "address": "CCSYLHOS666N6RVSKSBBHWGY5TXNMULEWFK5K6DSNEB35H5FJJHF2YMG",
+      "status": "Verified",
+      "description": "Deploys new insurance markets and tracks them."
+    },
+    "anchor_stake": {
+      "address": "CCWJGZBLFTT23N55MDZN6LR4NMHL67P4JED3UGJN4DDUO3ZXXM7QK5E2",
+      "status": "Verified",
+      "description": "Calculates Anchor Confidence Ratio (ACR) based on staked capital."
+    }
+  },
+  "external": {
+    "usdc": {
+      "address": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+      "status": "Verified",
+      "provider": "Circle / Stellar"
+    },
+    "oracle": {
+      "address": "CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63",
+      "status": "Connected",
+      "provider": "Reflector"
+    }
+  }
+}

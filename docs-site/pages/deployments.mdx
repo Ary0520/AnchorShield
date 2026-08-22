@@ -1,0 +1,24 @@
+# Live Deployments (Testnet)
+
+This page serves as the absolute Source of Truth for AnchorShield's deployed architecture on the Soroban Testnet. 
+
+*Network: `testnet`*
+*RPC URL: `https://soroban-testnet.stellar.org:443`*
+
+### Core Infrastructure
+| Component | Address | Status |
+| :--- | :--- | :--- |
+| **Market Factory** | `CCSYLHOS666N6RVSKSBBHWGY5TXNMULEWFK5K6DSNEB35H5FJJHF2YMG` | Verified |
+| **Anchor Stake** | `CCWJGZBLFTT23N55MDZN6LR4NMHL67P4JED3UGJN4DDUO3ZXXM7QK5E2` | Verified |
+
+### External Dependencies
+AnchorShield mathematically relies on these external systems to operate safely.
+
+| Dependency | Address | Provider | Use Case |
+| :--- | :--- | :--- | :--- |
+| **USDC (Testnet)** | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` | Circle | Protocol Collateral & Settlement |
+| **Reflector Oracle** | `CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63` | Reflector | Triggering Depeg Settlements |
+| **Yield Vault** | (Fallback Configured) | DeFindex / Blend | Underwriting Yield (Idle if unavailable) |
+
+> **Warning: No Hardcoded Oracles**
+> Never hardcode an Oracle address in your integration. Always read the `oracle_contract` field dynamically via the `get_market()` function to ensure you are listening to the correct data feed.
