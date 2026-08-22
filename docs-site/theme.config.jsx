@@ -6,11 +6,11 @@ export default {
   docsRepositoryBase: 'https://github.com/anchorshield',
   useNextSeoProps() {
     return {
-      titleTemplate: '%s – AnchorShield'
+      titleTemplate: '%s - AnchorShield'
     }
   },
   footer: {
-    text: 'AnchorShield Protocol \u00A9 2026',
+    text: 'AnchorShield Protocol 2026',
   },
   primaryHue: 165,
   primarySaturation: 100,
