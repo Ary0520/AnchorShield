@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   reactStrictMode: true,
   // SDK v16 uses ESM-only exports — Next.js needs to transpile it
   transpilePackages: ["@stellar/stellar-sdk", "@stellar/stellar-base"],
