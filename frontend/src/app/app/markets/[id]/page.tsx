@@ -247,8 +247,17 @@ export default function MarketDetailPage() {
               <span style={{ ...mono, color: "#888", fontSize: 13 }}>${formatUsdc(collateral)} locked</span>
             </div>
             {/* Expiry */}
-            <div style={{ background: "#161616", border: "1px solid #222", padding: "7px 13px", display: "flex", alignItems: "center", marginLeft: -1 }}>
+            <div style={{ background: "#161616", border: "1px solid #222", padding: "7px 13px", display: "flex", alignItems: "center", gap: 8, marginLeft: -1 }}>
               <span style={{ ...mono, color: "#888", fontSize: 13 }}>Expires {formatExpiry(config.expiry_timestamp)}</span>
+              {(() => {
+                const diff = Number(config.expiry_timestamp) * 1000 - Date.now();
+                if (diff <= 0) return <span style={{ ...mono, color: "#ef4444", fontSize: 11, background: "rgba(239,68,68,0.1)", padding: "2px 6px", borderRadius: 4 }}>Expired</span>;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const mins = Math.floor((diff / 1000 / 60) % 60);
+                const text = days > 0 ? `${days}d ${hours}h left` : hours > 0 ? `${hours}h ${mins}m left` : `${mins}m left`;
+                return <span style={{ ...mono, color: "#00ffc2", fontSize: 11, background: "rgba(0,255,194,0.1)", padding: "2px 6px", borderRadius: 4 }}>{text}</span>;
+              })()}
             </div>
           </div>
         </div>
@@ -293,7 +302,9 @@ export default function MarketDetailPage() {
               </div>
               {[
                 { label: "Trigger",  value: `${meta.symbol}/USD < $${meta.threshold}` },
-                { label: "Duration", value: "1 continuous hour" },
+              { label: "Duration", value: Number(config.breach_duration_seconds) >= 3600 
+                  ? `${Math.round(Number(config.breach_duration_seconds) / 3600)} continuous hour(s)` 
+                  : `${Math.round(Number(config.breach_duration_seconds) / 60)} continuous minutes` },
                 { label: "YES wins", value: "Each YES → $1.00 USDC", accent: "#ffb800" },
                 { label: "NO wins",  value: `No breach before ${formatExpiry(config.expiry_timestamp)}` },
               ].map((row, i) => (

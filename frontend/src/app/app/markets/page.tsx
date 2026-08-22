@@ -214,7 +214,14 @@ function MarketRow({ market, dimmed }: { market: EnrichedMarket; dimmed?: boolea
           )}
         </div>
         <p style={{ ...mono, fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
-          Expires {formatExpiry(market.config.expiry_timestamp)} · ${formatUsdc(market.collateral)} collateral
+          Expires {formatExpiry(market.config.expiry_timestamp)} {(() => {
+            const diff = Number(market.config.expiry_timestamp) * 1000 - Date.now();
+            if (diff <= 0) return "(Expired)";
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const m = Math.floor((diff / 1000 / 60) % 60);
+            return d > 0 ? `(in ${d}d ${h}h)` : h > 0 ? `(in ${h}h ${m}m)` : `(in ${m}m)`;
+          })()} • {Number(market.config.breach_duration_seconds) >= 3600 ? Math.round(Number(market.config.breach_duration_seconds)/3600) + "h" : Math.round(Number(market.config.breach_duration_seconds)/60) + "m"} Time Limit • ${formatUsdc(market.collateral)} collateral
         </p>
       </div>
 

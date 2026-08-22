@@ -47,6 +47,16 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    href: "/app/admin",
+    label: "Deploy Market",
+    adminOnly: true,
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M12 4v16m8-8H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -97,7 +107,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Nav links */}
           <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingLeft: 16, paddingRight: 16 }}>
-            {NAV_ITEMS.map((item) => {
+            {NAV_ITEMS.filter((item) => !(item as any).adminOnly || wallet.publicKey === process.env.NEXT_PUBLIC_ADMIN_PUBKEY).map((item) => {
               const active = isActive(item.href, item.exact);
               return (
                 <Link
@@ -204,7 +214,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         }}
       >
         <div style={{ display: "flex", width: "100%" }}>
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS.filter((item) => !(item as any).adminOnly || wallet.publicKey === process.env.NEXT_PUBLIC_ADMIN_PUBKEY).map((item) => {
             const active = isActive(item.href, item.exact);
             return (
               <Link

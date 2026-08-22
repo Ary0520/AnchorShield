@@ -163,6 +163,24 @@ impl MarketFactory {
         Self::bump_ttl(&env);
     }
 
+    /// Allows admin to remove a market from the factory registry.
+    pub fn delete_market(env: Env, market_id: u32) {
+        let admin: Address = env.storage().instance().get(&DataKey::Admin).unwrap();
+        admin.require_auth();
+
+        let mut markets: Map<u32, MarketConfig> = env
+            .storage()
+            .instance()
+            .get(&DataKey::Markets)
+            .unwrap();
+        
+        if markets.contains_key(market_id) {
+            markets.remove(market_id);
+            env.storage().instance().set(&DataKey::Markets, &markets);
+        }
+        Self::bump_ttl(&env);
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // View functions
     // ─────────────────────────────────────────────────────────────────────────
