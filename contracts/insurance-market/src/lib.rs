@@ -252,6 +252,16 @@ impl InsuranceMarket {
                 .get(&DataKey::CollateralToken)
                 .unwrap();
             crate::yield_::withdraw_from_defindex(&env, &collateral, 0);
+
+            // Record the final yield generated
+            let total_collateral: i128 = env.storage().instance().get(&DataKey::TotalCollateral).unwrap_or(0);
+            let current_balance = token::Client::new(&env, &collateral).balance(&env.current_contract_address());
+            let final_yield = if current_balance > total_collateral {
+                current_balance - total_collateral
+            } else {
+                0
+            };
+            env.storage().instance().set(&DataKey::FinalYield, &final_yield);
         }
 
         Self::bump_ttl(&env);
@@ -290,22 +300,42 @@ impl InsuranceMarket {
             .unwrap();
 
         // Determine the winning token balance and burn it
-        let claim_amount = if yes_wins {
-            let key = DataKey::YesBalance(holder.clone());
-            let bal: i128 = env.storage().persistent().get(&key).unwrap_or(0);
-            env.storage().persistent().set(&key, &0i128);
-            bal
+        let yes_key = DataKey::YesBalance(holder.clone());
+        let yes_bal: i128 = env.storage().persistent().get(&yes_key).unwrap_or(0);
+        let no_key = DataKey::NoBalance(holder.clone());
+        let no_bal: i128 = env.storage().persistent().get(&no_key).unwrap_or(0);
+
+        // Burn them so they can't claim again
+        env.storage().persistent().set(&yes_key, &0i128);
+        env.storage().persistent().set(&no_key, &0i128);
+
+        let total_collateral: i128 = env.storage().instance().get(&DataKey::TotalCollateral).unwrap();
+        let final_yield: i128 = env.storage().instance().get(&DataKey::FinalYield).unwrap_or(0);
+
+        let mut claim_amount = 0i128;
+
+        if yes_wins {
+            // YES holders get $1 per token (the principal)
+            claim_amount += yes_bal;
+            
+            // NO holders get the yield proportional to their NO tokens
+            if total_collateral > 0 {
+                let user_yield = (no_bal * final_yield) / total_collateral;
+                claim_amount += user_yield;
+            }
         } else {
-            let key = DataKey::NoBalance(holder.clone());
-            let bal: i128 = env.storage().persistent().get(&key).unwrap_or(0);
-            env.storage().persistent().set(&key, &0i128);
-            bal
-        };
+            // NO wins
+            // NO holders get $1 per token + yield proportional to their NO tokens
+            claim_amount += no_bal;
+            if total_collateral > 0 {
+                let user_yield = (no_bal * final_yield) / total_collateral;
+                claim_amount += user_yield;
+            }
+        }
 
-        assert!(claim_amount > 0, "no winning tokens to claim");
+        assert!(claim_amount > 0, "no tokens to claim");
 
-        // Withdraw from yield vault (MVP: no-op) and pay out $1 per winning token
-        withdraw_from_defindex(&env, &collateral, claim_amount);
+        // Pay out the calculated amount
         token::Client::new(&env, &collateral)
             .transfer(&env.current_contract_address(), &holder, &claim_amount);
 

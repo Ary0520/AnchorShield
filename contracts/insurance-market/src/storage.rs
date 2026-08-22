@@ -56,6 +56,7 @@ pub enum DataKey {
     TotalNo,             // i128 — total NO tokens minted
     BreachStartedAt,     // Option<u64> — ledger timestamp when depeg was first detected
     SettledFor,          // Option<bool> — Some(true)=YES wins, Some(false)=NO wins
+    FinalYield,          // i128 (NEW: Stores the excess yield upon settlement)
 
     // ── Per-account token balances (persistent storage with per-entry TTL) ───
     YesBalance(Address), // i128

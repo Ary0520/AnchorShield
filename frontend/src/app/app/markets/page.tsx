@@ -194,9 +194,25 @@ function MarketRow({ market, dimmed }: { market: EnrichedMarket; dimmed?: boolea
 
       {/* Label + meta */}
       <div className="flex-1 min-w-0">
-        <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 14, color: dimmed ? "rgba(255,255,255,0.5)" : "white" }}>
-          {market.config.label}
-        </p>
+        <div className="flex items-center gap-3">
+          <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 14, color: dimmed ? "rgba(255,255,255,0.5)" : "white" }}>
+            {market.config.label}
+          </p>
+          {!dimmed && (
+            <span style={{ 
+              background: "rgba(0, 255, 128, 0.1)", 
+              color: "#00FF80", 
+              padding: "2px 6px", 
+              borderRadius: "4px", 
+              fontSize: "9px", 
+              fontWeight: 700, 
+              ...mono,
+              border: "1px solid rgba(0, 255, 128, 0.2)"
+            }}>
+              +8.5% APY Base
+            </span>
+          )}
+        </div>
         <p style={{ ...mono, fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
           Expires {formatExpiry(market.config.expiry_timestamp)} · ${formatUsdc(market.collateral)} collateral
         </p>
