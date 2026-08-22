@@ -1,3 +1,9 @@
-body {
+﻿body {
   font-family: 'Inter', sans-serif;
+}
+
+/* Ensure sidebar remains fixed */
+html, body {
+  height: 100%;
+  overscroll-behavior: none;
 }
