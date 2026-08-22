@@ -213,12 +213,12 @@ export default function MarketDetailPage() {
                 style={{ width: 14, height: 14, bottom: -3, right: -3, background: stateIsOpen ? "#00e676" : "#555", borderColor: "#0a0a0a" }}
               />
             </div>
-            <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-0.44px", whiteSpace: "nowrap" }}>
+            <span style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-0.44px", whiteSpace: "nowrap" }}>
               {meta.symbol} Depeg Market
             </span>
             <span
               className="flex items-center gap-1 rounded-full"
-              style={{ padding: "3px 8px", background: openBadge.bg, border: `1px solid ${openBadge.border}`, color: openBadge.text, fontSize: 10, fontWeight: 700, fontFamily: "Inter, sans-serif", whiteSpace: "nowrap" }}
+              style={{ padding: "3px 8px", background: openBadge.bg, border: `1px solid ${openBadge.border}`, color: openBadge.text, fontSize: 10, fontWeight: 700, fontFamily: "'General Sans', sans-serif", whiteSpace: "nowrap" }}
             >
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: openBadge.dot, display: "inline-block" }} />
               {openBadge.label}
@@ -287,7 +287,7 @@ export default function MarketDetailPage() {
             >
               <div className="flex items-center gap-2 mb-1">
                 <span style={{ fontSize: 14 }}>⚒</span>
-                <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+                <span style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
                   How this settles
                 </span>
               </div>
@@ -311,7 +311,7 @@ export default function MarketDetailPage() {
                     border: "1px solid rgba(0, 255, 170, 0.3)",
                     color: "#00ffaa",
                     fontSize: 11,
-                    fontFamily: "Inter, sans-serif",
+                    fontFamily: "'General Sans', sans-serif",
                     fontWeight: 600,
                     cursor: "pointer",
                     boxShadow: "0 0 10px rgba(0, 255, 170, 0.1), inset 0 0 10px rgba(0, 255, 170, 0.05)"
@@ -332,7 +332,7 @@ export default function MarketDetailPage() {
                 className="flex items-center justify-between px-4 py-2.5 shrink-0"
                 style={{ borderBottom: "1px solid #1a1a1a" }}
               >
-                <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+                <span style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
                   Order Book
                 </span>
                 <span style={{ ...mono, fontSize: 9, color: "#555", letterSpacing: "0.06em" }}>YES TOKENS</span>
@@ -521,7 +521,7 @@ export default function MarketDetailPage() {
             <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: "1px solid #1a1a1a" }}>
               <div className="flex items-center gap-2">
                 <span className="animate-pulse" style={{ fontSize: 16 }}>✨</span>
-                <h3 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 14, color: "#00ffaa", letterSpacing: "0.02em" }}>
+                <h3 style={{ fontFamily: "var(--font-geist-sans)", fontWeight: 600, fontSize: 14, color: "#00ffaa", letterSpacing: "0.02em" }}>
                   AnchorShield AI Analyst
                 </h3>
               </div>
@@ -540,7 +540,7 @@ export default function MarketDetailPage() {
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-4 h-4 rounded-full border-2 border-t-[#00ffaa] border-r-transparent border-b-[#00ffaa]/20 border-l-[#00ffaa]/20 animate-spin" />
-                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+                    <span style={{ fontFamily: "'General Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
                       Synthesizing market parameters...
                     </span>
                   </div>
@@ -562,7 +562,7 @@ export default function MarketDetailPage() {
                     if (isHeading) {
                       return (
                         <h4 key={i} style={{
-                          fontFamily: "Inter, sans-serif",
+                          fontFamily: "'General Sans', sans-serif",
                           fontWeight: 700,
                           fontSize: 11,
                           color: "#00ffaa",
@@ -579,7 +579,7 @@ export default function MarketDetailPage() {
                     
                     return (
                       <p key={i} style={{ 
-                        fontFamily: "Inter, sans-serif", 
+                        fontFamily: "'General Sans', sans-serif", 
                         fontSize: 13.5, 
                         color: "rgba(255,255,255,0.85)", 
                         lineHeight: 1.6,
@@ -686,7 +686,7 @@ function MarketDetailSkeleton() {
           >
             {steps[step]}
           </p>
-          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginTop: 6, fontFamily: "Inter, sans-serif" }}>
+          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginTop: 6, fontFamily: "'General Sans', sans-serif" }}>
             Stellar testnet · Soroban RPC
           </p>
         </div>
@@ -790,7 +790,7 @@ function TradePanel({
                 background: "transparent",
                 color: tradeTab === tab ? "white" : "rgba(255,255,255,0.25)",
                 borderBottom: tradeTab === tab ? "2px solid #00ffc2" : "2px solid transparent",
-                fontFamily: "Inter, sans-serif",
+                fontFamily: "'General Sans', sans-serif",
               }}
             >
               {tab === "cover" ? "Buy Cover" : "Underwrite"}
@@ -807,7 +807,7 @@ function TradePanel({
               <div className="flex flex-col gap-2">
                 <span
                   className="font-bold uppercase"
-                  style={{ color: "#888", fontSize: 11, letterSpacing: "0.55px", fontFamily: "Inter, sans-serif" }}
+                  style={{ color: "#888", fontSize: 11, letterSpacing: "0.55px", fontFamily: "'General Sans', sans-serif" }}
                 >
                   Desired Cover Payout
                 </span>
@@ -824,7 +824,7 @@ function TradePanel({
                     style={{ ...mono, fontSize: 24 }}
                   />
                   <div className="absolute right-4 flex items-center gap-2">
-                    <span style={{ color: "#888", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 16 }}>USDC</span>
+                    <span style={{ color: "#888", fontFamily: "'General Sans', sans-serif", fontWeight: 600, fontSize: 16 }}>USDC</span>
                     <div
                       className="flex items-center justify-center rounded-full p-0.5"
                       style={{ background: "#161616", border: "1px solid #222", width: 24, height: 24 }}
@@ -867,7 +867,7 @@ function TradePanel({
               <div className="flex flex-col gap-2">
                 <span
                   className="font-bold"
-                  style={{ color: "#888", fontSize: 11, letterSpacing: "0.55px", fontFamily: "Inter, sans-serif" }}
+                  style={{ color: "#888", fontSize: 11, letterSpacing: "0.55px", fontFamily: "'General Sans', sans-serif" }}
                 >
                   ORDER TYPE
                 </span>
@@ -881,7 +881,7 @@ function TradePanel({
                         background: coverOrderType === t ? "#0a0a0a" : "transparent",
                         border: coverOrderType === t ? "1px solid #00ffc2" : "1px solid #333",
                         color: coverOrderType === t ? "white" : "#888",
-                        fontFamily: "Inter, sans-serif",
+                        fontFamily: "'General Sans', sans-serif",
                       }}
                     >
                       {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -906,7 +906,7 @@ function TradePanel({
           {tradeTab === "underwrite" && (
             <>
               <div className="flex flex-col gap-2">
-                <span style={{ color: "#888", fontSize: 11, letterSpacing: "0.55px", fontFamily: "Inter, sans-serif", fontWeight: 700 }}>
+                <span style={{ color: "#888", fontSize: 11, letterSpacing: "0.55px", fontFamily: "'General Sans', sans-serif", fontWeight: 700 }}>
                   STEP 1 — DEPOSIT USDC
                 </span>
                 <p style={{ color: "#888", fontSize: 12 }}>You receive equal YES + NO tokens</p>
@@ -919,7 +919,7 @@ function TradePanel({
                     placeholder="0"
                     style={{ ...mono, fontSize: 24 }}
                   />
-                  <span className="absolute right-4" style={{ color: "#888", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 16 }}>USDC</span>
+                  <span className="absolute right-4" style={{ color: "#888", fontFamily: "'General Sans', sans-serif", fontWeight: 600, fontSize: 16 }}>USDC</span>
                 </div>
                 {uwAmt > 0 && (
                   <p style={{ ...mono, fontSize: 11, color: "#888" }}>
@@ -929,7 +929,7 @@ function TradePanel({
               </div>
 
               <div className="flex flex-col gap-2">
-                <span style={{ color: "#888", fontSize: 11, letterSpacing: "0.55px", fontFamily: "Inter, sans-serif", fontWeight: 700 }}>
+                <span style={{ color: "#888", fontSize: 11, letterSpacing: "0.55px", fontFamily: "'General Sans', sans-serif", fontWeight: 700 }}>
                   STEP 2 — SET PREMIUM
                 </span>
                 <div className="relative flex items-center rounded-lg" style={{ background: "#0a0a0a", border: "1px solid #222" }}>
@@ -941,7 +941,7 @@ function TradePanel({
                     placeholder="150"
                     style={{ ...mono, fontSize: 24 }}
                   />
-                  <span className="absolute right-4" style={{ color: "#888", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 16 }}>bps</span>
+                  <span className="absolute right-4" style={{ color: "#888", fontFamily: "'General Sans', sans-serif", fontWeight: 600, fontSize: 16 }}>bps</span>
                 </div>
                 {uwPremBps > 0 && <p style={{ ...mono, fontSize: 11, color: "#888" }}>{uwPremBps} bps = {(uwPremBps/100).toFixed(2)}¢ per YES</p>}
               </div>
@@ -981,7 +981,7 @@ function TradePanel({
                     background: "#00ffc2",
                     color: "#0a0a0a",
                     boxShadow: "0 0 12px rgba(0,255,194,0.15)",
-                    fontFamily: "Inter, sans-serif",
+                    fontFamily: "'General Sans', sans-serif",
                     letterSpacing: "-0.18px",
                   }}
                 >
@@ -991,7 +991,7 @@ function TradePanel({
                 <button
                   onClick={wallet.connect}
                   className="w-full py-4 rounded-lg text-sm font-bold"
-                  style={{ background: "white", color: "#111", fontFamily: "Inter, sans-serif" }}
+                  style={{ background: "white", color: "#111", fontFamily: "'General Sans', sans-serif" }}
                 >
                   Connect Wallet
                 </button>
@@ -1008,7 +1008,7 @@ function TradePanel({
                   onClick={handleMintAndSell}
                   disabled={uwAmt <= 0}
                   className="w-full py-4 rounded-lg text-lg font-bold disabled:opacity-40"
-                  style={{ background: "#1c1b1b", border: "1px solid #333", color: "white", fontFamily: "Inter, sans-serif" }}
+                  style={{ background: "#1c1b1b", border: "1px solid #333", color: "white", fontFamily: "'General Sans', sans-serif" }}
                 >
                   Mint + Place Sell Order
                 </button>
@@ -1016,7 +1016,7 @@ function TradePanel({
                 <button
                   onClick={wallet.connect}
                   className="w-full py-4 rounded-lg text-sm font-bold"
-                  style={{ background: "white", color: "#111", fontFamily: "Inter, sans-serif" }}
+                  style={{ background: "white", color: "#111", fontFamily: "'General Sans', sans-serif" }}
                 >
                   Connect Wallet
                 </button>
@@ -1042,7 +1042,7 @@ function TradePanel({
               <rect x="4" y="5" width="4" height="8" rx="0.5" stroke="#888" strokeWidth="1.2"/>
               <rect x="10" y="8" width="5" height="5" rx="0.5" stroke="#888" strokeWidth="1.2"/>
             </svg>
-            <span className="font-bold text-white" style={{ fontSize: 14, fontFamily: "Inter, sans-serif" }}>
+            <span className="font-bold text-white" style={{ fontSize: 14, fontFamily: "'General Sans', sans-serif" }}>
               Your Position
             </span>
           </div>
@@ -1064,7 +1064,7 @@ function TradePanel({
             <button
               onClick={handleClaim}
               className="w-full py-3 rounded-lg text-sm font-bold mt-1"
-              style={{ background: "#00ffc2", color: "#0a0a0a", fontFamily: "Inter, sans-serif" }}
+              style={{ background: "#00ffc2", color: "#0a0a0a", fontFamily: "'General Sans', sans-serif" }}
             >
               Claim Winnings
             </button>

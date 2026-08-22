@@ -111,10 +111,10 @@ export default function HedgeMarketsPage() {
     <div className="p-6 space-y-5" style={{ background: "#0a0a12", minHeight: "100%" }}>
       {/* Header */}
       <div>
-        <h1 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-0.44px", margin: 0 }}>
+        <h1 style={{ fontFamily: "var(--font-geist-sans)", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-0.44px", margin: 0 }}>
           Hedge Markets
         </h1>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
+        <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
           Binary outcome contracts for stablecoin depeg events. Buy cover or underwrite.
         </p>
       </div>
@@ -195,7 +195,7 @@ function MarketRow({ market, dimmed }: { market: EnrichedMarket; dimmed?: boolea
       {/* Label + meta */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-3">
-          <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 14, color: dimmed ? "rgba(255,255,255,0.5)" : "white" }}>
+          <p style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 600, fontSize: 14, color: dimmed ? "rgba(255,255,255,0.5)" : "white" }}>
             {market.config.label}
           </p>
           {!dimmed && (
@@ -228,7 +228,7 @@ function MarketRow({ market, dimmed }: { market: EnrichedMarket; dimmed?: boolea
         </div>
         <span
           className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase"
-          style={{ background: badge.bg, color: badge.text, fontFamily: "Inter, sans-serif", letterSpacing: "0.06em", whiteSpace: "nowrap" }}
+          style={{ background: badge.bg, color: badge.text, fontFamily: "'General Sans', sans-serif", letterSpacing: "0.06em", whiteSpace: "nowrap" }}
         >
           {badge.label}
         </span>
@@ -282,7 +282,7 @@ function ComingSoonRow({ symbol, logo, name }: { symbol: string; logo: string; n
         style={{ filter: "grayscale(80%) opacity(0.6)" }} />
 
       <div className="flex-1 min-w-0">
-        <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 14, color: "rgba(255,255,255,0.45)" }}>
+        <p style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 600, fontSize: 14, color: "rgba(255,255,255,0.45)" }}>
           {symbol} Depeg
         </p>
         <p style={{ ...mono, fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 2 }}>
@@ -300,7 +300,7 @@ function ComingSoonRow({ symbol, logo, name }: { symbol: string; logo: string; n
           style={{
             background: "rgba(255,255,255,0.05)",
             color: "rgba(255,255,255,0.35)",
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "'General Sans', sans-serif",
             letterSpacing: "0.06em",
             border: "1px solid rgba(255,255,255,0.08)",
           }}

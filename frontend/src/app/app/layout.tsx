@@ -84,13 +84,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Brand */}
         <div>
           <div style={{ paddingLeft: 24, paddingBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 4 }}>
               <img src="/ANCHORSHIELDLOGO2.png" alt="AnchorShield" style={{ width: 50, height: 50, objectFit: "contain", flexShrink: 0 }} />
-              <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 22, color: "white", letterSpacing: "-1.2px", lineHeight: "32px", margin: 0 }}>
+              <p style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 500, fontSize: 22, color: "white", letterSpacing: "-1.2px", lineHeight: "32px", margin: 0 }}>
                 AnchorShield
               </p>
             </div>
-            <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 400, fontSize: 12, color: "#888", lineHeight: "16px", margin: 0, paddingLeft: 42 }}>
+            <p style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 400, fontSize: 12, color: "#888", lineHeight: "16px", margin: 0, paddingLeft: 42 }}>
               v1 - Testnet
             </p>
           </div>
@@ -118,7 +118,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.color = "#888"; }}
                 >
                   <span style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>{item.icon}</span>
-                  <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 400, fontSize: 14, lineHeight: "20px" }}>
+                  <span style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 400, fontSize: 14, lineHeight: "20px" }}>
                     {item.label}
                   </span>
                 </Link>
@@ -131,7 +131,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div style={{ borderTop: "1px solid #222", paddingTop: 17, paddingLeft: 16, paddingRight: 16 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <a href="mailto:anchorshieldstellar@gmail.com"
-              style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8, color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "Inter, sans-serif" }}
+              style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8, color: "#888", textDecoration: "none", fontSize: 14, fontFamily: "'General Sans', sans-serif" }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#888"}
             >
@@ -141,11 +141,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div style={{ paddingTop: 16 }}>
             {wallet.publicKey ? (
-              <button onClick={wallet.disconnect} style={{ width: "100%", background: "#1c1b1b", border: "1px solid #333", color: "#00ffc2", fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 14, padding: "8px 16px", cursor: "pointer", textAlign: "center" }}>
+              <button onClick={wallet.disconnect} style={{ width: "100%", background: "#1c1b1b", border: "1px solid #333", color: "#00ffc2", fontFamily: "'General Sans', sans-serif", fontWeight: 700, fontSize: 14, padding: "8px 16px", cursor: "pointer", textAlign: "center" }}>
                 {wallet.shortKey}
               </button>
             ) : (
-              <button onClick={wallet.connect} disabled={wallet.isConnecting} style={{ width: "100%", background: "white", border: "none", color: "#111", fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 14, padding: "8px 16px", cursor: wallet.isConnecting ? "not-allowed" : "pointer", opacity: wallet.isConnecting ? 0.6 : 1, textAlign: "center" }}>
+              <button onClick={wallet.connect} disabled={wallet.isConnecting} style={{ width: "100%", background: "white", border: "none", color: "#111", fontFamily: "'General Sans', sans-serif", fontWeight: 700, fontSize: 14, padding: "8px 16px", cursor: wallet.isConnecting ? "not-allowed" : "pointer", opacity: wallet.isConnecting ? 0.6 : 1, textAlign: "center" }}>
                 {wallet.isConnecting ? "Connecting..." : "Connect Wallet"}
               </button>
             )}
@@ -158,9 +158,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Top bar */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "8px 16px", borderBottom: "1px solid #222", background: "#111", flexShrink: 0, minHeight: 44 }}>
           {/* Mobile: show logo + name */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex md:hidden items-center gap-0">
             <img src="/ANCHORSHIELDLOGO2.png" alt="AnchorShield" style={{ width: 26, height: 26, objectFit: "contain" }} />
-            <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 16, color: "white", letterSpacing: "-0.5px" }}>
+            <span style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 500, fontSize: 16, color: "white", letterSpacing: "-0.5px" }}>
               AnchorShield
             </span>
           </div>
@@ -168,7 +168,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
             {/* Testnet badge */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.2)", borderRadius: 9999, fontSize: 11, color: "#00e676", fontFamily: "Inter, sans-serif", fontWeight: 500 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.2)", borderRadius: 9999, fontSize: 11, color: "#00e676", fontFamily: "'General Sans', sans-serif", fontWeight: 500 }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#00e676", display: "inline-block", animation: "pulse 2s ease-in-out infinite" }} />
               Testnet
             </div>
@@ -238,7 +238,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <span style={{ display: "flex", alignItems: "center" }}>
                   {item.icon}
                 </span>
-                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 10, fontWeight: active ? 600 : 400, letterSpacing: "0.01em", lineHeight: 1 }}>
+                <span style={{ fontFamily: "'General Sans', sans-serif", fontSize: 10, fontWeight: active ? 600 : 400, letterSpacing: "0.01em", lineHeight: 1 }}>
                   {item.label === "Hedge Markets" ? "Markets" : item.label === "Anchor Trust" ? "Anchors" : item.label === "Protocol Stats" ? "Stats" : item.label}
                 </span>
               </Link>

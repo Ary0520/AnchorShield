@@ -64,7 +64,7 @@ export default function AnchorTrustPage() {
         {/* ── Page header ──────────────────────────────────── */}
         <div className="flex items-start justify-between gap-6">
           <div>
-            <h1 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 26, color: "white", letterSpacing: "-0.52px", margin: 0, textTransform: "uppercase" }}>
+            <h1 style={{ fontFamily: "var(--font-geist-sans)", fontWeight: 700, fontSize: 26, color: "white", letterSpacing: "-0.52px", margin: 0, textTransform: "uppercase" }}>
               ACR - Operational Risk Registry
             </h1>
           </div>
@@ -102,7 +102,7 @@ export default function AnchorTrustPage() {
         {/* ── Table ────────────────────────────────────────── */}
         <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #1a1a1a", background: "#111" }}>
           <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid #1a1a1a" }}>
-            <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 500, fontSize: 18, color: "white", margin: 0 }}>Anchor Registry</h2>
+            <h2 style={{ fontFamily: "var(--font-geist-sans)", fontWeight: 500, fontSize: 18, color: "white", margin: 0 }}>Anchor Registry</h2>
             <select className="bg-transparent border-none text-[#888] text-sm outline-none cursor-pointer" style={mono}>
               <option>All Anchors</option>
             </select>
@@ -141,7 +141,7 @@ export default function AnchorTrustPage() {
                             {meta.logoSrc ? <img src={meta.logoSrc} className="w-6 h-6 object-contain" /> : <span style={{ color: "#888", fontSize: 14 }}>{meta.logo || "?"}</span>}
                           </div>
                           <div>
-                            <div style={{ color: "white", fontSize: 14, fontFamily: "Inter, sans-serif" }}>{meta.name}</div>
+                            <div style={{ color: "white", fontSize: 14, fontFamily: "'General Sans', sans-serif" }}>{meta.name}</div>
                             <div style={{ color: "#666", fontSize: 11, ...mono }}>{meta.shortAddr}</div>
                           </div>
                         </div>

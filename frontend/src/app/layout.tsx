@@ -40,6 +40,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { GeistSans } from 'geist/font/sans';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -47,7 +49,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className={`antialiased ${GeistSans.variable}`}>
         {children}
       </body>
     </html>

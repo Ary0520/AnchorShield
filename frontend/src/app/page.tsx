@@ -539,8 +539,8 @@ function LogoCarousel() {
   ];
 
   return (
-    <section className="py-16 border-y border-white/[0.04] overflow-hidden">
-      <p className="text-center text-white/3 text-[12px] font-mono uppercase tracking-[0.3em] mb-8">
+    <section className="py-28 border-y border-white/[0.04] overflow-hidden">
+      <p className="text-center text-white/3 text-[12px] font-mono uppercase tracking-[0.3em] mb-12">
         Stellar ecosystem partners
       </p>
 
@@ -1184,10 +1184,10 @@ export default function LandingPage() {
     <main className="min-h-screen bg-black text-white" style={{ fontFamily: "'General Sans', sans-serif" }}>
       <Nav />
       <Hero />
+      <LogoCarousel />
       <StatsBar />
       <HowItWorks />
       <WhySection />
-      <LogoCarousel />
       <AcrSection />
       <MarketsPreview />
       <CtaBanner />

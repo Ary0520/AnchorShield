@@ -79,10 +79,10 @@ export default function ProtocolStatsPage() {
 
         {/* Page header */}
         <div>
-          <h1 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 28, color: "white", letterSpacing: "-0.56px", margin: 0 }}>
+          <h1 style={{ fontFamily: "var(--font-geist-sans)", fontWeight: 700, fontSize: 28, color: "white", letterSpacing: "-0.56px", margin: 0 }}>
             Protocol Stats
           </h1>
-          <p style={{ color: "#888", fontSize: 13, marginTop: 4, fontFamily: "Inter, sans-serif" }}>
+          <p style={{ color: "#888", fontSize: 13, marginTop: 4, fontFamily: "'General Sans', sans-serif" }}>
             Live on-chain data · Stellar Testnet
           </p>
         </div>
@@ -107,7 +107,7 @@ export default function ProtocolStatsPage() {
                 <div key={card.label} className="flex flex-col p-4 rounded-lg" style={{ background: "#161616", border: "1px solid #222" }}>
                   <p style={{ ...mono, fontSize: 10, color: "#555", letterSpacing: "0.5px", marginBottom: 8 }}>{card.label.toUpperCase()}</p>
                   <p style={{ ...mono, fontSize: 26, fontWeight: 700, color: card.valueColor, lineHeight: 1, margin: 0 }}>{card.value}</p>
-                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "#555", marginTop: 6 }}>{card.sub}</p>
+                  <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 11, color: "#555", marginTop: 6 }}>{card.sub}</p>
                 </div>
               ))
           }
@@ -119,25 +119,25 @@ export default function ProtocolStatsPage() {
             <div className="flex gap-8 shrink-0">
               <div>
                 <p style={{ ...mono, fontSize: 22, fontWeight: 700, color: "#00ffc2", margin: 0 }}>{stats.expiredNo}</p>
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "#555", marginTop: 4 }}>NO wins</p>
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: 10, color: "#444" }}>Peg held</p>
+                <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 11, color: "#555", marginTop: 4 }}>NO wins</p>
+                <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 10, color: "#444" }}>Peg held</p>
               </div>
               <div style={{ width: 1, background: "#222", alignSelf: "stretch" }} />
               <div>
                 <p style={{ ...mono, fontSize: 22, fontWeight: 700, color: "#ff6b6b", margin: 0 }}>{stats.settledYes}</p>
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "#555", marginTop: 4 }}>YES wins</p>
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: 10, color: "#444" }}>Depeg confirmed</p>
+                <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 11, color: "#555", marginTop: 4 }}>YES wins</p>
+                <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 10, color: "#444" }}>Depeg confirmed</p>
               </div>
             </div>
             <div className="flex-1">
               <div className="flex justify-between mb-1">
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "#555" }}>NO win rate</p>
+                <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 11, color: "#555" }}>NO win rate</p>
                 <p style={{ ...mono, fontSize: 11, color: "#00ffc2" }}>{noWinRate}%</p>
               </div>
               <div className="h-2 rounded-full overflow-hidden" style={{ background: "#222" }}>
                 <div className="h-full rounded-full" style={{ width: `${noWinRate ?? 0}%`, background: "#00ffc2" }} />
               </div>
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: 10, color: "#444", marginTop: 4 }}>
+              <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 10, color: "#444", marginTop: 4 }}>
                 {noWinRate}% of resolved markets expired safely without a depeg
               </p>
             </div>
@@ -147,14 +147,14 @@ export default function ProtocolStatsPage() {
         {/* Markets table */}
         <div className="rounded-lg overflow-hidden" style={{ background: "#161616", border: "1px solid #222" }}>
           <div className="px-5 py-4" style={{ borderBottom: "1px solid #222" }}>
-            <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 16, color: "white", margin: 0 }}>All Markets</h2>
+            <h2 style={{ fontFamily: "var(--font-geist-sans)", fontWeight: 700, fontSize: 16, color: "white", margin: 0 }}>All Markets</h2>
           </div>
           {loading ? (
             <div className="p-5 space-y-3">
               {[1,2,3,4].map(i => <TableRowSkeleton key={i} />)}
             </div>
           ) : rows.length === 0 ? (
-            <p className="p-5 text-sm" style={{ color: "#555", fontFamily: "Inter, sans-serif" }}>No markets found.</p>
+            <p className="p-5 text-sm" style={{ color: "#555", fontFamily: "'General Sans', sans-serif" }}>No markets found.</p>
           ) : (
             <table className="w-full text-xs">
               <thead>
@@ -175,7 +175,7 @@ export default function ProtocolStatsPage() {
                       <td className="px-5 py-3"><span style={{ ...mono, color: "#555", fontSize: 12 }}>{market.market_id}</span></td>
                       <td className="px-5 py-3">
                         <Link href={`/app/markets/${market.market_id}`}
-                          style={{ fontFamily: "Inter, sans-serif", color: "white", fontSize: 13, fontWeight: 500, textDecoration: "none" }}
+                          style={{ fontFamily: "'General Sans', sans-serif", color: "white", fontSize: 13, fontWeight: 500, textDecoration: "none" }}
                           onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#00ffc2"}
                           onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "white"}>
                           {market.label}
@@ -186,7 +186,7 @@ export default function ProtocolStatsPage() {
                       <td className="px-5 py-3"><span style={{ ...mono, color: "#888", fontSize: 12 }}>{formatExpiry(market.expiry_timestamp)}</span></td>
                       <td className="px-5 py-3">
                         <span className="px-2 py-0.5 rounded text-xs font-medium"
-                          style={{ background: badge.bg, color: badge.text, fontFamily: "Inter, sans-serif" }}>
+                          style={{ background: badge.bg, color: badge.text, fontFamily: "'General Sans', sans-serif" }}>
                           {badge.label}
                         </span>
                       </td>
@@ -201,7 +201,7 @@ export default function ProtocolStatsPage() {
         {/* Settlement history */}
         <div className="rounded-lg overflow-hidden" style={{ background: "#161616", border: "1px solid #222" }}>
           <div className="px-5 py-4" style={{ borderBottom: "1px solid #222" }}>
-            <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 16, color: "white", margin: 0 }}>Settlement History</h2>
+            <h2 style={{ fontFamily: "var(--font-geist-sans)", fontWeight: 700, fontSize: 16, color: "white", margin: 0 }}>Settlement History</h2>
           </div>
           <div className="p-5">
             {!loading && rows.filter(r => r.state !== "Open").length > 0 ? (
@@ -213,10 +213,10 @@ export default function ProtocolStatsPage() {
                       style={{ background: "#0a0a0a", border: "1px solid #222" }}>
                       <div className="flex items-center gap-3">
                         <span className="px-2 py-0.5 rounded text-xs font-medium shrink-0"
-                          style={{ background: badge.bg, color: badge.text, fontFamily: "Inter, sans-serif" }}>
+                          style={{ background: badge.bg, color: badge.text, fontFamily: "'General Sans', sans-serif" }}>
                           {badge.label}
                         </span>
-                        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "white" }}>{market.label}</span>
+                        <span style={{ fontFamily: "'General Sans', sans-serif", fontSize: 13, color: "white" }}>{market.label}</span>
                       </div>
                       <div className="flex items-center gap-6">
                         <span style={{ ...mono, fontSize: 12, color: "#888" }}>{formatExpiry(market.expiry_timestamp)}</span>
@@ -232,17 +232,17 @@ export default function ProtocolStatsPage() {
                   style={{ background: "#0a0a0a", border: "1px solid #222" }}>
                   <div className="flex items-center gap-3">
                     <span className="px-2 py-0.5 rounded text-xs font-medium"
-                      style={{ background: "rgba(136,136,136,0.1)", color: "#888", fontFamily: "Inter, sans-serif" }}>
+                      style={{ background: "rgba(136,136,136,0.1)", color: "#888", fontFamily: "'General Sans', sans-serif" }}>
                       ✓ NO won
                     </span>
-                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "white" }}>USDC test — expires in 10 min</span>
+                    <span style={{ fontFamily: "'General Sans', sans-serif", fontSize: 13, color: "white" }}>USDC test — expires in 10 min</span>
                   </div>
                   <div className="flex items-center gap-6">
                     <span style={{ ...mono, fontSize: 12, color: "#888" }}>Jul 30 2026</span>
                     <span style={{ ...mono, fontSize: 12, color: "rgba(255,255,255,0.75)" }}>$20.00 returned</span>
                   </div>
                 </div>
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "#444" }}>Markets 0–3 expire Sep 28, 2026</p>
+                <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 11, color: "#444" }}>Markets 0–3 expire Sep 28, 2026</p>
               </div>
             )}
           </div>
@@ -253,8 +253,8 @@ export default function ProtocolStatsPage() {
           style={{ background: "rgba(0,255,194,0.04)", border: "1px solid rgba(0,255,194,0.12)" }}>
           <span style={{ color: "#00ffc2", fontSize: 16, flexShrink: 0, marginTop: 1 }}>ⓘ</span>
           <div>
-            <p style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 13, color: "white", marginBottom: 4 }}>How settlement works</p>
-            <p style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#888", lineHeight: 1.6, margin: 0 }}>
+            <p style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "white", marginBottom: 4 }}>How settlement works</p>
+            <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 12, color: "#888", lineHeight: 1.6, margin: 0 }}>
               Markets settle automatically via Reflector oracle. If the covered asset drops below the depeg threshold
               continuously for the breach duration (1 hour), YES wins and cover buyers receive $1 USDC per token.
               If the market expires without a sustained breach, NO wins and underwriters reclaim their collateral plus

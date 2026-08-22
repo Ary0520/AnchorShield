@@ -467,7 +467,7 @@ function ComingSoonCard({
           padding: "3px 28px",
           transform: "rotate(45deg)",
           transformOrigin: "center",
-          fontFamily: "Inter, sans-serif",
+          fontFamily: "'General Sans', sans-serif",
           letterSpacing: "0.12em",
           border: "1px solid rgba(255,255,255,0.1)",
         }}
