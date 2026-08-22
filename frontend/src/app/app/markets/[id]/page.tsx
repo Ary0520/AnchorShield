@@ -535,7 +535,7 @@ export default function MarketDetailPage() {
             </div>
 
             {/* Body */}
-            <div className="p-6 min-h-[160px] flex flex-col justify-center relative">
+            <div className="p-6 min-h-[160px] max-h-[75vh] overflow-y-auto flex flex-col justify-center relative" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(0,255,170,0.2) transparent" }}>
               {aiLoading ? (
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center gap-3 mb-2">
@@ -552,18 +552,40 @@ export default function MarketDetailPage() {
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col gap-3" style={{ animation: "fadeIn 0.5s ease" }}>
-                  {aiReport?.split('. ').map((sentence, i) => {
-                    if (!sentence.trim()) return null;
+                <div className="flex flex-col gap-2.5" style={{ animation: "fadeIn 0.5s ease", overflowY: "auto", paddingRight: 4 }}>
+                  {aiReport?.split('\n').map((line, i) => {
+                    const text = line.trim().replace(/\*/g, '');
+                    if (!text) return null;
+                    
+                    const isHeading = ["MARKET READ", "KEY RISKS", "ECONOMIC TRADE-OFF"].some(h => text.toUpperCase().includes(h));
+                    
+                    if (isHeading) {
+                      return (
+                        <h4 key={i} style={{
+                          fontFamily: "Inter, sans-serif",
+                          fontWeight: 700,
+                          fontSize: 11,
+                          color: "#00ffaa",
+                          letterSpacing: "0.06em",
+                          textTransform: "uppercase",
+                          marginTop: i > 0 ? 12 : 0,
+                          marginBottom: -4,
+                          animation: `fadeInUp 0.3s ease ${i * 0.05}s both`
+                        }}>
+                          {text}
+                        </h4>
+                      );
+                    }
+                    
                     return (
                       <p key={i} style={{ 
                         fontFamily: "Inter, sans-serif", 
-                        fontSize: 14, 
+                        fontSize: 13.5, 
                         color: "rgba(255,255,255,0.85)", 
                         lineHeight: 1.6,
-                        animation: `fadeInUp 0.4s ease ${i * 0.1}s both`
+                        animation: `fadeInUp 0.3s ease ${i * 0.05}s both`
                       }}>
-                        {sentence.trim() + (sentence.endsWith('.') ? '' : '.')}
+                        {text}
                       </p>
                     );
                   })}
