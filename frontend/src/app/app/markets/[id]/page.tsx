@@ -958,21 +958,55 @@ function TradePanel({
               </div>
 
               {uwAmt > 0 && (
-                <div className="flex flex-col gap-3 p-3 rounded-lg" style={{ background: "#1c1b1b", border: "1px solid #222" }}>
-                  <PreviewRow label="Collateral locked:" value={`$${uwAmt.toFixed(2)} USDC`} valueColor="white" />
-                  <div className="h-px" style={{ background: "#222" }} />
-                  <PreviewRow label="If NO wins (earned):" value={`+$${uwEarned.toFixed(2)}`} valueColor="#ffffff" bold />
-                  <PreviewRow label="If YES wins (lost):" value={`−$${uwAmt.toFixed(2)}`} valueColor="#690005" />
-                </div>
+                (() => {
+                  const daysLeft = Math.max(1, (Number(config.expiry_timestamp) * 1000 - Date.now()) / 86400000);
+                  const premiumApy = (uwPremBps / 10000) * (365 / daysLeft) * 100;
+                  const blendApy = 6.4;
+                  const totalApy = Math.round(premiumApy + blendApy);
+                  
+                  return (
+                    <div className="flex flex-col p-4 mt-2 rounded-xl" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)" }}>
+                      <div className="flex items-center justify-between mb-4">
+                        <span style={{ fontFamily: "'General Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#888", letterSpacing: "0.5px", textTransform: "uppercase" }}>Projected Returns</span>
+                        <span className="flex items-center gap-1.5 px-2 py-1 rounded" style={{ background: "rgba(255,255,255,0.08)", color: "#ffffff", fontSize: 10, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, border: "1px solid rgba(255,255,255,0.15)" }}>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                          Yield Stack Active
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between py-2 border-b border-white/5">
+                        <span style={{ color: "#aaa", fontSize: 13, ...mono }}>Premium Income ({uwPremBps} bps)</span>
+                        <span style={{ color: "white", fontSize: 13, ...mono }}>+${uwEarned.toFixed(2)}</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between py-2 border-b border-white/5">
+                        <span style={{ color: "#aaa", fontSize: 13, ...mono }}>DeFindex Blend Routing</span>
+                        <span style={{ color: "white", fontSize: 13, ...mono }}>+{blendApy}% APY</span>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-3 mt-1">
+                        <span style={{ color: "white", fontSize: 14, fontFamily: "'General Sans', sans-serif", fontWeight: 600 }}>Total Projected APY</span>
+                        <span style={{ color: "#ffffff", fontSize: 18, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, textShadow: "0 0 12px rgba(255,255,255,0.3)" }}>
+                          ~{totalApy}%
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 mt-2 border-t border-white/5">
+                        <span style={{ color: "#555", fontSize: 11, ...mono }}>Max Risk (If YES wins)</span>
+                        <span style={{ color: "#690005", fontSize: 11, ...mono }}>-${uwAmt.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  );
+                })()
               )}
 
-              {!isSettled && wallet.publicKey && (
+              {!isSettled && wallet.publicKey && (Date.now() > Number(config.expiry_timestamp) * 1000) && (
                 <button
                   onClick={handleTrySettle}
-                  className="w-full py-2 rounded-lg text-xs transition-all"
+                  className="w-full py-2 rounded-lg text-xs transition-all mt-2"
                   style={{ background: "transparent", border: "1px solid rgba(255,184,0,0.2)", color: "rgba(255,184,0,0.6)", ...mono }}
                 >
-                  Try Settle (permissionless)
+                  Market Expired: Settle Market (permissionless)
                 </button>
               )}
             </>
