@@ -176,12 +176,14 @@ function Nav() {
 
         {/* Links */}
         <div className="flex items-center gap-6">
-          <span
-            className="hidden sm:block text-sm text-white/45 cursor-not-allowed select-none"
-            title="Coming soon"
+          <a
+            href="https://drive.google.com/file/d/1MUwS6QS5d_gYxvIm6a1SuWyOxGyiBvpb/view"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:block text-sm text-white/70 hover:text-white transition-colors"
           >
-            Whitepaper
-          </span>
+            Litepaper
+          </a>
           <a
             href="https://docs.anchorshield.xyz"
             target="_blank"
@@ -1162,10 +1164,10 @@ function Footer() {
           </div>
           <div className="flex gap-6 text-xs" style={{ color: "rgba(0,0,0,0.35)" }}>
             <Link href="/app" className="hover:text-black transition-colors">App</Link>
+            <a href="https://drive.google.com/file/d/1MUwS6QS5d_gYxvIm6a1SuWyOxGyiBvpb/view" target="_blank" rel="noopener noreferrer"
+               className="hover:text-black transition-colors">Litepaper</a>
             <a href="https://docs.anchorshield.xyz" target="_blank" rel="noopener noreferrer"
                className="hover:text-black transition-colors">Docs</a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer"
-               className="hover:text-black transition-colors">GitHub</a>
             <a href="https://developers.stellar.org" target="_blank" rel="noopener noreferrer"
                className="hover:text-black transition-colors">Stellar Docs</a>
           </div>
