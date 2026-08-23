@@ -402,58 +402,88 @@ function StatsBar() {
 
 // ── HOW IT WORKS ───────────────────────────────────────────────────
 function HowItWorks() {
+  const [activeStep, setActiveStep] = useState(1); // Default to middle step active
+
   const steps = [
     {
       n: "01",
-      title: "Pick a market",
-      body: "Choose the stablecoin you want protected. Each market has a specific trigger and a live risk price.",
+      title: "Every peg has a price.",
+      tag: "MARKET SELECTION",
+      body: "Each stablecoin gets its own market — a specific trigger, like USDC falling below $0.995 for one continuous hour. The market only exists if the risk is real and measurable.",
     },
     {
       n: "02",
-      title: "Choose your side",
-      body: "Buying cover costs a small premium — paid out automatically if the peg breaks. Underwriting earns those premiums in exchange for covering the risk.",
+      title: "Buy the cover. Or sell it.",
+      tag: "TWO SIDES OF RISK",
+      body: "Cover buyers pay a small premium for the right to a payout if the peg breaks. Underwriters take the other side, earning that premium by putting up the collateral behind it.",
     },
     {
       n: "03",
-      title: "Walk away",
-      body: "The oracle watches the price. The contract decides. If the peg breaks, winners are paid instantly.",
+      title: "The oracle decides. Not us.",
+      tag: "AUTOMATED SETTLEMENT",
+      body: "Reflector's on-chain price feed is the only judge. When a breach is confirmed, the contract pays out instantly — no claims form, no review process, no one to convince.",
     },
   ];
+
   return (
-    <section id="how-it-works" className="py-28" style={{ fontFamily: "'General Sans', sans-serif" }}>
+    <section id="how-it-works" className="py-32 bg-black" style={{ fontFamily: "'General Sans', sans-serif" }}>
       <div className="max-w-7xl mx-auto px-6">
-        <FadeIn className="text-center mb-16">
-          <p className="text-white/70 text-xs uppercase tracking-widest mb-3 font-mono">How it works</p>
-          <h2 className={`text-4xl font-semibold gradient-text ${GeistSans.className}`}>Three steps. Fully automated.</h2>
+        
+        {/* Header */}
+        <FadeIn className="mb-16 max-w-2xl">
+          <p className="text-[#525252] text-xs uppercase tracking-[0.2em] mb-4 font-mono">The Mechanism</p>
+          <h2 className={`text-4xl md:text-5xl font-bold text-white leading-[1.1] tracking-tight ${GeistSans.className}`}>
+            Peg risk, priced and paid out.<br/>
+            Automatically.
+          </h2>
         </FadeIn>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {steps.map((s, i) => (
-            <FadeIn key={s.n} delay={i * 0.12}>
-              <div className="relative rounded-2xl p-7 h-full transition-all duration-300 step-card"
-                style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(0,229,255,0.18)",
-                  boxShadow: "0 0 18px rgba(0,229,255,0.07), inset 0 1px 0 rgba(255,255,255,0.05)",
-                }}>
-                <p className="text-6xl font-semibold mb-4"
-                  style={{
-                    background: "linear-gradient(135deg, #00e5ff 0%, rgba(0,229,255,0.4) 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                    filter: "drop-shadow(0 0 8px rgba(0,229,255,0.5))",
-                  }}>{s.n}</p>
-                <h3 className="text-white font-semibold text-lg mb-3">{s.title}</h3>
-                <p className="text-white/50 text-sm leading-relaxed">{s.body}</p>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
+
+        {/* 3-Column Container */}
+        <FadeIn delay={0.1}>
+          <div className="flex flex-col md:flex-row border border-[#262626]">
+            {steps.map((s, i) => {
+              const isActive = activeStep === i;
+              return (
+                <div 
+                  key={s.n} 
+                  onMouseEnter={() => setActiveStep(i)}
+                  className={`flex-1 p-10 flex flex-col relative cursor-default transition-colors duration-500
+                    ${i !== steps.length - 1 ? 'border-b md:border-b-0 md:border-r border-[#262626]' : ''}`}
+                >
+                  {/* Active Accent Underline */}
+                  <div className={`absolute bottom-0 left-0 w-full h-[2px] bg-[var(--accent)] 
+                                transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`} />
+                                
+                  {/* Number & Line */}
+                  <div className="flex items-center gap-4 mb-10">
+                    <span className={`font-mono text-xl transition-colors duration-300 ${isActive ? 'text-[var(--accent)]' : 'text-[#525252]'}`}>
+                      {s.n}
+                    </span>
+                    <div className={`h-[1px] w-16 transition-colors duration-300 ${isActive ? 'bg-[var(--accent)]' : 'bg-[#262626]'}`} />
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex flex-col flex-grow">
+                    <h3 className="text-white font-bold text-[24px] leading-snug mb-8">{s.title}</h3>
+                    <div className={`transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+                      <p className="text-[var(--accent)] font-mono text-[11px] uppercase tracking-widest mb-4">
+                        {s.tag}
+                      </p>
+                    </div>
+                    <p className="text-[#a3a3a3] text-[15px] leading-relaxed">
+                      {s.body}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </FadeIn>
+
       </div>
     </section>
   );
 }
-
 // ── WHY ANCHORSHIELD (bento with videos) ───────────────────────────
 function WhySection() {
   return (
