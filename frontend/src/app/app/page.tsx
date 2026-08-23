@@ -184,7 +184,7 @@ export default function RiskCurvePage() {
               className="px-2 py-0.5 rounded text-xs transition-all"
               style={{
                 background: sort === s ? "rgba(0,229,255,0.12)" : "transparent",
-                color: sort === s ? "#00e5ff" : "rgba(255,255,255,0.45)",
+                color: sort === s ? "#cccccc" : "rgba(255,255,255,0.45)",
               }}
             >
               {s === "risk-desc" ? "Highest risk" : s === "risk-asc" ? "Lowest risk" : "Expiry soonest"}
@@ -197,7 +197,7 @@ export default function RiskCurvePage() {
           style={{
             background: openOnly ? "rgba(0,229,255,0.08)" : "rgba(255,255,255,0.04)",
             border: openOnly ? "1px solid rgba(0,229,255,0.2)" : "1px solid rgba(255,255,255,0.07)",
-            color: openOnly ? "#00e5ff" : "rgba(255,255,255,0.4)",
+            color: openOnly ? "#cccccc" : "rgba(255,255,255,0.4)",
           }}
         >
           <Filter size={12} />
@@ -337,7 +337,7 @@ function MarketCard({ market, wallet }: { market: EnrichedMarket; wallet: Return
               style={{
                 background: "rgba(0,229,255,0.1)",
                 border: "1px solid rgba(0,229,255,0.2)",
-                color: "#00e5ff",
+                color: "#cccccc",
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.background = "rgba(0,229,255,0.18)";
@@ -430,7 +430,7 @@ function MarketCardSkeleton() {
       <div className="flex items-center gap-2 mt-1">
         <span
           className="inline-block w-1.5 h-1.5 rounded-full"
-          style={{ background: "#00e5ff", boxShadow: "0 0 6px #00e5ff", animation: "pulse 1.5s ease-in-out infinite" }}
+          style={{ background: "#cccccc", boxShadow: "0 0 6px #cccccc", animation: "pulse 1.5s ease-in-out infinite" }}
         />
         <span style={{ fontSize: 10, color: "rgba(0,229,255,0.5)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.05em" }}>
           Fetching from Stellar…

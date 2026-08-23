@@ -108,13 +108,13 @@ export default function OracleChart({ symbol, threshold }: Props) {
 
     // Area series — the main price line with gradient fill
     const series = chart.addSeries(AreaSeries, {
-      lineColor: "#00ffc2",
+      lineColor: "#ffffff",
       lineWidth: 2,
-      topColor: "rgba(0,255,194,0.12)",
-      bottomColor: "rgba(0,255,194,0.01)",
+      topColor: "rgba(255,255,255,0.12)",
+      bottomColor: "rgba(255,255,255,0.01)",
       crosshairMarkerVisible: true,
       crosshairMarkerRadius: 5,
-      crosshairMarkerBorderColor: "#00ffc2",
+      crosshairMarkerBorderColor: "#ffffff",
       crosshairMarkerBackgroundColor: "#0a0a0a",
       priceFormat: {
         type: "price",
@@ -192,8 +192,8 @@ export default function OracleChart({ symbol, threshold }: Props) {
         lineColor = "#ffb800";
         topColor  = "rgba(255,184,0,0.12)";
       } else {
-        lineColor = "#00ffc2";
-        topColor  = "rgba(0,255,194,0.1)";
+        lineColor = "#ffffff";
+        topColor  = "rgba(255,255,255,0.1)";
       }
 
       // Final null check before touching refs (unmount could have happened during color compute)

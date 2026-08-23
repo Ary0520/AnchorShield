@@ -5,7 +5,7 @@
  * Fires on Next.js soft navigations via the native `navigate` event
  * (App Router equivalent of router events).
  *
- * No external dependencies. Accent color matches the app's #00ffc2 theme.
+ * No external dependencies. Accent color matches the app's #ffffff theme.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -118,7 +118,7 @@ export default function TopLoader() {
       }}
     >
       {/* Track */}
-      <div style={{ position: "absolute", inset: 0, background: "rgba(0,255,194,0.08)" }} />
+      <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.08)" }} />
 
       {/* Bar */}
       <div
@@ -128,8 +128,8 @@ export default function TopLoader() {
           left: 0,
           height: "100%",
           width: `${width}%`,
-          background: "linear-gradient(90deg, #00ffc2, #00e5ff)",
-          boxShadow: "0 0 10px rgba(0,255,194,0.6), 0 0 4px rgba(0,255,194,0.4)",
+          background: "linear-gradient(90deg, #ffffff, #cccccc)",
+          boxShadow: "0 0 10px rgba(255,255,255,0.6), 0 0 4px rgba(255,255,255,0.4)",
           transition: width === 100
             ? "width 0.15s ease"
             : width <= 20
@@ -149,8 +149,8 @@ export default function TopLoader() {
           width: 6,
           height: 6,
           borderRadius: "50%",
-          background: "#00ffc2",
-          boxShadow: "0 0 8px 3px rgba(0,255,194,0.7)",
+          background: "#ffffff",
+          boxShadow: "0 0 8px 3px rgba(255,255,255,0.7)",
           opacity: width > 0 && width < 100 ? 1 : 0,
           transition: "opacity 0.15s",
         }}

@@ -20,8 +20,8 @@ const ANCHOR_NAMES: Record<string, {
 
 type RatingLabel = "AAA" | "AA" | "A" | "BBB" | "C" | "—";
 const RATING_CONFIG: { label: RatingLabel; color: string; bg: string; min: number }[] = [
-  { label: "AAA", color: "#00ffc2", bg: "rgba(0,255,194,0.12)",   min: 9500 },
-  { label: "AA",  color: "#00ffc2", bg: "rgba(0,255,194,0.09)",   min: 9000 },
+  { label: "AAA", color: "#ffffff", bg: "rgba(255,255,255,0.12)",   min: 9500 },
+  { label: "AA",  color: "#ffffff", bg: "rgba(255,255,255,0.09)",   min: 9000 },
   { label: "A",   color: "#22c55e", bg: "rgba(34,197,94,0.1)",    min: 8000 },
   { label: "BBB", color: "#ffb800", bg: "rgba(255,184,0,0.12)",   min: 7000 },
   { label: "C",   color: "#ff4444", bg: "rgba(255,68,68,0.08)",   min: 0    },
@@ -68,9 +68,9 @@ export default function AnchorTrustPage() {
               ACR - Operational Risk Registry
             </h1>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: "rgba(0,255,194,0.1)" }}>
-            <div className="w-2 h-2 rounded-full" style={{ background: "#00ffc2", boxShadow: "0 0 8px #00ffc2", animation: "pulse 2s infinite" }} />
-            <span style={{ ...mono, fontSize: 10, color: "#00ffc2", letterSpacing: "0.05em" }}>LIVE RISK ORACLE SYNC</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.1)" }}>
+            <div className="w-2 h-2 rounded-full" style={{ background: "#ffffff", boxShadow: "0 0 8px #ffffff", animation: "pulse 2s infinite" }} />
+            <span style={{ ...mono, fontSize: 10, color: "#ffffff", letterSpacing: "0.05em" }}>LIVE RISK ORACLE SYNC</span>
           </div>
         </div>
 
@@ -111,11 +111,11 @@ export default function AnchorTrustPage() {
           <table className="w-full text-left" style={{ borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid #1a1a1a" }}>
-                <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>ANCHOR ENTITY</th>
-                <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>SEP-24 SUCCESS</th>
-                <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>AVG LATENCY</th>
-                <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>ORACLE UPTIME</th>
-                <th className="px-5 py-3 font-normal text-right" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>STUCK TXS</th>
+                <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em", textAlign: "left" }}>ANCHOR ENTITY</th>
+                <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em", textAlign: "left" }}>SEP-24 SUCCESS</th>
+                <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em", textAlign: "left" }}>AVG LATENCY</th>
+                <th className="px-5 py-3 font-normal" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em", textAlign: "left" }}>HOT WALLET HEALTH</th>
+                <th className="px-5 py-3 font-normal text-right" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>ON-CHAIN REFUNDS</th>
                 <th className="px-5 py-3 font-normal text-right" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>PAYOUT VOL (USDC)</th>
                 <th className="px-5 py-3 font-normal text-right" style={{ ...mono, fontSize: 10, color: "#666", letterSpacing: "0.05em" }}>COMPOSITE ACR</th>
               </tr>
@@ -158,7 +158,7 @@ export default function AnchorTrustPage() {
                       <td className="px-5 py-4 text-right" style={{ color: e.metrics.failed_withdrawals > 0 ? "#ff4444" : "#ccc", ...mono, fontSize: 13 }}>
                         {e.metrics.failed_withdrawals}
                       </td>
-                      <td className="px-5 py-4 text-right" style={{ color: "#00ffc2", ...mono, fontSize: 13 }}>
+                      <td className="px-5 py-4 text-right" style={{ color: "#ffffff", ...mono, fontSize: 13 }}>
                         ${(Number(e.metrics.historical_payouts) / 10_000_000).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                       </td>
                       <td className="px-5 py-4 text-right">
@@ -180,9 +180,9 @@ export default function AnchorTrustPage() {
       {/* CSS for pulsing dot */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes pulse {
-          0% { opacity: 1; box-shadow: 0 0 8px #00ffc2; }
-          50% { opacity: 0.5; box-shadow: 0 0 2px #00ffc2; }
-          100% { opacity: 1; box-shadow: 0 0 8px #00ffc2; }
+          0% { opacity: 1; box-shadow: 0 0 8px #ffffff; }
+          50% { opacity: 0.5; box-shadow: 0 0 2px #ffffff; }
+          100% { opacity: 1; box-shadow: 0 0 8px #ffffff; }
         }
       `}} />
     </div>

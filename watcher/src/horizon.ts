@@ -5,56 +5,65 @@ import { pushLiveMetrics } from './acr';
 
 export interface AnchorHealth {
   anchorId: string;
-  stuckTxCount: number;
-  isHealthy: boolean;
+  refundCount: number;
+  hotWalletHealthBps: number;
   checkedAt: string;
+  payoutVolume: number;
 }
 
 export async function checkAnchorHealth(
   anchorId: string,
   distributionAccount: string,
-  stuckThresholdHours: number,
-): Promise<AnchorHealth & { payoutVolume: number }> {
-  const url = `${CONFIG.HORIZON_URL}/accounts/${distributionAccount}/payments?order=desc&limit=200`;
+): Promise<AnchorHealth> {
+  const paymentsUrl = `${CONFIG.HORIZON_URL}/accounts/${distributionAccount}/payments?order=desc&limit=200`;
+  const accountUrl = `${CONFIG.HORIZON_URL}/accounts/${distributionAccount}`;
 
   try {
-    const response = await axios.get<{
-      _embedded: { records: any[] };
-    }>(url, { timeout: 10_000 });
+    // 1. Fetch Hot Wallet Balance
+    const accResponse = await axios.get(accountUrl, { timeout: 10_000 });
+    const balances = accResponse.data.balances || [];
+    const nativeBalanceObj = balances.find((b: any) => b.asset_type === 'native');
+    const xlmBalance = nativeBalanceObj ? parseFloat(nativeBalanceObj.balance) : 0;
+    
+    // Scale: 5000 XLM = 100% health (10000 bps). Less XLM linearly reduces health.
+    let hotWalletHealthBps = Math.floor((xlmBalance / 5000) * 10000);
+    if (hotWalletHealthBps > 10000) hotWalletHealthBps = 10000;
+    if (hotWalletHealthBps < 0) hotWalletHealthBps = 0;
 
-    const payments = response.data._embedded.records;
-    let stuckCount = 0;
+    // 2. Fetch Payments for Volume & Refunds
+    const payResponse = await axios.get<{
+      _embedded: { records: any[] };
+    }>(paymentsUrl, { timeout: 10_000 });
+
+    const payments = payResponse.data._embedded.records;
+    let refundCount = 0;
     let payoutVolume = 0;
 
     for (const payment of payments) {
       if (payment.type !== 'payment') continue;
+      
       if (payment.to === distributionAccount) {
+         // Incoming deposit to anchor
          payoutVolume += parseFloat(payment.amount);
+      } else if (payment.from === distributionAccount) {
+         // Outgoing payment from anchor (Refund / Failed Off-Ramp)
+         refundCount++;
       }
-    }
-    
-    const stats = getAnchorStats(anchorId);
-    stuckCount = stats.totalPings - stats.successfulPings;
-
-    const isHealthy = stuckCount < 5;
-    if (!isHealthy) {
-      console.warn(`[Horizon] Anchor ${anchorId} has ${stuckCount} failed pings (threshold: 5)`);
     }
 
     return {
       anchorId,
-      stuckTxCount: stuckCount,
-      isHealthy,
+      refundCount,
+      hotWalletHealthBps,
       checkedAt: new Date().toISOString(),
       payoutVolume
     };
   } catch (err) {
     console.error(`[Horizon] Health check failed for ${anchorId}:`, (err as Error).message);
-    const stats = getAnchorStats(anchorId);
     return {
       anchorId,
-      stuckTxCount: stats.totalPings - stats.successfulPings,
-      isHealthy: false,
+      refundCount: 0,
+      hotWalletHealthBps: 10000,
       checkedAt: new Date().toISOString(),
       payoutVolume: 0
     };
@@ -68,14 +77,10 @@ export async function checkAllAnchors(): Promise<void> {
     console.log(`[Horizon] Starting live SEP-24 ping for ${domain}...`);
     const pingResult = await pingAnchorSep24(domain);
     
-    const healthResult = await checkAnchorHealth(domain, anchor.publicKey, anchor.stuck_tx_threshold_hours);
-    
-    // NO MOCKS EVER AGAIN. We use 100% REAL Mainnet Volume!
+    const healthResult = await checkAnchorHealth(domain, anchor.publicKey);
     const finalVolume = healthResult.payoutVolume;
     
     const stats = getAnchorStats(domain);
-    
-    // Bootstrap stats if watcher just started so it doesn't default to 0% uptime on boot
     if (stats.totalPings === 0) {
       stats.totalPings = 1;
       stats.successfulPings = pingResult.isUp ? 1 : 0;
@@ -97,7 +102,8 @@ export async function checkAllAnchors(): Promise<void> {
       `${pingResult.isUp ? 'UP' : 'DOWN'} ` +
       `(${avgLatencyMs}ms avg latency) | ` +
       `Success: ${(successRateBps / 100).toFixed(2)}% | ` +
-      `Failed Pings: ${healthResult.stuckTxCount} | ` +
+      `Refunds: ${healthResult.refundCount} | ` +
+      `HW Health: ${(healthResult.hotWalletHealthBps / 100).toFixed(2)}% | ` +
       `Payout Vol: ${finalVolume.toFixed(2)}`
     );
 
@@ -105,7 +111,8 @@ export async function checkAllAnchors(): Promise<void> {
       anchor.publicKey, 
       avgLatencyMs, 
       successRateBps, 
-      healthResult.stuckTxCount, 
+      healthResult.refundCount, 
+      healthResult.hotWalletHealthBps,
       finalVolume
     );
   }

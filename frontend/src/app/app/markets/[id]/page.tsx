@@ -142,7 +142,7 @@ export default function MarketDetailPage() {
     return (
       <div className="p-6 text-sm" style={{ background: "#0a0a0a", color: "#888" }}>
         Market not found.{" "}
-        <Link href="/app" style={{ color: "#00ffc2" }}>← Back to Risk Curve</Link>
+        <Link href="/app" style={{ color: "#ffffff" }}>← Back to Risk Curve</Link>
       </div>
     );
   }
@@ -256,7 +256,7 @@ export default function MarketDetailPage() {
                 const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
                 const mins = Math.floor((diff / 1000 / 60) % 60);
                 const text = days > 0 ? `${days}d ${hours}h left` : hours > 0 ? `${hours}h ${mins}m left` : `${mins}m left`;
-                return <span style={{ ...mono, color: "#00ffc2", fontSize: 11, background: "rgba(0,255,194,0.1)", padding: "2px 6px", borderRadius: 4 }}>{text}</span>;
+                return <span style={{ ...mono, color: "#ffffff", fontSize: 11, background: "rgba(255,255,255,0.1)", padding: "2px 6px", borderRadius: 4 }}>{text}</span>;
               })()}
             </div>
           </div>
@@ -264,7 +264,7 @@ export default function MarketDetailPage() {
 
         {/* TX notifications */}
         {txStatus && (
-          <div className="text-xs px-4 py-2 mb-3 rounded" style={{ background: "rgba(0,255,194,0.08)", border: "1px solid rgba(0,255,194,0.15)", color: "#00ffc2", ...mono }}>
+          <div className="text-xs px-4 py-2 mb-3 rounded" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "#ffffff", ...mono }}>
             {txStatus}
           </div>
         )}
@@ -671,7 +671,7 @@ function MarketDetailSkeleton() {
         <div style={{ position: "relative", width: 48, height: 48 }}>
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style={{ animation: "spin 1.2s linear infinite" }}>
             <circle cx="24" cy="24" r="20" stroke="rgba(0,229,255,0.12)" strokeWidth="3" />
-            <path d="M24 4 A20 20 0 0 1 44 24" stroke="#00e5ff" strokeWidth="3" strokeLinecap="round" />
+            <path d="M24 4 A20 20 0 0 1 44 24" stroke="#cccccc" strokeWidth="3" strokeLinecap="round" />
           </svg>
           <div
             style={{
@@ -679,7 +679,7 @@ function MarketDetailSkeleton() {
               display: "flex", alignItems: "center", justifyContent: "center",
             }}
           >
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#00e5ff", boxShadow: "0 0 10px #00e5ff" }} />
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#cccccc", boxShadow: "0 0 10px #cccccc" }} />
           </div>
         </div>
 
@@ -800,7 +800,7 @@ function TradePanel({
               style={{
                 background: "transparent",
                 color: tradeTab === tab ? "white" : "rgba(255,255,255,0.25)",
-                borderBottom: tradeTab === tab ? "2px solid #00ffc2" : "2px solid transparent",
+                borderBottom: tradeTab === tab ? "2px solid #ffffff" : "2px solid transparent",
                 fontFamily: "'General Sans', sans-serif",
               }}
             >
@@ -870,7 +870,7 @@ function TradePanel({
                   valueColor="white"
                 />
                 <div className="h-px" style={{ background: "#222" }} />
-                <PreviewRow label="If depeg:" value={coverAmt > 0 ? `+$${coverAmt.toFixed(2)} payout` : "—"} valueColor="#00ffc2" bold />
+                <PreviewRow label="If depeg:" value={coverAmt > 0 ? `+$${coverAmt.toFixed(2)} payout` : "—"} valueColor="#ffffff" bold />
                 <PreviewRow label="If no depeg:" value="premium lost" valueColor="#888" />
               </div>
 
@@ -890,7 +890,7 @@ function TradePanel({
                       className="flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all"
                       style={{
                         background: coverOrderType === t ? "#0a0a0a" : "transparent",
-                        border: coverOrderType === t ? "1px solid #00ffc2" : "1px solid #333",
+                        border: coverOrderType === t ? "1px solid #ffffff" : "1px solid #333",
                         color: coverOrderType === t ? "white" : "#888",
                         fontFamily: "'General Sans', sans-serif",
                       }}
@@ -961,7 +961,7 @@ function TradePanel({
                 <div className="flex flex-col gap-3 p-3 rounded-lg" style={{ background: "#1c1b1b", border: "1px solid #222" }}>
                   <PreviewRow label="Collateral locked:" value={`$${uwAmt.toFixed(2)} USDC`} valueColor="white" />
                   <div className="h-px" style={{ background: "#222" }} />
-                  <PreviewRow label="If NO wins (earned):" value={`+$${uwEarned.toFixed(2)}`} valueColor="#00ffc2" bold />
+                  <PreviewRow label="If NO wins (earned):" value={`+$${uwEarned.toFixed(2)}`} valueColor="#ffffff" bold />
                   <PreviewRow label="If YES wins (lost):" value={`−$${uwAmt.toFixed(2)}`} valueColor="#690005" />
                 </div>
               )}
@@ -989,9 +989,9 @@ function TradePanel({
                   disabled={coverAmt <= 0}
                   className="w-full py-4 rounded-lg text-lg font-bold flex items-center justify-center gap-2 disabled:opacity-40 transition-all"
                   style={{
-                    background: "#00ffc2",
+                    background: "#ffffff",
                     color: "#0a0a0a",
-                    boxShadow: "0 0 12px rgba(0,255,194,0.15)",
+                    boxShadow: "0 0 12px rgba(255,255,255,0.15)",
                     fontFamily: "'General Sans', sans-serif",
                     letterSpacing: "-0.18px",
                   }}
@@ -1075,7 +1075,7 @@ function TradePanel({
             <button
               onClick={handleClaim}
               className="w-full py-3 rounded-lg text-sm font-bold mt-1"
-              style={{ background: "#00ffc2", color: "#0a0a0a", fontFamily: "'General Sans', sans-serif" }}
+              style={{ background: "#ffffff", color: "#0a0a0a", fontFamily: "'General Sans', sans-serif" }}
             >
               Claim Winnings
             </button>

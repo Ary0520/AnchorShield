@@ -22,7 +22,7 @@ interface Stats {
 }
 
 function stateBadge(state: string): { bg: string; text: string; label: string } {
-  if (state === "Open")     return { bg: "rgba(0,255,194,0.1)",   text: "#00ffc2", label: "● Live" };
+  if (state === "Open")     return { bg: "rgba(255,255,255,0.1)",   text: "#ffffff", label: "● Live" };
   if (state === "Settled")  return { bg: "rgba(105,0,5,0.15)",    text: "#ff6b6b", label: "⚠ YES won" };
   if (state === "Expired")  return { bg: "rgba(136,136,136,0.1)", text: "#888",    label: "✓ NO won" };
   return                          { bg: "rgba(255,184,0,0.1)",    text: "#ffb800", label: state };
@@ -100,9 +100,9 @@ export default function ProtocolStatsPage() {
             ? [1,2,3,4].map(i => <StatCardSkeleton key={i} />)
             : [
                 { label: "Total Markets",     value: String(stats?.total ?? 0),                                                                        sub: "deployed via factory",               valueColor: "white"   },
-                { label: "Total USDC Locked", value: `$${formatUsdc(stats?.totalLocked ?? 0n)}`,                                                       sub: "across open markets",                valueColor: "#00ffc2" },
+                { label: "Total USDC Locked", value: `$${formatUsdc(stats?.totalLocked ?? 0n)}`,                                                       sub: "across open markets",                valueColor: "#ffffff" },
                 { label: "Markets Resolved",  value: String(resolved),                                                                                 sub: resolved === 0 ? "none yet" : `${stats?.expiredNo} NO · ${stats?.settledYes} YES`, valueColor: "white" },
-                { label: "NO Win Rate",       value: noWinRate !== null ? `${noWinRate}%` : "—",                                                       sub: noWinRate !== null ? "expired without depeg" : "no resolved markets yet", valueColor: noWinRate !== null ? "#00ffc2" : "#888" },
+                { label: "NO Win Rate",       value: noWinRate !== null ? `${noWinRate}%` : "—",                                                       sub: noWinRate !== null ? "expired without depeg" : "no resolved markets yet", valueColor: noWinRate !== null ? "#ffffff" : "#888" },
               ].map(card => (
                 <div key={card.label} className="flex flex-col p-4 rounded-lg" style={{ background: "#161616", border: "1px solid #222" }}>
                   <p style={{ ...mono, fontSize: 10, color: "#555", letterSpacing: "0.5px", marginBottom: 8 }}>{card.label.toUpperCase()}</p>
@@ -118,7 +118,7 @@ export default function ProtocolStatsPage() {
           <div className="flex items-center gap-6 p-4 rounded-lg" style={{ background: "#161616", border: "1px solid #222" }}>
             <div className="flex gap-8 shrink-0">
               <div>
-                <p style={{ ...mono, fontSize: 22, fontWeight: 700, color: "#00ffc2", margin: 0 }}>{stats.expiredNo}</p>
+                <p style={{ ...mono, fontSize: 22, fontWeight: 700, color: "#ffffff", margin: 0 }}>{stats.expiredNo}</p>
                 <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 11, color: "#555", marginTop: 4 }}>NO wins</p>
                 <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 10, color: "#444" }}>Peg held</p>
               </div>
@@ -132,10 +132,10 @@ export default function ProtocolStatsPage() {
             <div className="flex-1">
               <div className="flex justify-between mb-1">
                 <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 11, color: "#555" }}>NO win rate</p>
-                <p style={{ ...mono, fontSize: 11, color: "#00ffc2" }}>{noWinRate}%</p>
+                <p style={{ ...mono, fontSize: 11, color: "#ffffff" }}>{noWinRate}%</p>
               </div>
               <div className="h-2 rounded-full overflow-hidden" style={{ background: "#222" }}>
-                <div className="h-full rounded-full" style={{ width: `${noWinRate ?? 0}%`, background: "#00ffc2" }} />
+                <div className="h-full rounded-full" style={{ width: `${noWinRate ?? 0}%`, background: "#ffffff" }} />
               </div>
               <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 10, color: "#444", marginTop: 4 }}>
                 {noWinRate}% of resolved markets expired safely without a depeg
@@ -176,7 +176,7 @@ export default function ProtocolStatsPage() {
                       <td className="px-5 py-3">
                         <Link href={`/app/markets/${market.market_id}`}
                           style={{ fontFamily: "'General Sans', sans-serif", color: "white", fontSize: 13, fontWeight: 500, textDecoration: "none" }}
-                          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#00ffc2"}
+                          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#ffffff"}
                           onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "white"}>
                           {market.label}
                         </Link>
@@ -250,8 +250,8 @@ export default function ProtocolStatsPage() {
 
         {/* How settlement works */}
         <div className="flex items-start gap-3 p-4 rounded-lg"
-          style={{ background: "rgba(0,255,194,0.04)", border: "1px solid rgba(0,255,194,0.12)" }}>
-          <span style={{ color: "#00ffc2", fontSize: 16, flexShrink: 0, marginTop: 1 }}>ⓘ</span>
+          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.12)" }}>
+          <span style={{ color: "#ffffff", fontSize: 16, flexShrink: 0, marginTop: 1 }}>ⓘ</span>
           <div>
             <p style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "white", marginBottom: 4 }}>How settlement works</p>
             <p style={{ fontFamily: "'General Sans', sans-serif", fontSize: 12, color: "#888", lineHeight: 1.6, margin: 0 }}>
@@ -259,7 +259,7 @@ export default function ProtocolStatsPage() {
               continuously for the breach duration (1 hour), YES wins and cover buyers receive $1 USDC per token.
               If the market expires without a sustained breach, NO wins and underwriters reclaim their collateral plus
               any premiums earned. Settlement is permissionless — anyone can call{" "}
-              <code style={{ ...mono, fontSize: 11, color: "#00ffc2", background: "#0a0a0a", padding: "1px 4px", borderRadius: 3 }}>
+              <code style={{ ...mono, fontSize: 11, color: "#ffffff", background: "#0a0a0a", padding: "1px 4px", borderRadius: 3 }}>
                 try_settle()
               </code>
               . Our watcher calls it every 60 seconds.

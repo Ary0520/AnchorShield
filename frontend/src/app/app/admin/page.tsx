@@ -160,8 +160,8 @@ export default function AdminPage() {
           }}
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 rounded-md bg-[#00ffc2]/10 flex items-center justify-center border border-[#00ffc2]/20">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ffc2" strokeWidth="2" strokeLinecap="round">
+            <div className="w-8 h-8 rounded-md bg-[#ffffff]/10 flex items-center justify-center border border-[#ffffff]/20">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round">
                 <path d="M12 4v16m8-8H4" />
               </svg>
             </div>
@@ -185,7 +185,7 @@ export default function AdminPage() {
                       width: "100%", background: "#111", border: "1px solid #333", borderRadius: 8, padding: "12px 16px",
                       color: "white", fontFamily: "'General Sans', sans-serif", fontSize: 14, outline: "none", appearance: "none"
                     }}
-                    onFocus={e => e.target.style.borderColor = "#00ffc2"}
+                    onFocus={e => e.target.style.borderColor = "#ffffff"}
                     onBlur={e => e.target.style.borderColor = "#333"}
                   >
                     <option value="USDC">USDC (Pre-configured)</option>
@@ -221,7 +221,7 @@ export default function AdminPage() {
                       width: "100%", background: "#111", border: "1px solid #333", borderRadius: 8, padding: "12px 16px",
                       color: "white", fontFamily: "'General Sans', sans-serif", fontSize: 14, outline: "none", appearance: "none"
                     }}
-                    onFocus={e => e.target.style.borderColor = "#00ffc2"}
+                    onFocus={e => e.target.style.borderColor = "#ffffff"}
                     onBlur={e => e.target.style.borderColor = "#333"}
                   >
                     <option value="900">15 Minutes</option>
@@ -242,7 +242,7 @@ export default function AdminPage() {
                       width: "100%", background: "#111", border: "1px solid #333", borderRadius: 8, padding: "12px 16px",
                       color: "white", fontFamily: "'General Sans', sans-serif", fontSize: 14, outline: "none", appearance: "none"
                     }}
-                    onFocus={e => e.target.style.borderColor = "#00ffc2"}
+                    onFocus={e => e.target.style.borderColor = "#ffffff"}
                     onBlur={e => e.target.style.borderColor = "#333"}
                   >
                     <option value="3600">1 Hour</option>

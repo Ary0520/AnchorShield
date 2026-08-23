@@ -57,23 +57,25 @@ export async function pushLiveMetrics(
   anchorAddress: string,
   latencyMs: number,
   successRateBps: number,
-  failedWithdrawals: number,
+  refundCount: number,
+  hotWalletHealthBps: number,
   payoutVolume: number
 ) {
   // Convert ms to seconds (minimum 1 sec)
   const avg_latency_seconds = Math.max(1, Math.ceil(latencyMs / 1000));
   
-  // We use the same successRateBps for oracle_uptime_bps since our 
-  // success rate is strictly derived from the SEP-24 ping success rate.
-  const oracle_uptime_bps = successRateBps;
-  
   // payoutVolume is in fiat (e.g. 50000.50). Convert to stroops (7 decimals)
-  // Smart contract expects i128 stroops.
   const payoutStroops = BigInt(Math.floor(payoutVolume * 10_000_000));
   
-  console.log(`[RiskOracle] Aggregated Data for ${anchorAddress} -> Latency: ${avg_latency_seconds}s, Success: ${successRateBps}bps, Fails: ${failedWithdrawals}, Vol: ${payoutVolume}`);
+  console.log(`[RiskOracle] Aggregated Data for ${anchorAddress} -> Latency: ${avg_latency_seconds}s, Success: ${successRateBps}bps, Refunds: ${refundCount}, HW Health: ${hotWalletHealthBps}bps, Vol: ${payoutVolume}`);
   
   try {
+    // The smart contract expects:
+    // success_rate_bps (u32)
+    // avg_latency_seconds (u32)
+    // failed_withdrawals (u32) -> We pass refundCount here
+    // oracle_uptime_bps (u32) -> We pass hotWalletHealthBps here
+    // historical_payouts (i128)
     await invokeContract(
       CONFIG.ANCHOR_STAKE_CONTRACT,
       'update_anchor_metrics',
@@ -82,8 +84,8 @@ export async function pushLiveMetrics(
         nativeToScVal(anchorAddress, { type: 'address' }),       // anchor
         nativeToScVal(successRateBps, { type: 'u32' }),        
         nativeToScVal(avg_latency_seconds, { type: 'u32' }),     
-        nativeToScVal(failedWithdrawals, { type: 'u32' }),       
-        nativeToScVal(oracle_uptime_bps, { type: 'u32' }),       
+        nativeToScVal(refundCount, { type: 'u32' }),       
+        nativeToScVal(hotWalletHealthBps, { type: 'u32' }),       
         nativeToScVal(payoutStroops, { type: 'i128' }),          
       ]
     );

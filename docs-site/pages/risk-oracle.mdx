@@ -1,0 +1,42 @@
+﻿# Institutional Risk Oracle & ACR
+
+AnchorShield does not just measure stablecoin market prices. We provide a deep, algorithmically generated **Anchor Confidence Ratio (ACR)** that acts as an Operational Risk Registry for Stellar Anchors.
+
+Our off-chain Watcher node continuously runs forensic analysis on Mainnet data to produce an institutional-grade risk score. 
+
+## Live Data Endpoints
+
+The Oracle tracks three major operational vectors by querying the official Stellar Mainnet and Anchor infrastructure directly.
+
+### 1. Hot Wallet Solvency (Runway)
+An Anchor requires a balance of native XLM in its operational hot wallets to pay for network transaction fees. If this balance hits zero, all fiat-to-crypto off-ramps freeze.
+- **Endpoint:** `GET https://horizon.stellar.org/accounts/{distributionAccount}`
+- **Extraction:** We parse the `balances` array and isolate the `asset_type: "native"` balance.
+- **Health Grading:** The Oracle expects a minimum safe buffer of `5,000 XLM`. If the balance is `≥ 5,000`, the Hot Wallet Health score is **100.00% (10,000 bps)**. If it drops below this, the score degrades linearly (e.g., 25 XLM = 0.50% health).
+
+### 2. On-Chain Refunds (The "Shadow" Default Rate)
+To measure failed fiat off-ramps (e.g., KYC failures, frozen bank transfers), we track transactions where an Anchor sends USDC *back* to a retail user.
+- **Endpoint:** `GET https://horizon.stellar.org/accounts/{distributionAccount}/payments?order=desc&limit=200`
+- **Extraction:** We iterate over the last 200 payments. Any payment where the `from` field matches the Anchor's distribution account and is sending USDC to a user is flagged as an **On-Chain Refund**.
+
+### 3. SEP-24 Infrastructure Uptime & Latency
+- **Endpoint:** `GET https://{anchor-domain}/.well-known/stellar.toml` (To locate the `TRANSFER_SERVER`)
+- **Endpoint:** `GET {TRANSFER_SERVER}/info`
+- **Extraction:** We execute an HTTP ping every 60 seconds. A `200 OK` response increases the **SEP-24 Success** rate. The round-trip time is recorded as the **Avg Latency**.
+
+---
+
+## The Smart Contract Math (ACR Computation)
+
+These data points are pushed on-chain via the `update_anchor_metrics` function. The Soroban smart contract then ruthlessly calculates the final **Composite ACR** score (measured from `0` to `10_000` basis points).
+
+The mathematical gauntlet:
+
+1. **Base Score:** Begins at a perfect `10,000 bps` (100.00%).
+2. **Success Multiplier:** Multiplied by the SEP-24 Success rate. `score = (score * success_rate_bps) / 10,000`
+3. **Latency Penalty:** If average latency exceeds `120s`, a penalty of `-10 bps` per second over limit is applied (capped at -2000 bps).
+4. **Refund Penalty (Crucial):** For every single On-Chain Refund detected in the trailing window, a brutal penalty of **-50 bps (-0.5%)** is subtracted. `score = score - (refundCount * 50)`
+5. **Hot Wallet Multiplier:** The remaining score is multiplied by the Hot Wallet Health percentage. If an Anchor's XLM gas tank is dangerously low (e.g. 1%), their ACR score will practically flatline. `score = (score * hot_wallet_health_bps) / 10,000`
+6. **Historical Volume Bonus:** The contract awards a `+1 bps` bonus for every `$10,000` in successful incoming USDC volume detected on the mainnet.
+
+This transparent, ruthless algorithm ensures that Underwriters and Risk Managers can instantly detect an Anchor that is quietly experiencing operational failures before it triggers a massive stablecoin depeg.

@@ -38,7 +38,7 @@ function HeroSparkline() {
       />
       {/* price line */}
       <motion.path
-        d={d} fill="none" stroke="#00e5ff" strokeWidth="1.5"
+        d={d} fill="none" stroke="#cccccc" strokeWidth="1.5"
         strokeLinecap="round"
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 1 }}
@@ -47,7 +47,7 @@ function HeroSparkline() {
       {/* current price dot */}
       <motion.circle
         cx={toX(points.length - 1)} cy={toY(points[points.length - 1])}
-        r="3" fill="#00e5ff"
+        r="3" fill="#cccccc"
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 2.5, duration: 0.3 }}
@@ -736,11 +736,11 @@ function AcrSection() {
                       <div className="relative flex items-center justify-center w-32 h-32 mb-2">
                         <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
-                           <circle cx="50" cy="50" r="45" fill="none" stroke="#00e5ff" strokeWidth="4" strokeDasharray="283" strokeDashoffset="20" className="animate-[spin_4s_linear_infinite]" style={{ filter: "drop-shadow(0 0 8px rgba(0,229,255,0.4))" }} />
+                           <circle cx="50" cy="50" r="45" fill="none" stroke="#cccccc" strokeWidth="4" strokeDasharray="283" strokeDashoffset="20" className="animate-[spin_4s_linear_infinite]" style={{ filter: "drop-shadow(0 0 8px rgba(0,229,255,0.4))" }} />
                         </svg>
                         <div className="text-center z-10">
                           <span className="block text-3xl font-bold text-white tracking-tighter" style={{ textShadow: "0 0 20px rgba(0,229,255,0.4)" }}>9,450</span>
-                          <span className="block text-[9px] font-mono text-[#00e5ff] uppercase tracking-widest mt-1">ACR Score</span>
+                          <span className="block text-[9px] font-mono text-[#cccccc] uppercase tracking-widest mt-1">ACR Score</span>
                         </div>
                       </div>
                     </div>
@@ -762,7 +762,7 @@ function AcrSection() {
                           <span className="text-white text-sm font-medium mb-1 group-hover:text-white transition-colors">Network Latency</span>
                           <span className="text-white/40 text-[9px] font-mono uppercase tracking-widest">Avg fulfillment</span>
                         </div>
-                        <span className="text-[#00e5ff] font-mono text-sm tracking-tight group-hover:drop-shadow-[0_0_8px_rgba(0,229,255,0.6)] transition-all">45ms</span>
+                        <span className="text-[#cccccc] font-mono text-sm tracking-tight group-hover:drop-shadow-[0_0_8px_rgba(0,229,255,0.6)] transition-all">45ms</span>
                       </div>
 
                       <div className="w-full h-[1px] bg-white/5" />
