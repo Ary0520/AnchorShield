@@ -1,4 +1,4 @@
-﻿import { execSync } from 'child_process';
+import { execSync } from 'child_process';
 import fs from 'fs';
 
 function run(cmd) { 
@@ -58,8 +58,14 @@ function updateEnv(file, asId, mfId) {
 updateEnv('watcher/.env', asId, mfId);
 updateEnv('frontend/.env.local', asId, mfId);
 
+const DEFINDEX_USDC_BLEND_MAINNET = 'CDB2WMKQQNVZMEBY7Q7GZ5C7E7IAFSNMZ7GGVD6WKTCEWK7XOIAVZSAP';
+
 if (m0Match) {
     const market0 = m0Match[1];
+    
+    console.log(`Configuring DeFindex Yield Routing for Market 0...`);
+    run(`stellar contract invoke --id ${market0} --source-account deployer --network testnet -- set_yield_vault --admin ${deployer} --vault ${DEFINDEX_USDC_BLEND_MAINNET}`);
+    
     console.log(`Approving and Minting for Market 0 (${market0})...`);
     run(`stellar contract invoke --id ${usdc} --source-account deployer --network testnet -- approve --from ${deployer} --spender ${market0} --amount 100000000000 --expiration_ledger 4300000`);
     run(`stellar contract invoke --id ${market0} --source-account deployer --network testnet -- mint_complete_set --underwriter ${deployer} --amount 100000000`);
