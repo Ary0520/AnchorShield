@@ -32,6 +32,6 @@ export default {
   footer: {
     text: 'AnchorShield Protocol 2026',
   },
-  primaryHue: 165,
-  primarySaturation: 100,
+  primaryHue: 0,
+  primarySaturation: 0,
 }
