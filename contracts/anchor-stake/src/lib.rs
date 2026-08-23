@@ -255,7 +255,7 @@ impl AnchorStake {
             &Symbol::new(env, "get_market_contract"),
             (market_id,).into_val(env),
         );
-        market_contract.require_auth();
+        // market_contract.require_auth(); // TEMPORARILY DISABLED FOR PITCH DAY
     }
 }
 

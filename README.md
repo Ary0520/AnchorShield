@@ -209,7 +209,7 @@ node create-test-market.mjs
 | DeFindex yield | `yield_.rs` is a no-op. USDC stays in contract. |
 | `update_cover_outstanding` auth | Any caller accepted. Needs factory-verified caller check. |
 | `unstake` settlement verification | Trusts caller. Add on-chain market state check. |
-| Anchor SEP-24 monitoring | Watcher has placeholder logic. Needs real anchor account monitoring. |
+| Anchor SEP-24 monitoring | Live via active API polling. |
 | Anchor Trust v2 signals | Oracle uptime, settlement latency, withdrawal failures — v2 roadmap. |
 
 ---

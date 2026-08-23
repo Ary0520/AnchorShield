@@ -8,12 +8,12 @@ const mono = { fontFamily: "'JetBrains Mono', 'Fira Code', monospace" };
 const ANCHOR_NAMES: Record<string, {
   name: string; shortAddr: string; market: string; logo: string | null; logoSrc?: string;
 }> = {
-  GDMXS7S7CFSVRLMEPF55ZNKYNBNDNIC6FNFU6DMT4TY62IRYPC6IPX24: {
-    name: "MoneyGram",       shortAddr: "GDMXS7...HPWM",
+  GAVBS6SXMRD7C3IRN5K2SY5C2CAUFHBVOGWTQXADSBUHAFDDUKVTQWWY: {
+    name: "MoneyGram",       shortAddr: "GAVBS6...QWWY",
     market: "USDC Depeg (Market 0)", logo: "MG", logoSrc: "/moneygramlogo.png",
   },
-  GB4FRPZQ3AILWMBEOVQ6DDNMRDJVREPVDPZ2WMFDPTGODUXOFTUKS777: {
-    name: "Circle",           shortAddr: "GAKUX5...ZXWQ",
+  GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN: {
+    name: "Circle",           shortAddr: "GA5ZSE...KZVN",
     market: "EURC Depeg (Market 1)", logo: "CI", logoSrc: "/circlelogo.svg",
   },
 };

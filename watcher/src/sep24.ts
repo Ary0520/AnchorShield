@@ -1,11 +1,4 @@
-/**
- * sep24.ts — Monitors real-world Stellar Anchors via SEP-1 and SEP-24.
- * 
- * It dynamically discovers the SEP-24 endpoint from the anchor's stellar.toml,
- * pings the unauthenticated /info endpoint, and calculates real-world latency and uptime.
- */
-
-import axios from 'axios';
+﻿import axios from 'axios';
 
 export interface AnchorPingResult {
   domain: string;
@@ -13,8 +6,24 @@ export interface AnchorPingResult {
   latencyMs: number;
 }
 
+// Keep rolling history of pings to calculate real uptime and success rate
+const anchorStats: Record<string, {
+  totalPings: number;
+  successfulPings: number;
+  totalLatencyMs: number;
+}> = {};
+
+export function getAnchorStats(domain: string) {
+  if (!anchorStats[domain]) {
+    anchorStats[domain] = { totalPings: 0, successfulPings: 0, totalLatencyMs: 0 };
+  }
+  return anchorStats[domain];
+}
+
 export async function pingAnchorSep24(domain: string): Promise<AnchorPingResult> {
   const startTime = Date.now();
+  let isUp = false;
+  let latencyMs = 0;
   
   try {
     // Step 1: Fetch SEP-1 stellar.toml
@@ -34,12 +43,22 @@ export async function pingAnchorSep24(domain: string): Promise<AnchorPingResult>
     const infoUrl = `${transferServerUrl}/info`;
     await axios.get(infoUrl, { timeout: 10000 });
     
-    const latencyMs = Date.now() - startTime;
-    return { domain, isUp: true, latencyMs };
+    latencyMs = Date.now() - startTime;
+    isUp = true;
     
   } catch (err) {
-    const latencyMs = Date.now() - startTime;
+    latencyMs = Date.now() - startTime;
     console.error(`[SEP-24] Ping failed for ${domain}: ${(err as Error).message}`);
-    return { domain, isUp: false, latencyMs };
+    isUp = false;
   }
+  
+  // Record stats
+  const stats = getAnchorStats(domain);
+  stats.totalPings++;
+  if (isUp) {
+    stats.successfulPings++;
+  }
+  stats.totalLatencyMs += latencyMs;
+  
+  return { domain, isUp, latencyMs };
 }
