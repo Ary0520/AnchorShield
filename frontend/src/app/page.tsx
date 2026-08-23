@@ -852,7 +852,7 @@ function MarketCard({
   logo: string | null;
   expires: string;
   marketId: number;
-  delay?: number; // ms to wait before firing oracle fetch — staggers RPC calls
+  delay?: number;
 }) {
   const [prices, setPrices] = useState<{ v: number }[]>([]);
   const [coverCost, setCoverCost] = useState<string | null>(null);
@@ -872,113 +872,80 @@ function MarketCard({
   }, [symbol, delay]);
 
   const currentPrice = prices.length ? prices[prices.length - 1].v : null;
-  const priceDisplay = currentPrice ? `$${currentPrice.toFixed(4)}` : "—";
-  // Color the line based on distance from threshold
+  const priceDisplay = currentPrice ? currentPrice.toFixed(4) : "----";
   const danger = currentPrice !== null && currentPrice < 0.998;
-  const lineColor = danger ? "#fbbf24" : "#00e5ff";
+  const lineColor = "var(--accent)";
 
   return (
     <Link href="/app">
-      <motion.div
-        className="rounded-2xl overflow-hidden cursor-pointer relative"
-        style={{
-          background: "linear-gradient(145deg, #040408 0%, #000000 100%)",
-          border: "1px solid rgba(255,255,255,0.07)",
-        }}
-        whileHover={{
-          borderColor: "rgba(0,229,255,0.25)",
-          boxShadow: "0 0 24px rgba(0,229,255,0.06)",
-          y: -3,
-        }}
-        transition={{ duration: 0.2 }}
+      <div 
+        className="group relative cursor-pointer border border-[#262626] bg-black p-4 transition-colors hover:border-[#525252]"
       >
-        {/* Top glow when dangerous */}
-        {danger && (
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent" />
-        )}
-
-        {/* Header */}
-        <div className="px-4 pt-4 pb-2">
-          <div className="flex items-center gap-2.5">
-            {/* Logo */}
-            {logo ? (
-              <img src={logo} alt={asset} className="w-8 h-8 rounded-full" />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center
-                              text-white font-bold text-xs">
-                {asset[0]}
-              </div>
-            )}
-            <div>
-              <p className="text-white font-bold text-base leading-none">{asset}</p>
-              <p className="text-white/30 text-[11px] mt-0.5 font-mono">depeg &lt; $0.995</p>
-            </div>
+        {/* Terminal Header */}
+        <div className="flex justify-between items-start mb-4 border-b border-[#262626] pb-2">
+          <div>
+            <h3 className="font-mono text-white text-lg tracking-widest uppercase">{asset}/USD</h3>
+            <p className="font-mono text-[#525252] text-[10px] uppercase tracking-widest mt-1">TRG &lt; {THRESHOLD}</p>
           </div>
-        </div>
-
-        {/* Price + sparkline */}
-        <div className="relative px-1">
-          {/* Price overlay — top right */}
-          <div className="absolute top-0 right-4 z-10">
-            <p
-              className="text-xl font-bold leading-none tabular-nums"
-              style={{ color: danger ? "#fbbf24" : "#ffffff" }}
-            >
+          <div className="text-right">
+            <p className="font-mono text-xl tabular-nums tracking-widest" style={{ color: "#ffffff" }}>
               {priceDisplay}
             </p>
           </div>
-
-          <div className="h-16 mt-1">
-            {prices.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={prices} margin={{ top: 8, right: 6, left: 6, bottom: 4 }}>
-                  <YAxis domain={[0.993, 1.004]} hide />
-                  <ReferenceLine
-                    y={THRESHOLD}
-                    stroke="rgba(239,68,68,0.35)"
-                    strokeDasharray="3 3"
-                    strokeWidth={1}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="v"
-                    stroke={lineColor}
-                    strokeWidth={1.5}
-                    dot={false}
-                    isAnimationActive={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full mx-4 bg-white/[0.03] animate-pulse rounded-lg" />
-            )}
-          </div>
         </div>
 
-        {/* Divider */}
-        <div className="mx-4 h-px bg-white/[0.05]" />
+        {/* Recharts Terminal Chart */}
+        <div className="h-16 w-full mb-4">
+          {prices.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={prices} margin={{ top: 2, right: 0, left: 0, bottom: 2 }}>
+                <YAxis domain={[0.993, 1.004]} hide />
+                <ReferenceLine
+                  y={THRESHOLD}
+                  stroke="#ff0000"
+                  strokeDasharray="2 2"
+                  strokeWidth={1}
+                />
+                <Line
+                  type="stepAfter"
+                  dataKey="v"
+                  stroke={lineColor}
+                  strokeWidth={1.5}
+                  dot={false}
+                  isAnimationActive={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <span className="font-mono text-[#525252] text-xs">LOADING_FEED...</span>
+            </div>
+          )}
+        </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-3">
+        {/* Terminal Footer Data */}
+        <div className="grid grid-cols-2 gap-2 font-mono text-[11px] uppercase tracking-wider text-[#a3a3a3]">
           <div>
-            <p className="text-white/50 text-[11px]">Cover $1&apos;000</p>
-            <p className="text-white/20 text-[10px] mt-0.5 font-mono">exp. {expires}</p>
+            <p className="text-[#525252] mb-1">COVER</p>
+            <p className="text-white">$1,000</p>
           </div>
-          <div
-            className="text-sm font-bold px-3 py-1.5 rounded-lg tabular-nums"
-            style={{
-              background: danger ? "rgba(251,191,36,0.12)" : "rgba(0,229,255,0.1)",
-              color: danger ? "#fbbf24" : "#00e5ff",
-            }}
-          >
-            {coverCost ?? "—"}
+          <div>
+            <p className="text-[#525252] mb-1">EXP</p>
+            <p className="text-white">{expires}</p>
           </div>
         </div>
-      </motion.div>
+        
+        {/* Premium Badge */}
+        <div className="mt-4 pt-3 border-t border-[#262626] flex justify-between items-center">
+           <span className="font-mono text-[#525252] text-[10px] tracking-widest">PREMIUM</span>
+           <span className="font-mono text-white bg-[#1a1a1a] px-2 py-1 border border-[#333] text-xs">
+             {coverCost || "---"}
+           </span>
+        </div>
+      </div>
     </Link>
   );
 }
-
 // ── MARKETS PREVIEW ────────────────────────────────────────────────
 function MarketsPreview() {
   const markets = [
@@ -989,37 +956,33 @@ function MarketsPreview() {
   ];
 
   return (
-    <section className="py-28 border-t border-white/[0.05]">
+    <section className="py-28 border-t border-[#262626]">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Section header — more assertive */}
         <FadeIn className="mb-12">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-white/3 text-[12px] font-mono uppercase tracking-[0.25em] mb-3 ">
-                Live markets
+              <p className="text-[#525252] text-xs font-mono uppercase tracking-[0.2em] mb-4">
+                LIVE MARKETS
               </p>
-              <h2 className={`text-4xl md:text-5xl font-bold text-white leading-tight ${GeistSans.className}`}>
+              <h2 className={`text-4xl md:text-5xl font-bold text-white leading-[1.1] tracking-tight ${GeistSans.className}`}>
                 Pick the market.<br />
-                <span className="text-white/60">Hedge the risk.</span>
+                <span className="text-[#a3a3a3]">Hedge the risk.</span>
               </h2>
-              <p className="text-white/70 text-sm mt-4 max-w-lg">
-                Each market is a fully collateralized binary outcome contract.
-                Pay a small premium. Get an automatic $1 payout per token if the peg breaks.
-              </p>
             </div>
             <Link
               href="/app"
-              className="hidden lg:flex items-center gap-2 text-sm text-white/35
-                         hover:text-white transition-colors shrink-0 mt-2 ml-8 border-b border-white/10
-                         hover:border-white/40 pb-0.5"
+              className="hidden lg:flex items-center gap-2 text-sm text-[#a3a3a3] font-mono uppercase tracking-widest
+                         hover:text-white transition-colors shrink-0 mt-2 ml-8 border-b border-[#262626]
+                         hover:border-[#525252] pb-1"
             >
-              View all markets →
+              View all
             </Link>
           </div>
         </FadeIn>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
           {markets.map((m, i) => (
             <FadeIn key={m.asset} delay={i * 0.07}>
               <MarketCard {...m} delay={i * 400} />
@@ -1027,22 +990,6 @@ function MarketsPreview() {
           ))}
         </div>
 
-        {/* Bottom CTA strip */}
-        <FadeIn delay={0.35} className="mt-8">
-          <div className="flex items-center justify-between border-t border-white/[0.05] pt-6">
-            {/* <p className="text-white/25 text-xs">
-              Settlements are permissionless — anyone can trigger them.
-              Our watcher calls <span className="font-mono text-white/40">try_settle()</span> every 60s.
-            </p> */}
-            <Link
-              href="/app"
-              className="text-sm px-5 py-2.5 rounded-full border border-white/70 text-white/70
-                         hover:border-white/90 hover:text-white transition-all duration-200 shrink-0 ml-6"
-            >
-              Start hedging →
-            </Link>
-          </div>
-        </FadeIn>
       </div>
     </section>
   );
