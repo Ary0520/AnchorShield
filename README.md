@@ -1,5 +1,6 @@
 <div align="center">
-![Uploading image.png…]()
+<img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/1a723a49-5c32-46f6-a266-26786c1ff23c" />
+
 
 <h1 align="center">AnchorShield</h1>
 <p align="center">
