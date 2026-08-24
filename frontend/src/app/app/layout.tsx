@@ -101,7 +101,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </p>
             </div>
             <p style={{ fontFamily: "'General Sans', sans-serif", fontWeight: 400, fontSize: 12, color: "#888", lineHeight: "16px", margin: 0, paddingLeft: 42 }}>
-              v1 - Testnet
+              v1 - Mainnet
             </p>
           </div>
 
@@ -207,7 +207,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Testnet badge */}
             <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px 0 rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: 11, color: "rgba(255,255,255,0.8)", fontFamily: "'General Sans', sans-serif", fontWeight: 500 }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ffffff", display: "inline-block", animation: "pulse 2s ease-in-out infinite" }} />
-              Testnet
+              Mainnet
             </div>
             {/* Wallet — desktop only */}
               {wallet.publicKey && (

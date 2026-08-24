@@ -7,8 +7,8 @@
  * prices(asset, n) returns the last n price records at ~5min intervals.
  */
 
-export const REFLECTOR_CONTRACT = "CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63";
-export const ORACLE_RPC = "https://soroban-testnet.stellar.org";
+export const REFLECTOR_CONTRACT = "CAFJZQWSED6YAWZU3GWRTOCNPPCGBN32L7QV43XX5LZLFTK6JLN34DLN";
+export const ORACLE_RPC = process.env.NEXT_PUBLIC_STELLAR_RPC_URL || "https://mainnet.sorobanrpc.com";
 // Sim source — any valid-format address works for read-only simulate
 const SIM_SOURCE = "GD6KRXUKOAPTYW72IZOERCPGM3UHXTQDJK4RS5WUAZHC4K2WOONQA3ZR";
 
@@ -51,7 +51,7 @@ export async function fetchOraclePriceHistory(
 
     const tx = new TransactionBuilder(source, {
       fee: BASE_FEE,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase: Networks.PUBLIC,
     })
       .addOperation(
         new Contract(REFLECTOR_CONTRACT).call(
@@ -159,7 +159,7 @@ export async function fetchOracleLastPrice(symbol: string): Promise<PricePoint |
 
     const tx = new TransactionBuilder(source, {
       fee: BASE_FEE,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase: Networks.PUBLIC,
     })
       .addOperation(
         new Contract(REFLECTOR_CONTRACT).call("lastprice", assetArg)

@@ -622,7 +622,7 @@ export default function MarketDetailPage() {
 function MarketDetailSkeleton() {
   const [step, setStep] = useState(0);
   const steps = [
-    "Connecting to Stellar testnet…",
+    "Connecting to Stellar Mainnet...",
     "Loading market config…",
     "Reading oracle prices…",
     "Fetching order book…",
@@ -698,7 +698,7 @@ function MarketDetailSkeleton() {
             {steps[step]}
           </p>
           <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginTop: 6, fontFamily: "'General Sans', sans-serif" }}>
-            Stellar testnet · Soroban RPC
+            Stellar Mainnet — Soroban RPC
           </p>
         </div>
       </div>
@@ -960,34 +960,35 @@ function TradePanel({
               {uwAmt > 0 && (
                 (() => {
                   const daysLeft = Math.max(1, (Number(config.expiry_timestamp) * 1000 - Date.now()) / 86400000);
-                  const premiumApy = (uwPremBps / 10000) * (365 / daysLeft) * 100;
-                  const blendApy = 6.4;
-                  const totalApy = Math.round(premiumApy + blendApy);
+                  const premiumAbsolute = (uwPremBps / 10000) * 100;
+                  const blendAbsolute = 6.4 * (daysLeft / 365);
+                  const totalAbsolute = (premiumAbsolute + blendAbsolute).toFixed(2);
                   
                   return (
                     <div className="flex flex-col p-4 mt-2 rounded-xl" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)" }}>
-                      <div className="flex items-center justify-between mb-4">
-                        <span style={{ fontFamily: "'General Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#888", letterSpacing: "0.5px", textTransform: "uppercase" }}>Projected Returns</span>
-                        <span className="flex items-center gap-1.5 px-2 py-1 rounded" style={{ background: "rgba(255,255,255,0.08)", color: "#ffffff", fontSize: 10, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, border: "1px solid rgba(255,255,255,0.15)" }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                          Yield Stack Active
-                        </span>
+                      {/* Yield Stack Label */}
+                      <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+                        <span style={{ color: "#aaa", fontSize: 11, fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase", letterSpacing: "0.05em" }}>Projected Returns</span>
+                        <div className="flex items-center px-2 py-1 rounded" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                          <span style={{ color: "white", fontSize: 10, fontFamily: "'JetBrains Mono', monospace" }}><span style={{ color: "#aaa" }}>$</span> Yield Stack Active</span>
+                        </div>
                       </div>
 
-                      <div className="flex items-center justify-between py-2 border-b border-white/5">
-                        <span style={{ color: "#aaa", fontSize: 13, ...mono }}>Premium Income ({uwPremBps} bps)</span>
-                        <span style={{ color: "white", fontSize: 13, ...mono }}>+${uwEarned.toFixed(2)}</span>
+                      {/* Components */}
+                      <div className="flex items-center justify-between py-1">
+                        <span style={{ color: "#aaa", fontSize: 13, fontFamily: "'JetBrains Mono', monospace" }}>Premium Income ({uwPremBps} bps)</span>
+                        <span style={{ color: "white", fontSize: 13, fontFamily: "'JetBrains Mono', monospace" }}>+${((uwPremBps / 10000) * uwAmt).toFixed(2)}</span>
                       </div>
-                      
-                      <div className="flex items-center justify-between py-2 border-b border-white/5">
-                        <span style={{ color: "#aaa", fontSize: 13, ...mono }}>DeFindex Blend Routing</span>
-                        <span style={{ color: "white", fontSize: 13, ...mono }}>+{blendApy}% APY</span>
+                      <div className="flex items-center justify-between py-1 pb-3 border-b border-white/5">
+                        <span style={{ color: "#aaa", fontSize: 13, fontFamily: "'JetBrains Mono', monospace" }}>DeFindex Blend Routing</span>
+                        <span style={{ color: "white", fontSize: 13, fontFamily: "'JetBrains Mono', monospace" }}>+6.4% APY</span>
                       </div>
 
+                      {/* Total Absolute Return */}
                       <div className="flex items-center justify-between pt-3 mt-1">
-                        <span style={{ color: "white", fontSize: 14, fontFamily: "'General Sans', sans-serif", fontWeight: 600 }}>Total Projected APY</span>
+                        <span style={{ color: "white", fontSize: 14, fontFamily: "'General Sans', sans-serif", fontWeight: 600 }}>Est. 7-Day Return</span>
                         <span style={{ color: "#ffffff", fontSize: 18, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, textShadow: "0 0 12px rgba(255,255,255,0.3)" }}>
-                          ~{totalApy}%
+                          ~{totalAbsolute}%
                         </span>
                       </div>
 

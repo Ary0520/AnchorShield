@@ -10,12 +10,12 @@ import { Trash2 } from "lucide-react";
 const PRESETS: Record<string, { threshold: string, oracle: string, anchor: string }> = {
   "USDC": {
     threshold: "0.995",
-    oracle: "CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63",
+    oracle: "CAFJZQWSED6YAWZU3GWRTOCNPPCGBN32L7QV43XX5LZLFTK6JLN34DLN",
     anchor: process.env.NEXT_PUBLIC_ANCHOR_STAKE_ID || "",
   },
   "EURC": {
     threshold: "0.985",
-    oracle: "CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63",
+    oracle: "CAFJZQWSED6YAWZU3GWRTOCNPPCGBN32L7QV43XX5LZLFTK6JLN34DLN",
     anchor: process.env.NEXT_PUBLIC_ANCHOR_STAKE_ID || "",
   }
 };

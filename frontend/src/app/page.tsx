@@ -787,15 +787,14 @@ function AcrSection() {
 }
 
 // ── Market sparkline — fetches oracle price history from Reflector ─
-const ORACLE = "CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63";
-const RPC = "https://soroban-testnet.stellar.org";
+const ORACLE = "CAFJZQWSED6YAWZU3GWRTOCNPPCGBN32L7QV43XX5LZLFTK6JLN34DLN";
 
 async function fetchOraclePrices(symbol: string): Promise<number[]> {
   try {
     const { Contract, TransactionBuilder, Account, rpc, BASE_FEE, Networks, xdr, scValToNative } =
       await import("@stellar/stellar-sdk");
 
-    const server = new rpc.Server("https://soroban-testnet.stellar.org", { allowHttp: false });
+    const server = new rpc.Server(process.env.NEXT_PUBLIC_STELLAR_RPC_URL || "https://mainnet.sorobanrpc.com", { allowHttp: false });
     const source = new Account("GD6KRXUKOAPTYW72IZOERCPGM3UHXTQDJK4RS5WUAZHC4K2WOONQA3ZR", "0");
 
     // Asset::Other(Symbol) encoding confirmed working against Reflector testnet
@@ -806,7 +805,7 @@ async function fetchOraclePrices(symbol: string): Promise<number[]> {
 
     const tx = new TransactionBuilder(source, {
       fee: BASE_FEE,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase: Networks.PUBLIC,
     })
       .addOperation(
         new Contract(ORACLE).call("prices", assetArg, xdr.ScVal.scvU32(24))

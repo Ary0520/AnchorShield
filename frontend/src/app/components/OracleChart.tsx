@@ -118,8 +118,8 @@ export default function OracleChart({ symbol, threshold }: Props) {
       crosshairMarkerBackgroundColor: "#0a0a0a",
       priceFormat: {
         type: "price",
-        precision: 4,
-        minMove: 0.0001,
+        precision: 6,
+        minMove: 0.000001,
       },
       lastValueVisible: true,
       priceLineVisible: false,
@@ -238,7 +238,7 @@ export default function OracleChart({ symbol, threshold }: Props) {
                   letterSpacing: "-0.5px",
                 }}
               >
-                ${lastPrice?.toFixed(4) ?? "—"}
+                ${lastPrice?.toFixed(6) ?? "—"}
               </span>
               {lastTime && (
                 <span style={{ fontFamily: mono, fontSize: 10, color: "#444" }}>

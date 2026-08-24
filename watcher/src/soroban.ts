@@ -41,7 +41,7 @@ export async function invokeContract(
   const contract = new Contract(contractId);
 
   const tx = new TransactionBuilder(account, {
-    fee: BASE_FEE,
+    fee: "100000",
     networkPassphrase: CONFIG.NETWORK_PASSPHRASE,
   })
     .addOperation(contract.call(method, ...args))
@@ -52,6 +52,16 @@ export async function invokeContract(
   const simResult = await server.simulateTransaction(tx);
   if (rpc.Api.isSimulationError(simResult)) {
     throw new Error(`[soroban] Simulation failed for ${method}: ${simResult.error}`);
+  }
+
+  const simResultSuccess = simResult as rpc.Api.SimulateTransactionSuccessResponse;
+  if (simResultSuccess.result?.auth && simResultSuccess.result.auth.length > 0) {
+    const { authorizeEntry } = await import('@stellar/stellar-sdk');
+    simResultSuccess.result.auth = await Promise.all(
+      simResultSuccess.result.auth.map(entry =>
+        authorizeEntry(entry, keypair, Number(simResultSuccess.latestLedger) + 500, CONFIG.NETWORK_PASSPHRASE)
+      )
+    );
   }
 
   const preparedTx = rpc.assembleTransaction(tx, simResult).build();
@@ -101,7 +111,7 @@ export async function queryContract(
   const contract = new Contract(contractId);
 
   const tx = new TransactionBuilder(account, {
-    fee: BASE_FEE,
+    fee: "100000",
     networkPassphrase: CONFIG.NETWORK_PASSPHRASE,
   })
     .addOperation(contract.call(method, ...args))

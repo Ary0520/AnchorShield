@@ -22,10 +22,10 @@ import { signTransaction } from "@stellar/freighter-api";
 
 // ── Network config ─────────────────────────────────────────────────────────
 
-export const NETWORK_PASSPHRASE = Networks.TESTNET;
+export const NETWORK_PASSPHRASE = Networks.PUBLIC;
 export const RPC_URL =
   process.env.NEXT_PUBLIC_STELLAR_RPC_URL ||
-  "https://soroban-testnet.stellar.org";
+  "https://mainnet.sorobanrpc.com";
 
 export const FACTORY_ID = process.env.NEXT_PUBLIC_MARKET_FACTORY_ID!;
 export const ANCHOR_STAKE_ID = process.env.NEXT_PUBLIC_ANCHOR_STAKE_ID!;
@@ -76,7 +76,7 @@ async function queryContract(
   const contract = new Contract(contractId);
 
   const tx = new TransactionBuilder(source, {
-    fee: BASE_FEE,
+    fee: "100000",
     networkPassphrase: NETWORK_PASSPHRASE,
   })
     .addOperation(contract.call(method, ...args))
@@ -107,7 +107,7 @@ export async function invokeContract(
   const contract = new Contract(contractId);
 
   const tx = new TransactionBuilder(account, {
-    fee: BASE_FEE,
+    fee: "100000",
     networkPassphrase: NETWORK_PASSPHRASE,
   })
     .addOperation(contract.call(method, ...args))
@@ -147,7 +147,7 @@ export async function invokeContract(
 
   // Poll via raw JSON-RPC to avoid stellar-sdk v13 XDR parsing bug on getTransaction
   const hash = result.hash;
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 30; i++) {
     await new Promise((r) => setTimeout(r, 3000));
     try {
       const pollRes = await fetch(RPC_URL, {

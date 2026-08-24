@@ -135,7 +135,7 @@ export default function StatsPage() {
       <div>
         <h2 className="text-sm font-semibold">Protocol Statistics</h2>
         <p className="text-xs text-gray-400 mt-1">
-          Live on-chain data from Stellar testnet · All values in USDC
+          Live on-chain data from Stellar Mainnet — All values in USDC
         </p>
       </div>
 
