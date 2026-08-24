@@ -1,5 +1,6 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/stellar/stellar-protocol/master/stellar-logo.png" width="100" />
+![Uploading image.png…]()
+
 <h1 align="center">AnchorShield</h1>
 <p align="center">
 <strong>Parametric hedging and risk intelligence for Stellar's stablecoin economy.</strong>
