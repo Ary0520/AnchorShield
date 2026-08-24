@@ -12,7 +12,7 @@ AnchorShield is a production-grade, fully on-chain DeFi protocol built on Stella
 
 **Status:** Live on Stellar Mainnet.
 
-📄 **[Litepaper](./Litepaper.md)** &nbsp;|&nbsp; 📚 **[Documentation](https://docs.anchorshield.xyz/)** &nbsp;|&nbsp; 🐦 **[X (Twitter)](https://x.com/AnchorShieldApp)** &nbsp;|&nbsp; 🏆
+📄 **[Litepaper](./Litepaper.md)** &nbsp;|&nbsp; 📚 **[Documentation](https://docs.anchorshield.xyz/)** &nbsp;|&nbsp; 🐦 **[X (Twitter)](https://x.com/AnchorShieldApp)** &nbsp;|&nbsp; 
 
 ---
 
