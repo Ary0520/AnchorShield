@@ -236,7 +236,7 @@ function Hero() {
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full
                               border border-white/10 text-white/50 text-sm mb-8 font-mono">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                Live on Stellar Testnet
+                Live on Stellar Mainnet
               </div>
               <h1 className={`font-extrabold tracking-tighter mb-7 flex flex-col ${GeistSans.className}`}>
                 <span className="gradient-text text-7xl lg:text-[5.5rem] leading-[1.0] pb-2">Hedge stablecoin</span>
@@ -354,7 +354,7 @@ function StatsBar() {
             {/* Top right: 4 markets */}
             <HudCard className="flex-1 flex flex-col justify-between min-h-[160px]" scanDelay={1}>
               {/* <span className="text-white/25 text-[10px] font-mono uppercase tracking-[0.25em]">
-                Live on testnet
+                Live on mainnet
               </span> */}
               <div>
                 <motion.p
@@ -797,7 +797,7 @@ async function fetchOraclePrices(symbol: string): Promise<number[]> {
     const server = new rpc.Server(process.env.NEXT_PUBLIC_STELLAR_RPC_URL || "https://mainnet.sorobanrpc.com", { allowHttp: false });
     const source = new Account("GD6KRXUKOAPTYW72IZOERCPGM3UHXTQDJK4RS5WUAZHC4K2WOONQA3ZR", "0");
 
-    // Asset::Other(Symbol) encoding confirmed working against Reflector testnet
+    // Asset::Other(Symbol) encoding confirmed working against Reflector mainnet
     const assetArg = xdr.ScVal.scvVec([
       xdr.ScVal.scvSymbol("Other"),
       xdr.ScVal.scvSymbol(symbol),
@@ -1152,7 +1152,7 @@ function Footer() {
           <p className="text-xs" style={{ color: "rgba(0,0,0,0.25)" }}>
             AnchorShield is a decentralized protocol. It is not a licensed insurance product.
             All outcomes are determined automatically by on-chain oracle data.
-            Use at your own risk. Testnet deployment — not for production use.
+            Use at your own risk. Mainnet deployment — not for production use.
           </p>
         </div>
       </div>

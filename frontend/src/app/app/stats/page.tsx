@@ -83,7 +83,7 @@ export default function ProtocolStatsPage() {
             Protocol Stats
           </h1>
           <p style={{ color: "#888", fontSize: 13, marginTop: 4, fontFamily: "'General Sans', sans-serif" }}>
-            Live on-chain data · Stellar Testnet
+            Live on-chain data • Stellar Mainnet
           </p>
         </div>
 
